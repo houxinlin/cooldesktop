@@ -35,6 +35,8 @@ subprojects{
     }
 
     dependencies {
+        implementation("net.coobird:thumbnailator:0.4.15")
+
         implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("org.jetbrains.kotlin:kotlin-reflect")

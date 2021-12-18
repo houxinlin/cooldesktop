@@ -1,4 +1,5 @@
 import com.hxl.desktop.file.utils.Directory
+import java.nio.file.Paths
 
 /**
  * @author:   HouXinLin
@@ -12,5 +13,8 @@ class Test {
 }
 
 fun main() {
-
+    var get = "asd.a.s."
+    get.substring(get.lastIndexOf(".") + 1)?.let {
+        println(it.length)
+    }
 }
