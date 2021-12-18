@@ -10,6 +10,7 @@ import net.coobird.thumbnailator.Thumbnails
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
+import org.springframework.util.ResourceUtils
 import java.io.BufferedOutputStream
 import java.io.ByteArrayOutputStream
 import java.nio.file.Files
@@ -40,7 +41,7 @@ class FileServiceImpl : IFileService {
          */
         if (Paths.get(path).isDirectory()) {
             var classPathResource = ClassPathResource(FileIconRegister.getFullPath("folder"))
-            return ByteArrayResource(Files.readAllBytes(Paths.get(classPathResource.file.toString())))
+            return ByteArrayResource(classPathResource.inputStream.readBytes())
         }
         var fileAttribute = Paths.get(path).toFileAttribute()
         fileAttribute?.let {
@@ -54,13 +55,13 @@ class FileServiceImpl : IFileService {
             }
             var classPathResource = ClassPathResource(FileIconRegister.getFullPath(fileAttribute.type))
             if (classPathResource.exists()) {
-                return ByteArrayResource(Files.readAllBytes(Paths.get(classPathResource.file.toString())))
+                return ByteArrayResource(classPathResource.inputStream.readBytes())
             }
         }
         /**
          * return default icon
          */
         var classPathResource = ClassPathResource(FileIconRegister.getFullPath("file"))
-        return ByteArrayResource(Files.readAllBytes(Paths.get(classPathResource.file.toString())))
+        return ByteArrayResource(classPathResource.inputStream.readBytes())
     }
 }
