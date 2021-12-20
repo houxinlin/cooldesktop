@@ -1,7 +1,9 @@
-package com.hxl.desktop.web.extent
+package com.hxl.desktop.common.extent
 
-import com.hxl.desktop.web.bean.HttpResponseBody
-import com.hxl.desktop.web.response.HttpResponseStatus
+import com.hxl.desktop.common.bean.HttpResponseBody
+import com.hxl.desktop.common.bean.HttpResponseStatus
+import com.hxl.desktop.common.result.BaseHandlerResult
+
 
 /**
  * @author:   HouXinLin
@@ -14,6 +16,12 @@ class AnyExtent {
 }
 
 fun Any.asHttpResponseBody(): HttpResponseBody {
+    if (this is HttpResponseBody) {
+        return this;
+    }
+    if (this is BaseHandlerResult) {
+        return HttpResponseBody(this.code, this.data, this.msg);
+    }
     return HttpResponseBody(0, this, "OK");
 }
 

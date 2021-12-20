@@ -1,4 +1,4 @@
-package com.hxl.desktop.web.bean
+package com.hxl.desktop.common.bean
 
 /**
  * @author:   HouXinLin
@@ -7,5 +7,5 @@ package com.hxl.desktop.web.bean
  * @describe: http response body
  * @version:  v1.0
  */
-data class HttpResponseBody(var statu: Int, var data: Any, var msg: String) {
+data class HttpResponseBody(var status: Int, var data: Any, var msg: String) {
 }

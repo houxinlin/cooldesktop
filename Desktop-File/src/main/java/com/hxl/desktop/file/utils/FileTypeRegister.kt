@@ -7,11 +7,13 @@ package com.hxl.desktop.file.utils
  * @describe:
  * @version:  v1.0
  */
-class FileIconRegister {
+class FileTypeRegister {
 
     companion object {
-        val IMAGE = arrayOf("jpg","jpeg","png","webp","bmp");
         const val PREFIX = "/static/icon/ic-";
+
+        val IMAGE = arrayOf("jpg", "jpeg", "png", "webp", "bmp");
+        val ZIP= arrayOf("zip","rar","gz")
         fun getFullPath(key: String): String {
             return "${PREFIX}${key}.png";
         }

@@ -17,9 +17,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
  */
 @Configuration
 class WebConfig  : WebMvcConfigurer {
-    init {
-        println("a")
-    }
+
     @Bean
     fun webServerFactoryCustomizer(): WebServerFactoryCustomizer<*>? {
         return WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> { factory ->

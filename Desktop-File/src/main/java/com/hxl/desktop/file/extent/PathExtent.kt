@@ -1,6 +1,6 @@
 package com.hxl.desktop.file.extent
 
-import com.hxl.desktop.file.bean.FileAttribute
+import com.hxl.desktop.common.bean.FileAttribute
 import com.hxl.desktop.file.utils.Directory
 import java.nio.file.Path
 import kotlin.io.path.notExists

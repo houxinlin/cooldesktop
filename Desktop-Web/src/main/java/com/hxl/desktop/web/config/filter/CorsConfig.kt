@@ -24,7 +24,7 @@ class CorsConfig :Filter{
         var servletResponse=(response as HttpServletResponse)
         servletResponse.addHeader("Access-Control-Allow-Headers","x-requested-with,content-type")
         servletResponse.addHeader("Access-Control-Allow-Methods","GET,POST,PUT,POST")
-        servletResponse.addHeader("Access-Control-Allow-Origin",request.getHeader("Origin"))
+        servletResponse.addHeader("Access-Control-Allow-Origin",servletRequest.getHeader("Origin"))
         servletResponse.addHeader("Access-Control-Allow-Credentials","true")
         chain?.doFilter(request,response)
     }

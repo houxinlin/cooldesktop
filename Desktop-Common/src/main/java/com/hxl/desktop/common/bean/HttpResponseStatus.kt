@@ -1,4 +1,4 @@
-package com.hxl.desktop.web.response
+package com.hxl.desktop.common.bean
 
 /**
  * @author:   HouXinLin

@@ -1,12 +1,13 @@
 package com.hxl.desktop.file.utils
 
-import com.hxl.desktop.file.bean.FileAttribute
+import com.hxl.desktop.common.bean.FileAttribute
+import org.springframework.core.io.ClassPathResource
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.stream.Collectors
-import kotlin.io.path.exists
+import kotlin.io.path.*
 
 /**
  * @author:   HouXinLin
@@ -21,11 +22,13 @@ object Directory {
      * list director
      */
     fun listDirector(root: String): List<Path> {
-        if (!Paths.get(root).exists()) return emptyList()
-        return Files.list(Paths.get(root)).collect(Collectors.toList())
+        var path = Paths.get(root)
+        if (!path.exists()) return emptyList()
+        if (!path.isDirectory()) return emptyList()
+        return Files.list(path).collect(Collectors.toList())
     }
 
-    fun getFileSize(path: String): Long {
+    private fun getFileSize(path: String): Long {
         return if (File(path).isDirectory) {
             -1;
         } else {
@@ -34,19 +37,46 @@ object Directory {
     }
 
     fun getFileAttribute(path: Path): FileAttribute {
-        return FileAttribute(path.toString(), getFileType(path.toString()), getFileSize(path.toString()), path.last().toString())
+        return FileAttribute(
+                path.toString(),
+                getFileType(path.toString()),
+                getFileSize(path.toString()),
+                path.last().toString(),
+        )
     }
 
-    fun getFileType(path: String): String {
+    fun initWorkEnvironmentDirectory(): String {
+        var file = ClassPathResource("/work").path
+        if (!Paths.get(file).exists()) {
+            Paths.get(file).createDirectory()
+        }
+        createDirector(file, "chunk", "database", "app")
+        return file
+    }
+
+    fun getChunkDirectory(): String {
+        return Paths.get(initWorkEnvironmentDirectory(), "chunk").toString();
+    }
+
+    fun createChunkDirector(name: String): String {
+        createDirector(getChunkDirectory(), name);
+        return Paths.get(getChunkDirectory(), name).toString();
+    }
+
+    fun createDirector(root: String, vararg child: String) {
+        child.toList().stream().forEach { Paths.get(root, it).createDirectories() }
+    }
+
+    private fun getFileType(path: String): String {
         return if (File(path).isDirectory) {
-            "directory"
+            "folder"
         } else {
             var suffix = path.substring(path.lastIndexOf(".") + 1)
-            if (FileIconRegister.IMAGE.contains(suffix.lowercase())) {
-                return "img";
-            }
             if (suffix.isEmpty()) {
                 return "file"
+            }
+            if (FileTypeRegister.IMAGE.contains(suffix.lowercase())) {
+                return "img";
             }
             return suffix;
         }

@@ -10,5 +10,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan
 class Application
 
 fun main(args:Array<String>) {
-    SpringApplication.run(Application::class.java,*args)
+    var run = SpringApplication.run(Application::class.java, *args)
+    for (beanDefinitionName in run.beanDefinitionNames) {
+    }
 }
