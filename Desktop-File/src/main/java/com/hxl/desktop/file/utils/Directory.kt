@@ -59,12 +59,23 @@ object Directory {
     }
 
     fun createChunkDirector(name: String): String {
+        if (exists(Paths.get(getChunkDirectory(), name))) {
+            return Paths.get(getChunkDirectory(), name).toString()
+        }
         createDirector(getChunkDirectory(), name);
         return Paths.get(getChunkDirectory(), name).toString();
     }
 
     fun createDirector(root: String, vararg child: String) {
         child.toList().stream().forEach { Paths.get(root, it).createDirectories() }
+    }
+
+    fun exists(path: String): Boolean {
+        return Paths.get(path).exists()
+    }
+
+    fun exists(path: Path): Boolean {
+        return exists(path.toString())
     }
 
     private fun getFileType(path: String): String {

@@ -1,13 +1,16 @@
 import com.hxl.desktop.file.service.impl.FileServiceImpl
 import com.hxl.desktop.file.utils.Directory
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.util.FileSystemUtils
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
-import kotlin.io.path.createDirectories
-import kotlin.io.path.deleteExisting
-import kotlin.io.path.getOwner
+import java.util.stream.Collectors
+import java.util.stream.Stream
+import kotlin.io.path.*
+import kotlin.streams.toList
 
 /**
  * @author:   HouXinLin
@@ -21,7 +24,5 @@ class Test {
 }
 
 fun main() {
-    var name ="/home/HouXinLin/project/java/CoolDesktop/work/chunk/da01960c-9dfa-4f8e-b1ff-50d8d0c96d74/all/l";
 
-    Paths.get(name).createDirectories()
 }

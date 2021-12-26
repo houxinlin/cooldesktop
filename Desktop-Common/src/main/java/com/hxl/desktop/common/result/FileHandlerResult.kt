@@ -11,8 +11,11 @@ package com.hxl.desktop.common.result
 class FileHandlerResult(code: Int, data: String, msg: String) :
         BaseHandlerResult(code, data, msg) {
     companion object {
+        val OK = FileHandlerResult(0, "", "OK");
+
         val EXIST = FileHandlerResult(-1, "", "文件存在");
         val MERGE_ERROR = FileHandlerResult(-2, "", "文件存在");
-        val OK = FileHandlerResult(0, "", "OK");
+        val NO_PERMISSION=FileHandlerResult(-3,"","无权限对次文件执行任何操作");
+        val NONE=FileHandlerResult(-4,"","未知错误");
     }
 }

@@ -2,11 +2,15 @@ package com.hxl.desktop.file.service.impl
 
 import com.hxl.desktop.common.result.FileHandlerResult
 import com.hxl.desktop.common.bean.FileAttribute
+import com.hxl.desktop.common.bean.UploadInfo
 import com.hxl.desktop.file.extent.toFileAttribute
 import com.hxl.desktop.file.service.IFileService
 import com.hxl.desktop.file.utils.Directory
 import com.hxl.desktop.file.utils.FileTypeRegister
+import com.hxl.desktop.file.utils.ZipUtils
 import net.coobird.thumbnailator.Thumbnails
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
@@ -15,10 +19,8 @@ import org.springframework.web.multipart.MultipartFile
 import java.io.ByteArrayOutputStream
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.io.path.exists
-import kotlin.io.path.getOwner
-import kotlin.io.path.isDirectory
-import kotlin.io.path.outputStream
+import kotlin.io.path.*
+import kotlin.streams.toList
 
 /**
  * @author:   HouXinLin
@@ -29,12 +31,16 @@ import kotlin.io.path.outputStream
  */
 @Service
 class FileServiceImpl : IFileService {
-    override fun fileMerge(path: String, size: Int, name: String, inPath: String): FileHandlerResult {
-        var rootPath = Paths.get(Directory.getChunkDirectory(), path).toString();
+    var log: Logger = LoggerFactory.getLogger(FileServiceImpl::class.java);
+
+    override fun fileMerge(chunkId: String, name: String, inPath: String): FileHandlerResult {
+        var rootPath = Paths.get(Directory.getChunkDirectory(), chunkId).toString();
         var target = Paths.get(inPath, name);
+        log.info("fileMerge->{}", chunkId)
         if (target.exists()) {
             return FileHandlerResult.EXIST
         }
+        var size = Files.list(Paths.get(rootPath)).count()
         var targetOutputStream = target.outputStream()
         for (i in 0 until size) {
             targetOutputStream.write(Files.readAllBytes(Paths.get(rootPath, i.toString())))
@@ -45,8 +51,14 @@ class FileServiceImpl : IFileService {
         return FileHandlerResult.OK;
     }
 
-    override fun checkUploadFile(chunkId: String, id: Int, body: MultipartFile): Boolean {
-        Files.write(Paths.get(Directory.createChunkDirector(chunkId), id.toString()), body.inputStream.readBytes());
+    override fun checkUploadFile(uploadInfo: UploadInfo): Boolean {
+        var chunkDirector = Paths.get(Directory.createChunkDirector(uploadInfo.chunkId));
+        Files.write(Paths.get(chunkDirector.toString(), uploadInfo.blobId.toString()), uploadInfo.fileBinary.inputStream.readBytes());
+        var currentSize = Files.list(chunkDirector).map { it.fileSize() }.toList().sum();
+        log.info("upload finish current size={},target={}", currentSize, uploadInfo.total)
+        if (uploadInfo.total == currentSize) {
+            fileMerge(uploadInfo.chunkId, uploadInfo.fileName, uploadInfo.target)
+        }
         return true;
     }
 
@@ -92,15 +104,16 @@ class FileServiceImpl : IFileService {
         return ByteArrayResource(defaultIcon.inputStream.readBytes())
     }
 
-    override fun deleteFile(path: String): String {
+    override fun deleteFile(path: String): FileHandlerResult {
         var path = Paths.get(path)
         path.getOwner()?.let {
             if (System.getProperty("user.name") == it.name) {
                 FileSystemUtils.deleteRecursively(path)
-                return "OK";
+                log.info("delete file->{}", path)
+                return FileHandlerResult.OK
             }
-            return "无权限对次文件执行任何操作,该文件的所有者为${it.name}"
+            return FileHandlerResult.NO_PERMISSION
         }
-        return "未知错误";
+        return FileHandlerResult.NONE;
     }
 }

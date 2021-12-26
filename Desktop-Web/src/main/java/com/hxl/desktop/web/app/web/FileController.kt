@@ -1,5 +1,6 @@
 package com.hxl.desktop.web.app.web
 
+import com.hxl.desktop.common.bean.UploadInfo
 import com.hxl.desktop.file.service.IFileService
 import com.hxl.desktop.common.extent.asHttpResponseBody
 import org.springframework.http.HttpHeaders
@@ -22,10 +23,8 @@ class FileController {
     lateinit var iFileService: IFileService;
 
     @PostMapping("chunkUpload")
-    fun chunkUpload(@RequestParam(value = "chunkId") chunkId: String,
-                    @RequestParam(value = "blobId") blobId: Int,
-                    @RequestParam(value = "file") body: MultipartFile): Any {
-        return iFileService.checkUploadFile(chunkId,blobId, body)
+    fun chunkUpload( uploadInfo: UploadInfo): Any {
+        return iFileService.checkUploadFile(uploadInfo)
     }
 
     @PostMapping("chunkFileMerge")
@@ -33,9 +32,8 @@ class FileController {
             @RequestParam(value = "name") name: String,
             @RequestParam(value = "targetName") targetName: String,
             @RequestParam(value = "inPath") inPath: String,
-            @RequestParam(value = "size") size: Int,
     ): Any {
-        return iFileService.fileMerge(name, size, targetName,inPath).asHttpResponseBody()
+        return iFileService.fileMerge(name, targetName, inPath).asHttpResponseBody()
         return "OK";
     }
 
