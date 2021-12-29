@@ -1,6 +1,7 @@
 package com.hxl.desktop.file.utils
 
 import com.hxl.desktop.common.bean.FileAttribute
+import com.hxl.desktop.file.emun.FileType
 import org.springframework.core.io.ClassPathResource
 import java.io.File
 import java.nio.file.Files
@@ -80,14 +81,14 @@ object Directory {
 
     private fun getFileType(path: String): String {
         return if (File(path).isDirectory) {
-            "folder"
+            FileType.FOLDER.typeName
         } else {
             var suffix = path.substring(path.lastIndexOf(".") + 1)
             if (suffix.isEmpty()) {
-                return "file"
+                FileType.FILE.typeName
             }
             if (FileTypeRegister.IMAGE.contains(suffix.lowercase())) {
-                return "img";
+                FileType.IMAGE.typeName
             }
             return suffix;
         }

@@ -2,5 +2,5 @@ repositories {
     mavenCentral()
 }
 dependencies{
-    implementation(project(":Desktop-Common"))
+    implementation(project(":Desktop-Common"));
 }

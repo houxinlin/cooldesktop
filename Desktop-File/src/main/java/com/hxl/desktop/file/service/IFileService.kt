@@ -7,26 +7,27 @@ import org.springframework.core.io.ByteArrayResource
 import org.springframework.web.multipart.MultipartFile
 
 interface IFileService {
-    /**
-     * list files
-     */
     fun listDirector(root: String): List<FileAttribute>;
 
-    /**
-     * get file preview image
-     */
     fun getFileIconByType(type: String): ByteArrayResource;
 
-    /**
-     * delete file and folder
-     */
     fun deleteFile(path: String): FileHandlerResult;
 
 
     fun getImageThumbnail(path: String): ByteArrayResource;
 
 
-    fun checkUploadFile(uploadInfo: UploadInfo):Boolean
+    fun checkUploadFile(uploadInfo: UploadInfo): Boolean
 
-    fun fileMerge(path: String,  name: String,inPath:String): FileHandlerResult;
+    fun fileMerge(path: String, name: String, inPath: String): FileHandlerResult;
+
+    fun hasPermission(path: String): Boolean;
+
+    fun fileCopy(path: String): Boolean
+
+    fun filePaste(path: String): FileHandlerResult
+
+    fun fileRename(source: String, newName: String): FileHandlerResult
+
+    fun fileCut(path: String): Boolean
 }

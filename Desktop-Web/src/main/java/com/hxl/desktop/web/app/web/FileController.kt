@@ -22,11 +22,51 @@ class FileController {
     @Resource
     lateinit var iFileService: IFileService;
 
-    @PostMapping("chunkUpload")
-    fun chunkUpload( uploadInfo: UploadInfo): Any {
-        return iFileService.checkUploadFile(uploadInfo)
+    /**
+     *file rename
+     */
+    @PostMapping("fileRename")
+    fun fileCopy(@RequestParam("source") source: String,
+                 @RequestParam("newName") newName: String): Any {
+        return iFileService.fileRename(source,newName).asHttpResponseBody()
     }
 
+    /**
+     * file copy
+     */
+    @PostMapping("fileCopy")
+    fun fileCopy(@RequestParam("path") path: String): Any {
+        return iFileService.fileCopy(path).asHttpResponseBody()
+    }
+    /**
+     * file cut
+     */
+    @PostMapping("fileCut")
+    fun fileCut(@RequestParam("path") path: String): Any {
+        return iFileService.fileCut(path).asHttpResponseBody()
+    }
+
+
+    /**
+     * file paste
+     */
+    @PostMapping("filePaste")
+    fun filePaste(@RequestParam("path") target: String): Any {
+        return iFileService.filePaste(target).asHttpResponseBody()
+    }
+
+    /**
+     * chunk file upload
+     */
+
+    @PostMapping("chunkUpload")
+    fun chunkUpload(uploadInfo: UploadInfo): Any {
+        return iFileService.checkUploadFile(uploadInfo).asHttpResponseBody()
+    }
+
+    /**
+     * chunk file mearge
+     */
     @PostMapping("chunkFileMerge")
     fun chunkFileMerge(
             @RequestParam(value = "name") name: String,

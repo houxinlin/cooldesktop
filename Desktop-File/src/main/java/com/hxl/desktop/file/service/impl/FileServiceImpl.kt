@@ -3,11 +3,16 @@ package com.hxl.desktop.file.service.impl
 import com.hxl.desktop.common.result.FileHandlerResult
 import com.hxl.desktop.common.bean.FileAttribute
 import com.hxl.desktop.common.bean.UploadInfo
+import com.hxl.desktop.common.extent.toFile
+import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.common.manager.ClipboardManager
+import com.hxl.desktop.file.emun.FileType
 import com.hxl.desktop.file.extent.toFileAttribute
 import com.hxl.desktop.file.service.IFileService
 import com.hxl.desktop.file.utils.Directory
 import com.hxl.desktop.file.utils.FileTypeRegister
 import com.hxl.desktop.file.utils.ZipUtils
+import com.sun.org.apache.xpath.internal.operations.Bool
 import net.coobird.thumbnailator.Thumbnails
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -17,6 +22,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.FileSystemUtils
 import org.springframework.web.multipart.MultipartFile
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.io.path.*
@@ -32,6 +38,44 @@ import kotlin.streams.toList
 @Service
 class FileServiceImpl : IFileService {
     var log: Logger = LoggerFactory.getLogger(FileServiceImpl::class.java);
+
+    override fun fileCut(path: String): Boolean {
+        ClipboardManager.fileCut(path);
+        return true
+    }
+
+    override fun fileRename(source: String, newName: String): FileHandlerResult {
+        var file = File(source)
+        var target = File(file.parent, newName)
+        if (!file.exists()) {
+            return FileHandlerResult.EXIST
+        }
+        if (target.exists()) {
+            return FileHandlerResult.TARGET_EXIST
+        }
+        if (!hasPermission(source)) {
+            return FileHandlerResult.NO_PERMISSION
+        }
+        log.info("file rename source=>{} target=>{}", source, newName)
+        file.renameTo(target);
+        return FileHandlerResult.OK;
+    }
+
+    override fun fileCopy(path: String): Boolean {
+        if (path.toPath().exists()) {
+            ClipboardManager.fileCopy(path)
+            return true;
+        }
+        return false;
+    }
+
+    override fun filePaste(path: String): FileHandlerResult {
+        if (path.toPath().exists()) {
+          return  ClipboardManager.filePaste(path)
+
+        }
+        return FileHandlerResult.EXIST;
+    }
 
     override fun fileMerge(chunkId: String, name: String, inPath: String): FileHandlerResult {
         var rootPath = Paths.get(Directory.getChunkDirectory(), chunkId).toString();
@@ -52,6 +96,7 @@ class FileServiceImpl : IFileService {
     }
 
     override fun checkUploadFile(uploadInfo: UploadInfo): Boolean {
+        log.info("file upload  {}", uploadInfo.fileName)
         var chunkDirector = Paths.get(Directory.createChunkDirector(uploadInfo.chunkId));
         Files.write(Paths.get(chunkDirector.toString(), uploadInfo.blobId.toString()), uploadInfo.fileBinary.inputStream.readBytes());
         var currentSize = Files.list(chunkDirector).map { it.fileSize() }.toList().sum();
@@ -68,7 +113,11 @@ class FileServiceImpl : IFileService {
         for (file in listDirector) {
             file.toFileAttribute()?.let { mutableListOf.add(it) }
         }
-        return mutableListOf;
+        var folderList = mutableListOf.filter { it.type == FileType.FOLDER.typeName }
+        var fileList = mutableListOf.filter { it.type != FileType.FOLDER.typeName }
+        folderList.sortedBy { it.name }
+        fileList.sortedBy { it.name }
+        return folderList.plus(fileList)
     }
 
     override fun getImageThumbnail(path: String): ByteArrayResource {
@@ -82,8 +131,8 @@ class FileServiceImpl : IFileService {
                 var bufferedOutputStream = ByteArrayOutputStream()
                 try {
                     Thumbnails.of(path)
-                            .outputQuality(0.5)
-                            .scale(0.5)
+                            .outputQuality(0.3)
+                            .scale(0.3)
                             .toOutputStream(bufferedOutputStream)
                     return ByteArrayResource(bufferedOutputStream.toByteArray())
                 } catch (v: Exception) {
@@ -104,16 +153,21 @@ class FileServiceImpl : IFileService {
         return ByteArrayResource(defaultIcon.inputStream.readBytes())
     }
 
-    override fun deleteFile(path: String): FileHandlerResult {
+    override fun hasPermission(path: String): Boolean {
         var path = Paths.get(path)
         path.getOwner()?.let {
-            if (System.getProperty("user.name") == it.name) {
-                FileSystemUtils.deleteRecursively(path)
-                log.info("delete file->{}", path)
-                return FileHandlerResult.OK
-            }
-            return FileHandlerResult.NO_PERMISSION
+            return (System.getProperty("user.name") == it.name)
         }
-        return FileHandlerResult.NONE;
+        return false;
+
+    }
+
+    override fun deleteFile(path: String): FileHandlerResult {
+        if (hasPermission(path)) {
+            FileSystemUtils.deleteRecursively(Paths.get(path))
+            log.info("delete file->{}", path)
+            return FileHandlerResult.OK
+        }
+        return FileHandlerResult.NO_PERMISSION
     }
 }

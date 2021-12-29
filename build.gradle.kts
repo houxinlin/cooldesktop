@@ -17,6 +17,9 @@ configurations {
     }
 }
 
+dependencies{
+
+}
 repositories {
     mavenCentral()
 }
@@ -45,13 +48,19 @@ subprojects{
     }
 
     dependencies {
+        implementation(files("/home/HouXinLin/apps/Developer/tomcat/source/9/output/embed/tomcat-embed-core.jar"))
+
+        implementation("org.springframework.boot:spring-boot-starter-web"){
+            exclude(group="org.apache.tomcat.embed",module = "tomcat-embed-core")
+        }
         implementation("net.coobird:thumbnailator:0.4.15")
-        implementation("org.springframework.boot:spring-boot-starter-web")
+
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
+
     }
 
     tasks.withType<KotlinCompile> {

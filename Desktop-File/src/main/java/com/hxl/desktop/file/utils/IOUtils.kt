@@ -1,7 +1,6 @@
 package com.hxl.desktop.file.utils
 
-import org.apache.tomcat.util.http.fileupload.IOUtils
-import org.springframework.util.FileCopyUtils
+
 
 /**
  * @author:   HouXinLin
