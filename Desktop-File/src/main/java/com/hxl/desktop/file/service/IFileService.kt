@@ -4,7 +4,9 @@ import com.hxl.desktop.common.result.FileHandlerResult
 import com.hxl.desktop.common.bean.FileAttribute
 import com.hxl.desktop.common.bean.UploadInfo
 import org.springframework.core.io.ByteArrayResource
+import org.springframework.scheduling.annotation.Async
 import org.springframework.web.multipart.MultipartFile
+import java.util.concurrent.Future
 
 interface IFileService {
     fun listDirector(root: String): List<FileAttribute>;
@@ -30,4 +32,8 @@ interface IFileService {
     fun fileRename(source: String, newName: String): FileHandlerResult
 
     fun fileCut(path: String): Boolean
+
+
+    @Async
+    fun fileCompress(path: String, targetName: String, compressType: String): Future<FileHandlerResult>
 }

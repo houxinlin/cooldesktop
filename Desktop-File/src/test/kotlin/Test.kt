@@ -1,17 +1,19 @@
-import com.hxl.desktop.file.service.impl.FileServiceImpl
-import com.hxl.desktop.file.utils.Directory
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.springframework.util.FileSystemUtils
-import java.io.File
-import java.nio.ByteBuffer
-import java.nio.file.Files
-import java.nio.file.Paths
+import com.hxl.desktop.common.extent.listRootDirector
+import com.hxl.desktop.common.extent.toFile
+import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.common.extent.walkFileTree
+import org.apache.commons.compress.archivers.ArchiveOutputStream
+import org.apache.commons.compress.archivers.ArchiveStreamFactory
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
+import org.apache.commons.compress.utils.IOUtils
+import java.io.BufferedInputStream
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.OutputStream
+import java.nio.file.*
 import java.util.*
-import java.util.stream.Collectors
-import java.util.stream.Stream
 import kotlin.io.path.*
-import kotlin.streams.toList
+
 
 /**
  * @author:   HouXinLin
@@ -25,4 +27,36 @@ class Test {
 }
 
 fun main() {
+    var target = "/home/HouXinLin/test/test/"
+    var archiveOutputStream = ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.ZIP, FileOutputStream("/home/HouXinLin/test/test.zip"))
+    if (!Files.isDirectory(Paths.get(target))) {
+        var zipArchiveEntry = ZipArchiveEntry(Paths.get(target).name)
+        archiveOutputStream.putArchiveEntry(zipArchiveEntry)
+        IOUtils.copy(Files.newInputStream(Paths.get(target)), archiveOutputStream);
+        archiveOutputStream.closeArchiveEntry()
+        archiveOutputStream.finish()
+        archiveOutputStream.close()
+        return
+    }
+//    println(Paths.get(target).listRootDirector())
+    addFile(target,archiveOutputStream)
+
+    archiveOutputStream.finish()
+    archiveOutputStream.close()
+
+}
+
+fun addFile(target: String, archiveOutputStream: ArchiveOutputStream) {
+    for (file in Paths.get(target).walkFileTree()) {
+        val entryName: String = file.removePrefix(target)
+        val entry = ZipArchiveEntry(entryName)
+        if (!file.toPath().isDirectory()) {
+            archiveOutputStream.putArchiveEntry(entry)
+            IOUtils.copy(file.toFile().inputStream(), archiveOutputStream)
+        }else{
+            var zipArchiveEntry = ZipArchiveEntry(file.removePrefix(target) + "/")
+            archiveOutputStream.putArchiveEntry(zipArchiveEntry)
+        }
+        archiveOutputStream.closeArchiveEntry()
+    }
 }

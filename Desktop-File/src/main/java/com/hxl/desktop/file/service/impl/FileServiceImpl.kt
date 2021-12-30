@@ -3,28 +3,27 @@ package com.hxl.desktop.file.service.impl
 import com.hxl.desktop.common.result.FileHandlerResult
 import com.hxl.desktop.common.bean.FileAttribute
 import com.hxl.desktop.common.bean.UploadInfo
-import com.hxl.desktop.common.extent.toFile
 import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.common.manager.ClipboardManager
+import com.hxl.desktop.file.compress.FileCompress
 import com.hxl.desktop.file.emun.FileType
 import com.hxl.desktop.file.extent.toFileAttribute
 import com.hxl.desktop.file.service.IFileService
 import com.hxl.desktop.file.utils.Directory
 import com.hxl.desktop.file.utils.FileTypeRegister
-import com.hxl.desktop.file.utils.ZipUtils
-import com.sun.org.apache.xpath.internal.operations.Bool
 import net.coobird.thumbnailator.Thumbnails
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.ClassPathResource
+import org.springframework.scheduling.annotation.AsyncResult
 import org.springframework.stereotype.Service
 import org.springframework.util.FileSystemUtils
-import org.springframework.web.multipart.MultipartFile
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.concurrent.Future
 import kotlin.io.path.*
 import kotlin.streams.toList
 
@@ -71,7 +70,7 @@ class FileServiceImpl : IFileService {
 
     override fun filePaste(path: String): FileHandlerResult {
         if (path.toPath().exists()) {
-          return  ClipboardManager.filePaste(path)
+            return ClipboardManager.filePaste(path)
 
         }
         return FileHandlerResult.EXIST;
@@ -135,8 +134,8 @@ class FileServiceImpl : IFileService {
                             .scale(0.3)
                             .toOutputStream(bufferedOutputStream)
                     return ByteArrayResource(bufferedOutputStream.toByteArray())
-                } catch (v: Exception) {
-
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }
@@ -169,5 +168,10 @@ class FileServiceImpl : IFileService {
             return FileHandlerResult.OK
         }
         return FileHandlerResult.NO_PERMISSION
+    }
+
+    override fun fileCompress(path: String, targetName: String, compressType: String): Future<FileHandlerResult> {
+         FileCompress.getCompressByType(compressType).compress(path,targetName)
+        return AsyncResult(FileHandlerResult.OK)
     }
 }

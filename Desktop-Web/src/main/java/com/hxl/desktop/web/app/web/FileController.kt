@@ -28,7 +28,7 @@ class FileController {
     @PostMapping("fileRename")
     fun fileCopy(@RequestParam("source") source: String,
                  @RequestParam("newName") newName: String): Any {
-        return iFileService.fileRename(source,newName).asHttpResponseBody()
+        return iFileService.fileRename(source, newName).asHttpResponseBody()
     }
 
     /**
@@ -38,6 +38,7 @@ class FileController {
     fun fileCopy(@RequestParam("path") path: String): Any {
         return iFileService.fileCopy(path).asHttpResponseBody()
     }
+
     /**
      * file cut
      */
@@ -119,6 +120,13 @@ class FileController {
                 .headers(header)
                 .contentLength(fileIcon.contentLength())
                 .body(fileIcon);
+    }
+
+    @PostMapping("fileCompress")
+    fun fileCompress(@RequestParam("path") path: String,
+                     @RequestParam("targetName") targetName: String,
+                     @RequestParam("compressType") compressType: String): Any {
+        return iFileService.fileCompress(path, targetName, compressType)
     }
 
 }

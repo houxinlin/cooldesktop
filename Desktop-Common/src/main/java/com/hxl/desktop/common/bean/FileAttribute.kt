@@ -12,4 +12,5 @@ data class FileAttribute(
         var type: String = "",
         var fileSize: Long = -1,
         var name: String = "",
+        var rawType: String = ""
 )

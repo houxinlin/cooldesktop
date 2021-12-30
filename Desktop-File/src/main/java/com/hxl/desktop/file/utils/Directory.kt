@@ -4,9 +4,9 @@ import com.hxl.desktop.common.bean.FileAttribute
 import com.hxl.desktop.file.emun.FileType
 import org.springframework.core.io.ClassPathResource
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
+import java.io.IOException
+import java.nio.file.*
+import java.nio.file.attribute.BasicFileAttributes
 import java.util.stream.Collectors
 import kotlin.io.path.*
 
@@ -43,6 +43,7 @@ object Directory {
                 getFileType(path.toString()),
                 getFileSize(path.toString()),
                 path.last().toString(),
+                getRawFileType(path.toString()),
         )
     }
 
@@ -79,18 +80,28 @@ object Directory {
         return exists(path.toString())
     }
 
+    private fun getRawFileType(path: String): String {
+        var suffix = path.substring(path.lastIndexOf(".") + 1)
+        if (suffix.isEmpty()) {
+            return "";
+        }
+        return suffix;
+    }
+
     private fun getFileType(path: String): String {
         return if (File(path).isDirectory) {
             FileType.FOLDER.typeName
         } else {
             var suffix = path.substring(path.lastIndexOf(".") + 1)
             if (suffix.isEmpty()) {
-                FileType.FILE.typeName
+                return FileType.FILE.typeName
             }
             if (FileTypeRegister.IMAGE.contains(suffix.lowercase())) {
-                FileType.IMAGE.typeName
+                return FileType.IMAGE.typeName
             }
             return suffix;
         }
     }
+
+
 }

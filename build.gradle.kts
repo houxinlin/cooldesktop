@@ -48,10 +48,11 @@ subprojects{
     }
 
     dependencies {
-        implementation(files("/home/HouXinLin/apps/Developer/tomcat/source/9/output/embed/tomcat-embed-core.jar"))
+//        implementation(files("/home/HouXinLin/apps/Developer/tomcat/source/9/output/embed/tomcat-embed-core.jar"))
+        implementation("org.apache.commons:commons-compress:1.21")
 
         implementation("org.springframework.boot:spring-boot-starter-web"){
-            exclude(group="org.apache.tomcat.embed",module = "tomcat-embed-core")
+//            exclude(group="org.apache.tomcat.embed",module = "tomcat-embed-core")
         }
         implementation("net.coobird:thumbnailator:0.4.15")
 
