@@ -13,6 +13,7 @@ class FileHandlerResult(code: Int, data: String, msg: String) :
     companion object {
         val OK = FileHandlerResult(0, "", "OK");
         val EXIST = FileHandlerResult(-1, "", "文件存在");
+        val NOW_EXIST = FileHandlerResult(-1, "", "文件bu存在");
         val MERGE_ERROR = FileHandlerResult(-2, "", "文件存在");
         val NO_PERMISSION = FileHandlerResult(-3, "", "无权限对次文件执行任何操作");
         val NONE = FileHandlerResult(-4, "", "未知错误");

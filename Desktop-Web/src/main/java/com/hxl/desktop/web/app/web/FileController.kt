@@ -3,11 +3,16 @@ package com.hxl.desktop.web.app.web
 import com.hxl.desktop.common.bean.UploadInfo
 import com.hxl.desktop.file.service.IFileService
 import com.hxl.desktop.common.extent.asHttpResponseBody
+import com.hxl.desktop.common.extent.toFile
+import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.common.result.FileHandlerResult
+import com.hxl.desktop.file.extent.getAttribute
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import javax.annotation.Resource
+import kotlin.io.path.exists
 
 /**
  * @author:   HouXinLin
@@ -26,8 +31,10 @@ class FileController {
      *file rename
      */
     @PostMapping("fileRename")
-    fun fileCopy(@RequestParam("source") source: String,
-                 @RequestParam("newName") newName: String): Any {
+    fun fileCopy(
+        @RequestParam("source") source: String,
+        @RequestParam("newName") newName: String
+    ): Any {
         return iFileService.fileRename(source, newName).asHttpResponseBody()
     }
 
@@ -70,9 +77,9 @@ class FileController {
      */
     @PostMapping("chunkFileMerge")
     fun chunkFileMerge(
-            @RequestParam(value = "name") name: String,
-            @RequestParam(value = "targetName") targetName: String,
-            @RequestParam(value = "inPath") inPath: String,
+        @RequestParam(value = "name") name: String,
+        @RequestParam(value = "targetName") targetName: String,
+        @RequestParam(value = "inPath") inPath: String,
     ): Any {
         return iFileService.fileMerge(name, targetName, inPath).asHttpResponseBody()
         return "OK";
@@ -103,9 +110,9 @@ class FileController {
         header.add(HttpHeaders.CONTENT_TYPE, "image/png")
         var fileIcon = iFileService.getFileIconByType(path)
         return ResponseEntity.ok()
-                .headers(header)
-                .contentLength(fileIcon.contentLength())
-                .body(fileIcon);
+            .headers(header)
+            .contentLength(fileIcon.contentLength())
+            .body(fileIcon);
     }
 
     /**
@@ -117,16 +124,26 @@ class FileController {
         header.add(HttpHeaders.CONTENT_TYPE, "image/png")
         var fileIcon = iFileService.getImageThumbnail(path)
         return ResponseEntity.ok()
-                .headers(header)
-                .contentLength(fileIcon.contentLength())
-                .body(fileIcon);
+            .headers(header)
+            .contentLength(fileIcon.contentLength())
+            .body(fileIcon);
     }
 
     @PostMapping("fileCompress")
-    fun fileCompress(@RequestParam("path") path: String,
-                     @RequestParam("targetName") targetName: String,
-                     @RequestParam("compressType") compressType: String): Any {
+    fun fileCompress(
+        @RequestParam("path") path: String,
+        @RequestParam("targetName") targetName: String,
+        @RequestParam("compressType") compressType: String
+    ): Any {
         return iFileService.fileCompress(path, targetName, compressType)
+    }
+
+    @PostMapping("getFileAttribute")
+    fun getFileAttribute(@RequestParam("path") path: String): Any {
+        if (path.toPath().exists()) {
+            return path.toFile().getAttribute().asHttpResponseBody()
+        }
+        return FileHandlerResult.NOW_EXIST.asHttpResponseBody()
     }
 
 }

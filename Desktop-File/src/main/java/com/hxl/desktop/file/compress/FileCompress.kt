@@ -2,73 +2,80 @@ package com.hxl.desktop.file.compress
 
 import com.hxl.desktop.common.extent.toFile
 import com.hxl.desktop.common.extent.toPath
-import com.hxl.desktop.common.extent.walkFileTree
-import org.apache.commons.compress.archivers.ArchiveOutputStream
+import com.hxl.desktop.file.extent.walkFileTree
 import org.apache.commons.compress.archivers.ArchiveStreamFactory
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
-import org.apache.commons.compress.utils.IOUtils
-import org.apache.tomcat.util.http.fileupload.FileUtils
-import java.io.*
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.io.path.isDirectory
-import kotlin.io.path.name
 
 
 class FileCompress {
     companion object {
         fun getCompressByType(type: String): ICompress {
-            if (type.lowercase() == "zip") {
+            if ("zip" == type.lowercase()) {
                 return ZipCompress();
+            }
+            if ("tar" == type.lowercase()) {
+                return TarCompress()
+            }
+            if ("7z" == type.lowercase()) {
+                return SEVEN_ZCompress();
             }
             return null!!
         }
 
-        fun createArchiveOutputStream(path: String, targetName: String, type: String): ArchiveOutputStream {
-            var name = Paths.get(path.toFile().parent, "$targetName.$type").toFile();
-            return ArchiveStreamFactory().createArchiveOutputStream(type, FileOutputStream(name))
+        private fun putFileItemToArchive(name: String, path: String, outputStream: BaseArchiveOutputStream<*, *>) {
+            outputStream.putArchiveEntry(name, path)
+        }
+
+        private fun getOutputStream(type: String, outPath: String): BaseArchiveOutputStream<*, *> {
+            if ("tar" == type) {
+                return CTarArchiveOutputStream(outPath)
+            }
+            if ("7z" == type) {
+                return CSevenArchiveOutputStream(outPath);
+            }
+            return CZipArchiveOutputStream(outPath)
+        }
+
+        fun compressByType(path: String, targetName: String, type: String) {
+            var targetArchivePath = Paths.get(path.toFile().parent, "$targetName.$type").toFile();
+            var archiveOutputStream = getOutputStream(type, targetArchivePath.toString())
+
+            if (!Files.isDirectory(Paths.get(path))) {
+                var archiveName = path.removePrefix(path)
+                putFileItemToArchive(archiveName, path, archiveOutputStream)
+                archiveOutputStream.close()
+                return
+            }
+            for (file in path.toPath().walkFileTree()) {
+                if (!file.toPath().isDirectory()) {
+                    var archiveName = file.removePrefix(path)
+                    putFileItemToArchive(archiveName, file, archiveOutputStream)
+                } else {
+                    var archiveEntry = file.removePrefix(path) + "/"
+                    putFileItemToArchive(archiveEntry, file, archiveOutputStream)
+                }
+            }
+            archiveOutputStream.close()
         }
     }
 
     class ZipCompress : ICompress {
         override fun compress(path: String, targetName: String) {
-            var archiveOutputStream = createArchiveOutputStream(path, targetName, ArchiveStreamFactory.ZIP);
-            if (!Files.isDirectory(Paths.get(path))) {
-                var zipArchiveEntry = ZipArchiveEntry(Paths.get(path).name)
-                archiveOutputStream.putArchiveEntry(zipArchiveEntry)
-                IOUtils.copy(Files.newInputStream(Paths.get(path)), archiveOutputStream);
-                archiveOutputStream.closeArchiveEntry()
-                archiveOutputStream.finish()
-                archiveOutputStream.close()
-                return
-            }
-            for (file in Paths.get(path).walkFileTree()) {
-                val entryName: String = file.removePrefix(path)
-                val entry = ZipArchiveEntry(entryName)
-                if (!file.toPath().isDirectory()) {
-                    archiveOutputStream.putArchiveEntry(entry)
-                    IOUtils.copy(file.toFile().inputStream(), archiveOutputStream)
-                } else {
-                    var zipArchiveEntry = ZipArchiveEntry(file.removePrefix(path) + "/")
-                    archiveOutputStream.putArchiveEntry(zipArchiveEntry)
-                }
-                archiveOutputStream.closeArchiveEntry()
-            }
-
-            archiveOutputStream.finish()
-            archiveOutputStream.close()
+            compressByType(path, targetName, ArchiveStreamFactory.ZIP)
         }
     }
 
-    class Z7Compress : ICompress {
+    class SEVEN_ZCompress : ICompress {
         override fun compress(path: String, targetName: String) {
-
+            compressByType(path, targetName, ArchiveStreamFactory.SEVEN_Z)
         }
     }
 
     class TarCompress : ICompress {
         override fun compress(path: String, targetName: String) {
-
+            compressByType(path, targetName, ArchiveStreamFactory.TAR)
         }
     }
 }

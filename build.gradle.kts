@@ -48,6 +48,9 @@ subprojects{
     }
 
     dependencies {
+        // https://mvnrepository.com/artifact/org.tukaani/xz
+        implementation("org.tukaani:xz:1.9")
+
 //        implementation(files("/home/HouXinLin/apps/Developer/tomcat/source/9/output/embed/tomcat-embed-core.jar"))
         implementation("org.apache.commons:commons-compress:1.21")
 

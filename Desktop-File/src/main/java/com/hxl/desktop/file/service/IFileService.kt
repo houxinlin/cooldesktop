@@ -15,9 +15,7 @@ interface IFileService {
 
     fun deleteFile(path: String): FileHandlerResult;
 
-
     fun getImageThumbnail(path: String): ByteArrayResource;
-
 
     fun checkUploadFile(uploadInfo: UploadInfo): Boolean
 
@@ -36,4 +34,5 @@ interface IFileService {
 
     @Async
     fun fileCompress(path: String, targetName: String, compressType: String): Future<FileHandlerResult>
+
 }

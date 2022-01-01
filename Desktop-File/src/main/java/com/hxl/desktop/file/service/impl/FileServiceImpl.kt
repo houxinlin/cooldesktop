@@ -3,11 +3,13 @@ package com.hxl.desktop.file.service.impl
 import com.hxl.desktop.common.result.FileHandlerResult
 import com.hxl.desktop.common.bean.FileAttribute
 import com.hxl.desktop.common.bean.UploadInfo
+import com.hxl.desktop.common.extent.toFile
 import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.common.manager.ClipboardManager
 import com.hxl.desktop.file.compress.FileCompress
 import com.hxl.desktop.file.emun.FileType
-import com.hxl.desktop.file.extent.toFileAttribute
+import com.hxl.desktop.file.extent.getAttribute
+import com.hxl.desktop.file.extent.listRootDirector
 import com.hxl.desktop.file.service.IFileService
 import com.hxl.desktop.file.utils.Directory
 import com.hxl.desktop.file.utils.FileTypeRegister
@@ -42,6 +44,7 @@ class FileServiceImpl : IFileService {
         ClipboardManager.fileCut(path);
         return true
     }
+
 
     override fun fileRename(source: String, newName: String): FileHandlerResult {
         var file = File(source)
@@ -97,7 +100,10 @@ class FileServiceImpl : IFileService {
     override fun checkUploadFile(uploadInfo: UploadInfo): Boolean {
         log.info("file upload  {}", uploadInfo.fileName)
         var chunkDirector = Paths.get(Directory.createChunkDirector(uploadInfo.chunkId));
-        Files.write(Paths.get(chunkDirector.toString(), uploadInfo.blobId.toString()), uploadInfo.fileBinary.inputStream.readBytes());
+        Files.write(
+            Paths.get(chunkDirector.toString(), uploadInfo.blobId.toString()),
+            uploadInfo.fileBinary.inputStream.readBytes()
+        );
         var currentSize = Files.list(chunkDirector).map { it.fileSize() }.toList().sum();
         log.info("upload finish current size={},target={}", currentSize, uploadInfo.total)
         if (uploadInfo.total == currentSize) {
@@ -107,11 +113,10 @@ class FileServiceImpl : IFileService {
     }
 
     override fun listDirector(root: String): List<FileAttribute> {
-        var listDirector = Directory.listDirector(root)
+        var files = root.toPath().listRootDirector()
         var mutableListOf = mutableListOf<FileAttribute>()
-        for (file in listDirector) {
-            file.toFileAttribute()?.let { mutableListOf.add(it) }
-        }
+        files.forEach { mutableListOf.add(it.toFile().getAttribute()) }
+
         var folderList = mutableListOf.filter { it.type == FileType.FOLDER.typeName }
         var fileList = mutableListOf.filter { it.type != FileType.FOLDER.typeName }
         folderList.sortedBy { it.name }
@@ -124,15 +129,15 @@ class FileServiceImpl : IFileService {
             var classPathResource = ClassPathResource(FileTypeRegister.getFullPath("folder"))
             return ByteArrayResource(classPathResource.inputStream.readBytes())
         }
-        var fileAttribute = Paths.get(path).toFileAttribute()
+        var fileAttribute = path.toFile().getAttribute()
         fileAttribute?.let {
             if (fileAttribute.type == "img") {
                 var bufferedOutputStream = ByteArrayOutputStream()
                 try {
                     Thumbnails.of(path)
-                            .outputQuality(0.3)
-                            .scale(0.3)
-                            .toOutputStream(bufferedOutputStream)
+                        .outputQuality(0.3)
+                        .scale(0.3)
+                        .toOutputStream(bufferedOutputStream)
                     return ByteArrayResource(bufferedOutputStream.toByteArray())
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -171,7 +176,7 @@ class FileServiceImpl : IFileService {
     }
 
     override fun fileCompress(path: String, targetName: String, compressType: String): Future<FileHandlerResult> {
-         FileCompress.getCompressByType(compressType).compress(path,targetName)
+        FileCompress.getCompressByType(compressType).compress(path, targetName)
         return AsyncResult(FileHandlerResult.OK)
     }
 }
