@@ -10,6 +10,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.compressors.CompressorStreamFactory
 import org.apache.commons.compress.utils.IOUtils
+import java.io.BufferedOutputStream
 import java.io.FileOutputStream
 import java.io.OutputStream
 import java.nio.file.Files
@@ -23,25 +24,16 @@ interface BaseArchiveOutputStream<T, E> {
     fun close()
 }
 
-abstract class BaseCompressOutputStream(outPath: String) : BaseArchiveOutputStream<ArchiveOutputStream, ArchiveEntry> {
-    private lateinit var outputStream: ArchiveOutputStream;
+abstract class BaseCompressOutputStream(var outPath: String) :
+    BaseArchiveOutputStream<ArchiveOutputStream, ArchiveEntry> {
+    private var outputStream: ArchiveOutputStream;
     abstract fun getCompressName(): String;
+    abstract fun getAlgorithmName(): String;
+
+    abstract fun createOutputStream(): ArchiveOutputStream
 
     init {
-        if ("tar" == getCompressName()) {
-            var xz = CompressorStreamFactory().createCompressorOutputStream(
-                CompressorStreamFactory.XZ,
-                FileOutputStream(outPath)
-            )
-            outputStream = ArchiveStreamFactory().createArchiveOutputStream(getCompressName(), xz)
-        } else {
-            var gzip = CompressorStreamFactory().createCompressorOutputStream(
-                CompressorStreamFactory.GZIP,
-                FileOutputStream(outPath)
-            )
-            outputStream = ArchiveStreamFactory()
-                .createArchiveOutputStream(getCompressName(), gzip)
-        }
+        outputStream = createOutputStream()
     }
 
     override fun getOutputStream(): ArchiveOutputStream {
@@ -58,20 +50,18 @@ abstract class BaseCompressOutputStream(outPath: String) : BaseArchiveOutputStre
     }
 
     override fun putArchiveEntry(name: String, file: String) {
-
         outputStream.putArchiveEntry(createEntry(name, file))
-
         if (!Files.isDirectory(Paths.get(file))) {
             outputStream.write(file.toFile().readBytes())
         }
         outputStream.closeArchiveEntry()
     }
 
-
     override fun writeByte(data: ByteArray) {
         outputStream.write(data)
     }
 }
+
 
 class CSevenArchiveOutputStream(outPath: String) : BaseArchiveOutputStream<SevenZOutputFile, SevenZArchiveEntry> {
     private lateinit var outputStream: SevenZOutputFile;
@@ -107,13 +97,37 @@ class CSevenArchiveOutputStream(outPath: String) : BaseArchiveOutputStream<Seven
 }
 
 class CTarArchiveOutputStream(outPath: String) : BaseCompressOutputStream(outPath) {
+    override fun createOutputStream(): ArchiveOutputStream {
+        var compressorOutputStream =
+            CompressorStreamFactory().createCompressorOutputStream(
+                getAlgorithmName(),
+                BufferedOutputStream(FileOutputStream(outPath))
+            )
+        return ArchiveStreamFactory().createArchiveOutputStream(getCompressName(), compressorOutputStream)
+    }
+
     override fun getCompressName(): String {
-        return "tar"
+        return ArchiveStreamFactory.TAR
+    }
+
+    override fun getAlgorithmName(): String {
+        return CompressorStreamFactory.XZ
     }
 }
 
 class CZipArchiveOutputStream(outPath: String) : BaseCompressOutputStream(outPath) {
+    override fun createOutputStream(): ArchiveOutputStream {
+        return ArchiveStreamFactory().createArchiveOutputStream(
+            getCompressName(),
+            BufferedOutputStream(FileOutputStream(outPath))
+        )
+    }
+
     override fun getCompressName(): String {
-        return "zip"
+        return ArchiveStreamFactory.ZIP
+    }
+
+    override fun getAlgorithmName(): String {
+        return CompressorStreamFactory.DEFLATE
     }
 }

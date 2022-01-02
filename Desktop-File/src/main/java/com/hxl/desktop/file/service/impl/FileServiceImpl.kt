@@ -6,8 +6,9 @@ import com.hxl.desktop.common.bean.UploadInfo
 import com.hxl.desktop.common.extent.toFile
 import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.common.manager.ClipboardManager
-import com.hxl.desktop.file.compress.FileCompress
+import com.hxl.desktop.file.utils.FileCompressUtils
 import com.hxl.desktop.file.emun.FileType
+import com.hxl.desktop.file.extent.decompression
 import com.hxl.desktop.file.extent.getAttribute
 import com.hxl.desktop.file.extent.listRootDirector
 import com.hxl.desktop.file.service.IFileService
@@ -176,7 +177,15 @@ class FileServiceImpl : IFileService {
     }
 
     override fun fileCompress(path: String, targetName: String, compressType: String): Future<FileHandlerResult> {
-        FileCompress.getCompressByType(compressType).compress(path, targetName)
+        FileCompressUtils.getCompressByType(compressType).compress(path, targetName)
+        return AsyncResult(FileHandlerResult.OK)
+    }
+
+    override fun fileDecompression(path: String): Future<FileHandlerResult> {
+        var file = path.toFile()
+        if (file.exists()) {
+            file.decompression()
+        }
         return AsyncResult(FileHandlerResult.OK)
     }
 }

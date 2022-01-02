@@ -1,13 +1,13 @@
 package com.hxl.desktop.file.extent
 
 import com.hxl.desktop.common.bean.FileAttribute
-import com.hxl.desktop.common.extent.toFile
-import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.file.utils.FileCompressUtils
 import com.hxl.desktop.file.emun.FileType
 import com.hxl.desktop.file.utils.FileTypeRegister
+import org.apache.commons.compress.archivers.ArchiveStreamFactory
+import org.apache.commons.compress.compressors.CompressorStreamFactory
 import java.io.File
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributeView
 
 class FileExtent {
@@ -56,4 +56,15 @@ fun File.getAttribute(): FileAttribute {
         readAttributes.lastModifiedTime().toMillis(),
         Files.getOwner(this.toPath()).name
     )
+}
+
+
+fun File.compress(targetName: String) {
+    FileCompressUtils.getCompressByType(FileCompressUtils.getFileType(this.toString()))
+        .compress(this.toString(),targetName)
+}
+
+fun File.decompression() {
+    FileCompressUtils.getCompressByType(FileCompressUtils.getFileType(this.toString()))
+    .decompression(this.toString())
 }

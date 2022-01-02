@@ -35,4 +35,7 @@ interface IFileService {
     @Async
     fun fileCompress(path: String, targetName: String, compressType: String): Future<FileHandlerResult>
 
+    @Async
+    fun fileDecompression(path: String): Future<FileHandlerResult>
+
 }

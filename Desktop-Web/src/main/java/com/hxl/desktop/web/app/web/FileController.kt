@@ -138,6 +138,13 @@ class FileController {
         return iFileService.fileCompress(path, targetName, compressType)
     }
 
+    @PostMapping("fileDecompression")
+    fun fileCompress(
+        @RequestParam("path") path: String
+    ): Any {
+        return iFileService.fileDecompression(path)
+    }
+
     @PostMapping("getFileAttribute")
     fun getFileAttribute(@RequestParam("path") path: String): Any {
         if (path.toPath().exists()) {
