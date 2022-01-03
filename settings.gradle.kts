@@ -1,6 +1,6 @@
 rootProject.name = "CoolDesktop"
-include("Desktop-Web")
-include("Desktop-File")
-include("Desktop-Loader")
-include("Desktop-Database")
-include("Desktop-Common")
+include("desktop-web")
+include("desktop-file")
+include("desktop-loader")
+include("desktop-database")
+include("desktop-common")
