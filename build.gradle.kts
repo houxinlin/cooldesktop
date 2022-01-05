@@ -35,7 +35,7 @@ subprojects{
 
     }
 
-    if(name!="Desktop-Web"){
+    if(name!="desktop-web"){
         tasks.bootJar {
             enabled = false
 

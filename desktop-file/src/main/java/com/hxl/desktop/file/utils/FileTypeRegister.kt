@@ -11,7 +11,7 @@ class FileTypeRegister {
 
     companion object {
         const val PREFIX = "/static/icon/ic-";
-        val IMAGE = arrayOf("jpg", "jpeg", "png", "webp", "bmp");
+        val IMAGE = arrayOf("jpg", "jpeg", "png", "bmp");
         val ZIP= arrayOf("zip","rar","gz","7z")
         fun getFullPath(key: String): String {
             return "${PREFIX}${key}.png";

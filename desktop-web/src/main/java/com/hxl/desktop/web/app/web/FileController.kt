@@ -7,6 +7,7 @@ import com.hxl.desktop.common.extent.toFile
 import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.common.result.FileHandlerResult
 import com.hxl.desktop.file.extent.getAttribute
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -24,6 +25,8 @@ import kotlin.io.path.exists
 @RequestMapping("/desktop/api/file")
 @RestController()
 class FileController {
+
+
     @Resource
     lateinit var iFileService: IFileService;
     /**

@@ -7,4 +7,5 @@ dependencies{
     implementation(project(":desktop-loader"))
     implementation(project(":desktop-database"))
     implementation(project(":desktop-common"))
+    implementation(project(":desktop-websocket"))
 }
