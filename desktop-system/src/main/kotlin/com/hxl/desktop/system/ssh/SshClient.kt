@@ -1,8 +1,9 @@
 package com.hxl.desktop.system.ssh
 
-import com.jcraft.jsch.Channel
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
+import java.io.InputStream
+import java.io.OutputStream
 import java.util.*
 
 
@@ -10,38 +11,55 @@ class SshClient(
     var userName: String,
     var host: String,
     var port: Int,
-    var pass: String
-) : Thread() {
+    var pass: String,
+    var terminalOutput: TerminalOutput
+) : SshThread {
 
     private val jsch = JSch()
     private var session: Session? = null;
-    private lateinit var terminalOutput: TerminalOutput
 
-    override fun run() {
-        super.run()
+    var inputStream: InputStream? = null
+    var outputStream: OutputStream? = null
 
+    override fun writeCommand(command: String) {
+        outputStream?.write(((command ).toByteArray()))
+        outputStream?.flush()
     }
-    init {
+
+    override fun startTerminal() {
         initJsch()
         if (session != null) {
             readTerminalData();
+            return
         }
+        terminalOutput.output("连接失败".toByteArray())
+    }
+
+    override fun stopTerminal() {
+        session?.disconnect()
+        terminalOutput.output("终端关闭".toByteArray())
+    }
+
+    override fun run() {
+        startTerminal()
     }
 
     private fun readTerminalData() {
         try {
             var channel = session!!.openChannel("shell")
-            var mSSHInputStream = channel.getInputStream()
-            var mSSHOutputStream = channel.getOutputStream()
+            inputStream = channel.getInputStream()
+            outputStream = channel.getOutputStream()
             channel.connect(10000)
             val buffer = ByteArray(1024)
             var i = 0
-            while (mSSHInputStream.read(buffer).also { i = it } != -1) {
-                println(String(Arrays.copyOfRange(buffer, 0, i)))
+            while (inputStream!!.read(buffer).also { i = it } != -1) {
+                terminalOutput.output(Arrays.copyOfRange(buffer, 0, i))
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            terminalOutput.output(e.message!!.toByteArray())
         } finally {
+            inputStream?.close()
+            outputStream?.close()
         }
     }
 
@@ -55,8 +73,14 @@ class SshClient(
     }
 
     companion object {
-        fun createSshClient(userName: String, host: String, port: Int, pass: String): SshClient {
-            return SshClient(userName, host, port, pass)
+        fun createSshClient(
+            userName: String,
+            host: String,
+            port: Int,
+            pass: String,
+            terminalOutput: TerminalOutput
+        ): SshClient {
+            return SshClient(userName, host, port, pass, terminalOutput)
         }
     }
 }
