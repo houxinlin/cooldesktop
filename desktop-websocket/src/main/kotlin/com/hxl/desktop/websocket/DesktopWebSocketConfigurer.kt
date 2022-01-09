@@ -47,6 +47,7 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
 
                     override fun afterConnectionClosed(session: WebSocketSession, closeStatus: CloseStatus) {
                         super.afterConnectionClosed(session, closeStatus)
+                        sshManager.removeBySession(session)
                     }
                 }
             }

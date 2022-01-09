@@ -22,6 +22,7 @@ class SshClient(
     var outputStream: OutputStream? = null
 
     override fun writeCommand(command: String) {
+        println(command)
         outputStream?.write(((command ).toByteArray()))
         outputStream?.flush()
     }
@@ -65,6 +66,9 @@ class SshClient(
 
     private fun initJsch() {
         session = jsch.getSession(userName, host, port)
+        session?.setConfig("userauth.gssapi-with-mic", "no")
+        session?.setConfig("StrictHostKeyChecking", "no");
+
         session?.apply {
             setPassword(pass)
             userInfo = SSHUserInfo()

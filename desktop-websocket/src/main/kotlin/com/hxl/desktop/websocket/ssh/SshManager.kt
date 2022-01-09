@@ -33,4 +33,11 @@ class SshManager {
         sshThreadMapping[id]?.writeCommand(message)
     }
 
+    fun removeBySession(session: WebSocketSession) {
+        sessionMapping.remove(session.id)
+        var sshThread = sshThreadMapping[session.id]
+        sshThread?.stopTerminal()
+        sshThreadMapping.remove(session.id)
+    }
+
 }

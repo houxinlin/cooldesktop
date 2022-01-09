@@ -13,14 +13,17 @@ import java.util.*
 
 class SshBinder(var session: WebSocketSession) {
     fun create(): SshThread {
-        println("chun"+session.id)
         return SshClientFactory().createSshSshClient(
-            "root", "houxinlin.com", 22, "hxl495594..", object : TerminalOutput {
+            "root",
+            "houxinlin.com",
+            22,
+            "",
+            object : TerminalOutput {
                 override fun output(data: ByteArray) {
-                    session.sendMessage(TextMessage(createMessage(data)))
+                    if (session.isOpen)
+                        session.sendMessage(TextMessage(createMessage(data)))
                 }
-            }
-        )
+            })
     }
 
     fun createStompMessageHeader(): MutableMap<String, Any> {
