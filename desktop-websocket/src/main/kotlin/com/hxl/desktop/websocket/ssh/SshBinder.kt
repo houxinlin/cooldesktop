@@ -17,7 +17,7 @@ class SshBinder(var session: WebSocketSession) {
             "root",
             "houxinlin.com",
             22,
-            "",
+            "hxl495594..",
             object : TerminalOutput {
                 override fun output(data: ByteArray) {
                     if (session.isOpen)

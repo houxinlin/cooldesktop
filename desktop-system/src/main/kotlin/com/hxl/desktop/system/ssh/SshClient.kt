@@ -1,5 +1,6 @@
 package com.hxl.desktop.system.ssh
 
+import com.jcraft.jsch.ChannelShell
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
 import java.io.InputStream
@@ -14,26 +15,47 @@ class SshClient(
     var pass: String,
     var terminalOutput: TerminalOutput
 ) : SshThread {
+    private val timout: Int = 1000 * 5
 
     private val jsch = JSch()
     private var session: Session? = null;
 
-    var inputStream: InputStream? = null
-    var outputStream: OutputStream? = null
+    private var inputStream: InputStream? = null
+    private var outputStream: OutputStream? = null
+    private var offlineCommand= mutableListOf<String>()
+    private var channelShell: ChannelShell? = null;
+
+    override fun setSize(col: Int, row: Int, w: Int, h: Int) {
+        channelShell?.setPty(true)
+        channelShell?.setPtySize(col, row, w, h)
+    }
+
+    override fun run() {
+        startTerminal()
+    }
 
     override fun writeCommand(command: String) {
-        println(command)
-        outputStream?.write(((command ).toByteArray()))
+        if (outputStream==null){
+            offlineCommand.add(command)
+            return
+        }
+        if (command.startsWith("setSize")) {
+            var value = command.substring(7)
+            var col = value.substring(0, 4).toInt()
+            var row = value.substring(4, 8).toInt()
+            var w = value.substring(8, 12).toInt()
+            var h = value.substring(12, 16).toInt()
+            setSize(col, row, w, h)
+            return
+        }
+        outputStream?.write(((command).toByteArray()))
         outputStream?.flush()
     }
 
     override fun startTerminal() {
         initJsch()
-        if (session != null) {
-            readTerminalData();
-            return
-        }
-        terminalOutput.output("连接失败".toByteArray())
+        readTerminalData();
+
     }
 
     override fun stopTerminal() {
@@ -41,20 +63,27 @@ class SshClient(
         terminalOutput.output("终端关闭".toByteArray())
     }
 
-    override fun run() {
-        startTerminal()
-    }
 
     private fun readTerminalData() {
         try {
-            var channel = session!!.openChannel("shell")
-            inputStream = channel.getInputStream()
-            outputStream = channel.getOutputStream()
-            channel.connect(10000)
+            if (session == null) {
+                terminalOutput.output("连接失败".toByteArray())
+                return
+            }
+
+            channelShell = session!!.openChannel("shell") as ChannelShell
+            inputStream = channelShell!!.inputStream
+            outputStream = channelShell!!.outputStream
+            channelShell!!.connect(timout)
+            if (offlineCommand.size!=0){
+                for (s in offlineCommand) {
+                    writeCommand(s)
+                }
+            }
             val buffer = ByteArray(1024)
             var i = 0
             while (inputStream!!.read(buffer).also { i = it } != -1) {
-                terminalOutput.output(Arrays.copyOfRange(buffer, 0, i))
+                terminalOutput.output(buffer.copyOfRange(0, i))
             }
         } catch (e: Exception) {
             terminalOutput.output(e.message!!.toByteArray())
@@ -68,7 +97,6 @@ class SshClient(
         session = jsch.getSession(userName, host, port)
         session?.setConfig("userauth.gssapi-with-mic", "no")
         session?.setConfig("StrictHostKeyChecking", "no");
-
         session?.apply {
             setPassword(pass)
             userInfo = SSHUserInfo()
@@ -76,15 +104,4 @@ class SshClient(
         }
     }
 
-    companion object {
-        fun createSshClient(
-            userName: String,
-            host: String,
-            port: Int,
-            pass: String,
-            terminalOutput: TerminalOutput
-        ): SshClient {
-            return SshClient(userName, host, port, pass, terminalOutput)
-        }
-    }
 }

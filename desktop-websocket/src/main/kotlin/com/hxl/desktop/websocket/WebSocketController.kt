@@ -21,12 +21,7 @@ class WebSocketController {
 
     @MessageMapping("/desktop")
     fun greeting(message: String, @Header("simpSessionId")  sessionId:String) {
-
         sshManager.writeCommand(sessionId,message)
     }
 
-    @GetMapping("/test")
-    fun test() {
-        simpMessagingTemplate!!.convertAndSend("/topic/greetings", "test")
-    }
 }

@@ -73,9 +73,9 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
     @EventListener
     fun websocketSubscribeEvent(sub: SessionSubscribeEvent) {
         if (sub.message is GenericMessage) {
-            var simpDestination = sub.message.headers.get("simpDestination")
+            var simpDestination = sub.message.headers["simpDestination"]
             if ("/topic/ssh" == simpDestination) {
-                sshManager.startNewSshClient(sub.message.headers.get("simpSessionId") as String)
+                sshManager.startNewSshClient(sub.message.headers["simpSessionId"] as String)
             }
         }
     }

@@ -8,7 +8,7 @@ class SshClientFactory {
         pass: String,
         terminalOutput: TerminalOutput
     ): SshThread {
-        var sshClient = SshClient.createSshClient(userName, host, port, pass, terminalOutput)
+        var sshClient = SshClient(userName, host, port, pass, terminalOutput)
         Thread(sshClient).start()
         return sshClient
     }
