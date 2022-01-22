@@ -11,6 +11,7 @@ import com.hxl.desktop.file.emun.FileType
 import com.hxl.desktop.file.extent.decompression
 import com.hxl.desktop.file.extent.getAttribute
 import com.hxl.desktop.file.extent.listRootDirector
+import com.hxl.desktop.file.extent.suffix
 import com.hxl.desktop.file.service.IFileService
 import com.hxl.desktop.file.utils.Directory
 import com.hxl.desktop.file.utils.FileTypeRegister
@@ -220,6 +221,25 @@ class FileServiceImpl : IFileService {
         } catch (e: Exception) {
             return FileHandlerResult.CREATE_FILE_FAIL
         }
+        return FileHandlerResult.OK
+    }
+
+    override fun getTextFileContent(path: String): FileHandlerResult {
+        var file = path.toFile()
+        if (file.exists()) {
+            var infoMap = mutableMapOf<String, Any>()
+            infoMap["content"] = file.bufferedReader().readText()
+            infoMap["type"] = file.suffix()
+            return FileHandlerResult.create(0, infoMap, "ok")
+        }
+        return FileHandlerResult.NOT_EXIST
+    }
+
+    override fun setTextFileContent(path: String, content: String): FileHandlerResult {
+        var file = path.toFile()
+        if (!file.exists())
+            file.createNewFile()
+        Files.write(Paths.get(path), content.toByteArray())
         return FileHandlerResult.OK
     }
 }

@@ -95,7 +95,6 @@ abstract class Compressed() : ICompress {
                 Files.createDirectories(Paths.get(curPaths.toFile().parent))
             }
             Files.write(curPaths,archiveStream.readBytes())
-//            IOUtils.copy(archiveStream, curPaths.outputStream().buffered())
         }
     }
 

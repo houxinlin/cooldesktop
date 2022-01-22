@@ -1,5 +1,6 @@
 package com.hxl.desktop.websocket
 
+import com.hxl.desktop.system.property.SystemProperty
 import com.hxl.desktop.websocket.ssh.SshManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
@@ -27,11 +28,15 @@ import java.util.*
 class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
 
     @Autowired
+    lateinit var systemProperty: SystemProperty
+
+    @Autowired
     lateinit var sshManager: SshManager
 
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
         config.enableSimpleBroker("/desktop-topic");
         config.setApplicationDestinationPrefixes("/desktop");
+
     }
 
 
@@ -75,7 +80,10 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
         if (sub.message is GenericMessage) {
             var simpDestination = sub.message.headers["simpDestination"]
             if ("/topic/ssh" == simpDestination) {
-                sshManager.startNewSshClient(sub.message.headers["simpSessionId"] as String)
+                sshManager.startNewSshClient(
+                    sub.message.headers["simpSessionId"] as String,
+                    systemProperty.getSSHUserInfo()
+                )
             }
         }
     }

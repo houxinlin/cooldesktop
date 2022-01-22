@@ -7,6 +7,6 @@ package com.hxl.desktop.common.result
  * @describe:
  * @version:  v1.0
  */
-open class BaseHandlerResult(val code: Int, val data: String, val msg: String) {
+open class BaseHandlerResult(val code: Int, val data: Any, val msg: String) {
 
 }

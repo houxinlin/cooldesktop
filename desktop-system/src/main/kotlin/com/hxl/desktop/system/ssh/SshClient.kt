@@ -5,7 +5,6 @@ import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
 import java.io.InputStream
 import java.io.OutputStream
-import java.util.*
 
 
 class SshClient(
@@ -34,18 +33,21 @@ class SshClient(
         startTerminal()
     }
 
+    private fun handlerSystemCommand(command:String){
+        var value = command.substring(7)
+        var col = value.substring(0, 4).toInt()
+        var row = value.substring(4, 8).toInt()
+        var w = value.substring(8, 12).toInt()
+        var h = value.substring(12, 16).toInt()
+        setSize(col, row, w, h)
+    }
     override fun writeCommand(command: String) {
         if (outputStream==null){
             offlineCommand.add(command)
             return
         }
         if (command.startsWith("setSize")) {
-            var value = command.substring(7)
-            var col = value.substring(0, 4).toInt()
-            var row = value.substring(4, 8).toInt()
-            var w = value.substring(8, 12).toInt()
-            var h = value.substring(12, 16).toInt()
-            setSize(col, row, w, h)
+            handlerSystemCommand(command)
             return
         }
         outputStream?.write(((command).toByteArray()))
@@ -54,13 +56,17 @@ class SshClient(
 
     override fun startTerminal() {
         initJsch()
-        readTerminalData();
+        readTerminalData()
 
     }
 
     override fun stopTerminal() {
         session?.disconnect()
-        terminalOutput.output("终端关闭".toByteArray())
+        session=null
+        inputStream=null
+        outputStream=null
+        offlineCommand.clear()
+        channelShell=null
     }
 
 
@@ -100,7 +106,7 @@ class SshClient(
         session?.apply {
             setPassword(pass)
             userInfo = SSHUserInfo()
-            connect(2000)
+            connect(timout)
         }
     }
 

@@ -1,15 +1,18 @@
 package com.hxl.desktop.system.ssh
 
+import java.util.concurrent.atomic.AtomicInteger
+
 class SshClientFactory {
-    fun createSshSshClient(
-        userName: String,
-        host: String,
-        port: Int,
-        pass: String,
-        terminalOutput: TerminalOutput
-    ): SshThread {
-        var sshClient = SshClient(userName, host, port, pass, terminalOutput)
-        Thread(sshClient).start()
+    var threadId = AtomicInteger(0)
+    private fun createThread(sshClient: SshClient): SshClient {
+        var thread = Thread(sshClient)
+        thread.name = "ssh-client-thread-" + threadId.addAndGet(1)
+        thread.start()
         return sshClient
+    }
+
+    fun createSshSshClient(info: SshServerInfo): SshThread {
+        var sshClient = SshClient(info.userName, info.host, info.port, info.pass, info.terminalOutput)
+        return createThread(sshClient)
     }
 }

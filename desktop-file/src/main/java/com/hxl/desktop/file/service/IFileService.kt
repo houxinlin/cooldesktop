@@ -38,6 +38,10 @@ interface IFileService {
     @Async
     fun fileDecompression(path: String): Future<FileHandlerResult>
 
-    fun createFile(parent:String,name: String, type: String): FileHandlerResult
+    fun createFile(parent: String, name: String, type: String): FileHandlerResult
+
+    fun getTextFileContent(path: String): FileHandlerResult
+
+    fun setTextFileContent(path: String, content: String): FileHandlerResult
 
 }

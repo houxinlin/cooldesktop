@@ -29,6 +29,7 @@ class FileController {
 
     @Resource
     lateinit var iFileService: IFileService;
+
     /**
      *file rename
      */
@@ -38,8 +39,9 @@ class FileController {
         @RequestParam("name") name: String,
         @RequestParam("type") type: String
     ): Any {
-        return iFileService.createFile(parent,name, type).asHttpResponseBody()
+        return iFileService.createFile(parent, name, type).asHttpResponseBody()
     }
+
     /**
      *file rename
      */
@@ -163,7 +165,19 @@ class FileController {
         if (path.toPath().exists()) {
             return path.toFile().getAttribute().asHttpResponseBody()
         }
-        return FileHandlerResult.NOW_EXIST.asHttpResponseBody()
+        return FileHandlerResult.NOT_EXIST.asHttpResponseBody()
     }
 
+    @GetMapping("getTextFileContent")
+    fun getTextFileContent(@RequestParam("path") path: String): Any {
+        if (path.toPath().exists()) {
+            return iFileService.getTextFileContent(path).asHttpResponseBody()
+        }
+        return FileHandlerResult.NOT_EXIST.asHttpResponseBody()
+    }
+
+    @GetMapping("setTextFileContent")
+    fun setTextFileContent(@RequestParam("path") path: String, @RequestParam("content") content: String): Any {
+        return iFileService.setTextFileContent(path, content).asHttpResponseBody()
+    }
 }

@@ -6,8 +6,4 @@ class TestSsh {
 }
 
 fun main() {
-    var s = "setSize3"
-
-
-    println(s.substring(7))
 }

@@ -16,6 +16,6 @@ class Test {
 }
 
 fun main() {
-    println(FileServiceImpl().fileDecompression("/home/HouXinLin/test/test.tar.xz"))
+
 }
 

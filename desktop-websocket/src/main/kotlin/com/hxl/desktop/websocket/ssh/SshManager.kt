@@ -1,15 +1,14 @@
 package com.hxl.desktop.websocket.ssh
 
 import com.hxl.desktop.system.ssh.SshClientFactory
+import com.hxl.desktop.system.ssh.SshServerInfo
 import com.hxl.desktop.system.ssh.SshThread
-import com.hxl.desktop.system.ssh.TerminalOutput
 import org.springframework.stereotype.Service
 import org.springframework.web.socket.WebSocketSession
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
 class SshManager {
-    var userId: String = ""
 
     var sessionMapping = ConcurrentHashMap<String, WebSocketSession>();
 
@@ -23,9 +22,11 @@ class SshManager {
         registerSession(session.id, session)
     }
 
-    fun startNewSshClient(id: String) {
-        var sshThread = SshBinder(sessionMapping.get(id)!!).create()
-        sshThreadMapping[id] = sshThread
+    fun startNewSshClient(id: String, serverInfo: SshServerInfo) {
+        var sshMessageListener = SshMessageListener(sessionMapping[id]!!)
+        serverInfo.apply { terminalOutput = sshMessageListener }
+        var sshClient = SshClientFactory().createSshSshClient(serverInfo)
+        sshThreadMapping[id] = sshClient
 
     }
 
@@ -35,8 +36,7 @@ class SshManager {
 
     fun removeBySession(session: WebSocketSession) {
         sessionMapping.remove(session.id)
-        var sshThread = sshThreadMapping[session.id]
-        sshThread?.stopTerminal()
+        sshThreadMapping[session.id]?.stopTerminal()
         sshThreadMapping.remove(session.id)
     }
 

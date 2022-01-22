@@ -67,3 +67,11 @@ fun File.decompression() {
     FileCompressUtils.getCompressByType(FileCompressUtils.getFileType(this.toString()))
         .decompression(this.toString())
 }
+
+fun File.suffix(): String {
+    var lastIndexOf = this.name.lastIndexOf(".")
+    if (lastIndexOf != -1) {
+        return this.name.substring(lastIndexOf + 1)
+    }
+    return ""
+}
