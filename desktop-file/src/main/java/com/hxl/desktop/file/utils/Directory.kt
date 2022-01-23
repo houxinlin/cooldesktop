@@ -20,7 +20,7 @@ import kotlin.io.path.*
  * @version:  v1.0
  */
 object Directory {
-    val WORK_DIRECTOR = arrayOf("chunk", "database", "app")
+    val WORK_DIRECTOR = arrayOf("chunk", "database", "app/webapp")
 
 
     private fun getFileSize(path: String): Long {
@@ -32,12 +32,16 @@ object Directory {
 
 
     fun initWorkEnvironmentDirectory(): String {
-        var file = ClassPathResource("/work").path
+        var file = Paths.get(System.getProperty("user.dir"), "work").toString()
         if (!Paths.get(file).exists()) {
-            Paths.get(file).createDirectory()
+            Paths.get(file).createDirectories()
         }
         createDirector(file, *WORK_DIRECTOR)
         return file
+    }
+
+    fun getWebAppDirectory(): String {
+        return Paths.get(initWorkEnvironmentDirectory(), "app/webapp").toString();
     }
 
     fun getChunkDirectory(): String {

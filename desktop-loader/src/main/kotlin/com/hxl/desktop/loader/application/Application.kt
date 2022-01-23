@@ -3,6 +3,11 @@ package com.hxl.desktop.loader.application
 
 open class Application {
     /**
+     * id
+     */
+    var applicationId = "";
+
+    /**
      * 应用程序名
      */
     var applicationName: String = ""
@@ -11,6 +16,7 @@ open class Application {
      * 图标
      */
     var icon: String = ""
+
 
     /**
      * 版本
@@ -41,5 +47,9 @@ open class Application {
      * 是否可以多开
      */
     var singleInstance: Boolean = true
+    override fun toString(): String {
+        return "Application(applicationId='$applicationId', applicationName='$applicationName', icon='$icon', applicationVersion='$applicationVersion', canMax=$canMax, handlerMediaTypes=$handlerMediaTypes, author='$author', visibilityIsDesktop=$visibilityIsDesktop, singleInstance=$singleInstance)"
+    }
+
 
 }
