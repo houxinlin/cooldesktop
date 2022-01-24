@@ -176,7 +176,7 @@ class FileController {
         return FileHandlerResult.NOT_EXIST.asHttpResponseBody()
     }
 
-    @GetMapping("setTextFileContent")
+    @PostMapping("setTextFileContent")
     fun setTextFileContent(@RequestParam("path") path: String, @RequestParam("content") content: String): Any {
         return iFileService.setTextFileContent(path, content).asHttpResponseBody()
     }

@@ -58,6 +58,7 @@ class WebMiniApplicationLoader : ApplicationLoader {
                 }
                 var applicationInfoHeaderSize = byteBuffer.readInt()
                 var applicationInfoByte = byteBuffer.readByte(applicationInfoHeaderSize)
+                println(applicationInfoByte.decodeToString())
                 var webMiniApplication =
                     JSON.parseObject(applicationInfoByte.decodeToString(), WebMiniApplication::class.java)
                 webMiniApplication.applicationPath = path

@@ -1,7 +1,9 @@
 package com.hxl.desktop.loader.application
 
+import com.hxl.desktop.loader.application.cache.ResourceCache
 
-open class Application {
+
+open class Application : ResourceCache() {
     /**
      * id
      */
@@ -47,6 +49,11 @@ open class Application {
      * 是否可以多开
      */
     var singleInstance: Boolean = true
+
+    /**
+     * 菜单
+     */
+    var menus: List<String> = mutableListOf()
     override fun toString(): String {
         return "Application(applicationId='$applicationId', applicationName='$applicationName', icon='$icon', applicationVersion='$applicationVersion', canMax=$canMax, handlerMediaTypes=$handlerMediaTypes, author='$author', visibilityIsDesktop=$visibilityIsDesktop, singleInstance=$singleInstance)"
     }

@@ -12,7 +12,6 @@ class ApplicationRegister {
     private var webMiniApplicationMap = mutableMapOf<String, WebMiniApplication>()
     fun registerWebApp(webMiniApplication: WebMiniApplication) {
         webMiniApplicationMap[webMiniApplication.applicationId] = webMiniApplication
-
     }
 
     fun listApplication(): MutableList<WebMiniApplication> {

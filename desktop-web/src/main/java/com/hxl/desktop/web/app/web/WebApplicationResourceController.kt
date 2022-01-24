@@ -36,7 +36,6 @@ class WebApplicationResourceController {
         }
         val restOfTheUrl = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE) as String
         val res = restOfTheUrl.removePrefix("/desktop/webapplication/${applicationId}")
-
         var fileLastValue = Paths.get(restOfTheUrl).last().toString()
         (webMinApplication as WebMiniApplication)?.let {
             var loadResource = it.loadResource(res)

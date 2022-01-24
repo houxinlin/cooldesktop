@@ -21,12 +21,20 @@ class WebMiniApplication : Application() {
      */
     var staticResOffset: Long = 0;
 
+
     fun loadResource(path: String): ByteArray? {
-        var bufferedInputStream = BufferedInputStream(
-            FileInputStream(applicationPath)
-        )
-        bufferedInputStream.skip(staticResOffset)
-        var fileTable = FilePackage.decode(bufferedInputStream.readBytes())
-        return fileTable!!.get(path)
+
+        if (!inCache(path)) {
+            var bufferedInputStream = BufferedInputStream(
+                FileInputStream(applicationPath)
+            )
+            bufferedInputStream.skip(staticResOffset)
+            var fileTable = FilePackage.decode(bufferedInputStream.readBytes())
+            if (fileTable?.get(path) == null) {
+                return null;
+            }
+            addCacheResource(path, fileTable.get(path)!!)
+        }
+        return getCacheResource(path)
     }
 }
