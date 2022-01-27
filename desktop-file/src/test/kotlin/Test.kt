@@ -1,7 +1,7 @@
-import com.hxl.desktop.common.extent.toFile
-import com.hxl.desktop.file.extent.compress
-import com.hxl.desktop.file.extent.decompression
-import com.hxl.desktop.file.service.impl.FileServiceImpl
+import net.sf.jmimemagic.Magic
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 
 
 /**
@@ -11,11 +11,17 @@ import com.hxl.desktop.file.service.impl.FileServiceImpl
  * @describe: test
  * @version:  v1.0
  */
-class Test {
+object  Test {
 
-}
+    @JvmStatic
+    fun main(args: Array<String>) {
 
-fun main() {
+    }
 
+    init {
+        Magic.initialize()
+
+        println(Magic.getMagicMatch(Files.readAllBytes(Paths.get("/home/HouXinLin/apps/Developer/android-studio-2020.3.1.24-linux.zip"))).mimeType)
+    }
 }
 

@@ -1,7 +1,6 @@
 package com.hxl.desktop.common.extent
 
 import java.io.File
-import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -15,3 +14,4 @@ fun String.toPath(): Path {
 fun String.toFile(): File {
     return File(this);
 }
+

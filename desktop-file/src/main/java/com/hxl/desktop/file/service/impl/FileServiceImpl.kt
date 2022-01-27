@@ -8,11 +8,9 @@ import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.common.manager.ClipboardManager
 import com.hxl.desktop.file.utils.FileCompressUtils
 import com.hxl.desktop.file.emun.FileType
-import com.hxl.desktop.file.extent.decompression
-import com.hxl.desktop.file.extent.getAttribute
-import com.hxl.desktop.file.extent.listRootDirector
-import com.hxl.desktop.file.extent.suffix
+import com.hxl.desktop.file.extent.*
 import com.hxl.desktop.file.service.IFileService
+import com.hxl.desktop.file.utils.ClassPathUtils
 import com.hxl.desktop.file.utils.Directory
 import com.hxl.desktop.file.utils.FileTypeRegister
 import net.coobird.thumbnailator.Thumbnails
@@ -118,7 +116,7 @@ class FileServiceImpl : IFileService {
     override fun listDirector(root: String): List<FileAttribute> {
         var files = root.toPath().listRootDirector()
         var mutableListOf = mutableListOf<FileAttribute>()
-        files.forEach { mutableListOf.add(it.toFile().getAttribute()) }
+        files.forEach { mutableListOf.add(it.toFile().getAttribute(true)) }
 
         var folderList = mutableListOf.filter { it.type == FileType.FOLDER.typeName }
         var fileList = mutableListOf.filter { it.type != FileType.FOLDER.typeName }
@@ -128,8 +126,12 @@ class FileServiceImpl : IFileService {
     }
 
     override fun getImageThumbnail(path: String): ByteArrayResource {
-        if (Paths.get(path).isDirectory()) {
-            var classPathResource = ClassPathResource(FileTypeRegister.getFullPath("folder"))
+        if (path.toPath().isDirectory()) {
+            var classPathResource = ClassPathResource(ClassPathUtils.getClassPathFullPath("folder"))
+            return ByteArrayResource(classPathResource.inputStream.readBytes())
+        }
+        if ("gif" == path.toFile().getFileSuffixValue().lowercase()) {
+            var classPathResource = ClassPathResource(ClassPathUtils.getClassPathFullPath("gif"))
             return ByteArrayResource(classPathResource.inputStream.readBytes())
         }
         var fileAttribute = path.toFile().getAttribute()
@@ -147,16 +149,16 @@ class FileServiceImpl : IFileService {
                 }
             }
         }
-        var defaultIcon = ClassPathResource(FileTypeRegister.getFullPath("file"))
+        var defaultIcon = ClassPathResource(ClassPathUtils.getClassPathFullPath("file"))
         return ByteArrayResource(defaultIcon.inputStream.readBytes())
     }
 
     override fun getFileIconByType(type: String): ByteArrayResource {
-        var classPathResource = ClassPathResource(FileTypeRegister.getFullPath(type))
+        var classPathResource = ClassPathResource(ClassPathUtils.getClassPathFullPath(type))
         if (classPathResource.exists()) {
             return ByteArrayResource(classPathResource.inputStream.readBytes())
         }
-        var defaultIcon = ClassPathResource(FileTypeRegister.getFullPath("file"))
+        var defaultIcon = ClassPathResource(ClassPathUtils.getClassPathFullPath("file"))
         return ByteArrayResource(defaultIcon.inputStream.readBytes())
     }
 
@@ -229,7 +231,7 @@ class FileServiceImpl : IFileService {
         if (file.exists()) {
             var infoMap = mutableMapOf<String, Any>()
             infoMap["content"] = file.bufferedReader().readText()
-            infoMap["type"] = file.suffix()
+            infoMap["type"] = file.getFileSuffixValue()
             return FileHandlerResult.create(0, infoMap, "ok")
         }
         return FileHandlerResult.NOT_EXIST

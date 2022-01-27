@@ -1,5 +1,7 @@
 package com.hxl.desktop.file.utils
 
+import com.hxl.desktop.file.emun.FileType
+
 /**
  * @author:   HouXinLin
  * @email:    2606710413@qq.com
@@ -7,14 +9,41 @@ package com.hxl.desktop.file.utils
  * @describe:
  * @version:  v1.0
  */
-class FileTypeRegister {
+object FileTypeRegister {
+    val TEXT_SUFFIX_LIST = mutableListOf<String>(
+        "txt",
+        "ini",
+        "conf",
+        "json",
+        "xml",
+        "html",
+        "js",
+        "css",
+        "java",
+        "py",
+        "bat",
+        "sh",
+        "ink",
+        "out"
+    )
+    val IMAGE_SUFFIX_LIST = mutableListOf<String>("png", "jpg", "jpeg", "ico", "webp", "bmp")
+    val VIDEO_SUFFIX_LIST = mutableListOf<String>()
+    val MUSIC_SUFFIX_LIST = mutableListOf<String>()
 
-    companion object {
-        const val PREFIX = "/static/icon/ic-";
-        val IMAGE = arrayOf("jpg", "jpeg", "png", "bmp");
-        val ZIP= arrayOf("zip","rar","gz","7z")
-        fun getFullPath(key: String): String {
-            return "${PREFIX}${key}.png";
+    fun inWhichList(value: String): String {
+        if (TEXT_SUFFIX_LIST.contains(value.lowercase())) {
+            return FileType.TEXT.typeName
         }
+        if (IMAGE_SUFFIX_LIST.contains(value.lowercase())) {
+            return FileType.IMAGE.typeName
+        }
+        if (VIDEO_SUFFIX_LIST.contains(value.lowercase())) {
+            return FileType.TEXT.typeName
+        }
+        if (MUSIC_SUFFIX_LIST.contains(value.lowercase())) {
+            return FileType.TEXT.typeName
+        }
+        return FileType.NONE.typeName;
+
     }
 }

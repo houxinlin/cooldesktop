@@ -7,11 +7,16 @@ import com.hxl.desktop.common.extent.toFile
 import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.common.result.FileHandlerResult
 import com.hxl.desktop.file.extent.getAttribute
+import com.hxl.desktop.web.util.MediaUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.nio.file.Files
+import java.nio.file.Paths
 import javax.annotation.Resource
 import kotlin.io.path.exists
 
@@ -180,4 +185,16 @@ class FileController {
     fun setTextFileContent(@RequestParam("path") path: String, @RequestParam("content") content: String): Any {
         return iFileService.setTextFileContent(path, content).asHttpResponseBody()
     }
+
+    @GetMapping("download")
+    fun download(@RequestParam("path") path: String): ResponseEntity<org.springframework.core.io.Resource> {
+        val resource = ByteArrayResource(Files.readAllBytes(Paths.get(path)))
+        val header = HttpHeaders()
+        return ResponseEntity.ok()
+            .headers(header)
+            .contentLength(resource.contentLength())
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(resource);
+    }
+
 }

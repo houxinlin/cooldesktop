@@ -1,5 +1,6 @@
 package com.hxl.desktop.common.bean
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import java.nio.file.attribute.BasicFileAttributes
 
 /**
@@ -19,5 +20,6 @@ data class FileAttribute(
     var createTimer: Long,
     var lastAccessTime: Long,
     var lastModifiedTime: Long,
-    var owner: String
+    var owner: String,
+    var isBinary: Boolean
 )
