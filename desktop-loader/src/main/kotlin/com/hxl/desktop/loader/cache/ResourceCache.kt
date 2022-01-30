@@ -1,4 +1,4 @@
-package com.hxl.desktop.loader.application.cache
+package com.hxl.desktop.loader.cache
 
 abstract class ResourceCache {
     private var map = mutableMapOf<String, ByteArray>()

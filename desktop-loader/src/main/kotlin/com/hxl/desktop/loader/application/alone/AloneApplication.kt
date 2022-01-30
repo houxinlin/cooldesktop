@@ -1,4 +1,6 @@
 package com.hxl.desktop.loader.application.alone
 
-class AloneApplication {
+import com.hxl.desktop.loader.application.Application
+
+class AloneApplication : Application() {
 }

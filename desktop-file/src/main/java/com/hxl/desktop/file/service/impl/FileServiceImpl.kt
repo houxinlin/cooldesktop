@@ -240,8 +240,11 @@ class FileServiceImpl : IFileService {
     override fun setTextFileContent(path: String, content: String): FileHandlerResult {
         var file = path.toFile()
         if (!file.exists())
-            file.createNewFile()
-        Files.write(Paths.get(path), content.toByteArray())
-        return FileHandlerResult.OK
+            return FileHandlerResult.NOT_EXIST
+        if (hasPermission(file.parent)) {
+            Files.write(Paths.get(path), content.toByteArray())
+            return FileHandlerResult.OK
+        }
+        return FileHandlerResult.NO_PERMISSION
     }
 }

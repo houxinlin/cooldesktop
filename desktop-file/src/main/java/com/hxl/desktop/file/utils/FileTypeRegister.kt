@@ -27,10 +27,10 @@ object FileTypeRegister {
         "out"
     )
     val IMAGE_SUFFIX_LIST = mutableListOf<String>("png", "jpg", "jpeg", "ico", "webp", "bmp")
-    val VIDEO_SUFFIX_LIST = mutableListOf<String>()
-    val MUSIC_SUFFIX_LIST = mutableListOf<String>()
+    val VIDEO_SUFFIX_LIST = mutableListOf<String>("flv", "mp4", "m3u8", "ts", "3gp", "mov", "avi", "wmv")
+    val MUSIC_SUFFIX_LIST = mutableListOf<String>("mp3", "aifc", "m3u", "ra", "wav", "ram")
 
-    fun inWhichList(value: String): String {
+    fun getFileTypeBySuffix(value: String): String {
         if (TEXT_SUFFIX_LIST.contains(value.lowercase())) {
             return FileType.TEXT.typeName
         }

@@ -39,7 +39,6 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
 
     }
 
-
     override fun configureWebSocketTransport(registry: WebSocketTransportRegistration) {
         super.configureWebSocketTransport(registry)
         registry.addDecoratorFactory(object : WebSocketHandlerDecoratorFactory {

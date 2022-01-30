@@ -48,6 +48,7 @@ class WebMiniApplicationLoader : ApplicationLoader {
         loadThreadPool.submit(LoadThread(path))
     }
 
+
     inner class LoadThread(var path: String) : Runnable {
         override fun run() {
             try {

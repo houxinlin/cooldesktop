@@ -15,4 +15,5 @@ class AloneApplicationLoader: ApplicationLoader {
     override fun loadApplication() {
 
     }
+
 }

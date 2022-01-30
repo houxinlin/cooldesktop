@@ -13,8 +13,6 @@ import org.springframework.web.util.HtmlUtils
 
 @RestController
 class WebSocketController {
-    @Autowired
-     val simpMessagingTemplate: SimpMessagingTemplate? = null
 
     @Autowired
     lateinit var sshManager: SshManager

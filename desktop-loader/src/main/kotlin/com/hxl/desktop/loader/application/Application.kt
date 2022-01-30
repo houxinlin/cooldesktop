@@ -1,6 +1,6 @@
 package com.hxl.desktop.loader.application
 
-import com.hxl.desktop.loader.application.cache.ResourceCache
+import com.hxl.desktop.loader.cache.ResourceCache
 
 
 open class Application : ResourceCache() {

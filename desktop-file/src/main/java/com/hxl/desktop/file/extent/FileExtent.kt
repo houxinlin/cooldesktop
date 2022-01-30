@@ -50,7 +50,7 @@ fun File.getFileTypeUseSuffix(): String {
     if (fileSuffixValue == FileType.NONE.typeName) {
         return FileType.NONE.typeName
     }
-    return FileTypeRegister.inWhichList(fileSuffixValue)
+    return FileTypeRegister.getFileTypeBySuffix(fileSuffixValue)
 }
 
 
@@ -63,7 +63,7 @@ fun File.getFileSuffixValue(): String {
     }
     var suffix = this.name.substring(this.name.lastIndexOf(".") + 1)
     if (suffix.isNotEmpty()) {
-        return suffix;
+        return suffix.lowercase();
     }
     return FileType.NONE.typeName
 }
