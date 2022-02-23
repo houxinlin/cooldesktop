@@ -1,17 +1,13 @@
 package com.hxl.desktop.websocket.ssh
 
-import com.hxl.desktop.system.ssh.SshClient
-import com.hxl.desktop.system.ssh.SshClientFactory
-import com.hxl.desktop.system.ssh.SshThread
-import com.hxl.desktop.system.ssh.TerminalOutput
+import com.hxl.desktop.system.ssh.TerminalResponse
 import org.springframework.messaging.simp.SimpMessageType
 import org.springframework.messaging.simp.stomp.StompCommand
 import org.springframework.messaging.simp.stomp.StompEncoder
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
-import java.util.*
 
-class SshMessageListener(var session: WebSocketSession) : TerminalOutput {
+class SshMessageListener(var session: WebSocketSession) : TerminalResponse {
     override fun output(data: ByteArray) {
         if (session.isOpen)
             session.sendMessage(TextMessage(createMessage(data)))

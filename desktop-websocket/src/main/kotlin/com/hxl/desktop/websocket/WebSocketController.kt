@@ -1,5 +1,6 @@
 package com.hxl.desktop.websocket
 
+import com.hxl.desktop.websocket.action.TerminalWebSocketConnectionAction
 import com.hxl.desktop.websocket.ssh.SshManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.Header
@@ -15,11 +16,11 @@ import org.springframework.web.util.HtmlUtils
 class WebSocketController {
 
     @Autowired
-    lateinit var sshManager: SshManager
+    lateinit var terminalWebSocketConnectionAction: TerminalWebSocketConnectionAction
 
     @MessageMapping("/desktop")
     fun greeting(message: String, @Header("simpSessionId")  sessionId:String) {
-        sshManager.writeCommand(sessionId,message)
+        terminalWebSocketConnectionAction.onMessage(message,sessionId);
     }
 
 }

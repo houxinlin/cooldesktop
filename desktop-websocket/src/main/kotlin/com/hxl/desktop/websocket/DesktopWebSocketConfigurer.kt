@@ -1,6 +1,8 @@
 package com.hxl.desktop.websocket
 
 import com.hxl.desktop.system.property.SystemProperty
+import com.hxl.desktop.websocket.action.TerminalWebSocketConnectionAction
+import com.hxl.desktop.websocket.action.WebSocketConnectionAction
 import com.hxl.desktop.websocket.ssh.SshManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
@@ -10,6 +12,7 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.messaging.support.GenericMessage
 import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.WebSocketHandler
+import org.springframework.web.socket.WebSocketMessage
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
@@ -21,6 +24,7 @@ import org.springframework.web.socket.messaging.SessionSubscribeEvent
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler
 import java.security.Principal
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 
 @Configuration
@@ -29,9 +33,14 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
 
     @Autowired
     lateinit var systemProperty: SystemProperty
+    var connectionAction = mutableMapOf<String, WebSocketConnectionAction>()
+
+    var webSocketSessionMap = ConcurrentHashMap<String, WebSocketSession>()
 
     @Autowired
-    lateinit var sshManager: SshManager
+    fun setTerminalWebSocketConnectionAction(action: TerminalWebSocketConnectionAction) {
+        connectionAction["/topic/ssh"] = action;
+    }
 
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
         config.enableSimpleBroker("/desktop-topic");
@@ -41,21 +50,30 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
 
     override fun configureWebSocketTransport(registry: WebSocketTransportRegistration) {
         super.configureWebSocketTransport(registry)
-        registry.addDecoratorFactory(object : WebSocketHandlerDecoratorFactory {
-            override fun decorate(handler: WebSocketHandler): WebSocketHandler {
-                return object : WebSocketHandlerDecorator(handler) {
-                    override fun afterConnectionEstablished(session: WebSocketSession) {
-                        super.afterConnectionEstablished(session)
-                        sshManager.registerSession(session)
-                    }
+        registry.addDecoratorFactory { handler ->
+            object : WebSocketHandlerDecorator(handler) {
 
-                    override fun afterConnectionClosed(session: WebSocketSession, closeStatus: CloseStatus) {
-                        super.afterConnectionClosed(session, closeStatus)
-                        sshManager.removeBySession(session)
-                    }
+                /**
+                 * 连接成功
+                 */
+
+                override fun afterConnectionEstablished(session: WebSocketSession) {
+                    super.afterConnectionEstablished(session)
+                    webSocketSessionMap[session.id] = session
+
+                }
+
+                /**
+                 * 连接丢失
+                 */
+
+                override fun afterConnectionClosed(session: WebSocketSession, closeStatus: CloseStatus) {
+                    super.afterConnectionClosed(session, closeStatus)
+                    webSocketSessionMap.remove(session.id)
+                    connectionAction.values.forEach { it.closeSession(session) }
                 }
             }
-        })
+        }
 
     }
 
@@ -78,11 +96,8 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
     fun websocketSubscribeEvent(sub: SessionSubscribeEvent) {
         if (sub.message is GenericMessage) {
             var simpDestination = sub.message.headers["simpDestination"]
-            if ("/topic/ssh" == simpDestination) {
-                sshManager.startNewSshClient(
-                    sub.message.headers["simpSessionId"] as String,
-                    systemProperty.getSSHUserInfo()
-                )
+            if (connectionAction.containsKey(simpDestination)) {
+                connectionAction[simpDestination]!!.action(webSocketSessionMap[sub.message.headers["simpSessionId"]]!!)
             }
         }
     }

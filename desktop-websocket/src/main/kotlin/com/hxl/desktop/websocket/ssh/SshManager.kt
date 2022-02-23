@@ -1,8 +1,8 @@
 package com.hxl.desktop.websocket.ssh
 
-import com.hxl.desktop.system.ssh.SshClientFactory
-import com.hxl.desktop.system.ssh.SshServerInfo
-import com.hxl.desktop.system.ssh.SshThread
+import com.hxl.desktop.system.ssh.ServerConnectionInfo
+import com.hxl.desktop.system.ssh.Terminal
+import com.hxl.desktop.system.ssh.factory.TerminalInstanceFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.socket.WebSocketSession
 import java.util.concurrent.ConcurrentHashMap
@@ -12,7 +12,7 @@ class SshManager {
 
     var sessionMapping = ConcurrentHashMap<String, WebSocketSession>();
 
-    var sshThreadMapping = ConcurrentHashMap<String, SshThread>();
+    var terminalMapping = ConcurrentHashMap<String, Terminal>();
 
     fun registerSession(id: String, session: WebSocketSession) {
         sessionMapping[id] = session
@@ -22,22 +22,23 @@ class SshManager {
         registerSession(session.id, session)
     }
 
-    fun startNewSshClient(id: String, serverInfo: SshServerInfo) {
+    fun startNewSshClient(id: String, serverInfo: ServerConnectionInfo) {
         var sshMessageListener = SshMessageListener(sessionMapping[id]!!)
-        serverInfo.apply { terminalOutput = sshMessageListener }
-        var sshClient = SshClientFactory().createSshSshClient(serverInfo)
-        sshThreadMapping[id] = sshClient
+        serverInfo.apply { terminalResponse = sshMessageListener }
+        var sshClient = TerminalInstanceFactory.getTerminal(serverInfo)
+//        var sshClient = TerminalInstanceFactory().createSshSshClient(serverInfo)
+//        terminalMapping[id] = sshClient
 
     }
 
     fun writeCommand(id: String, message: String) {
-        sshThreadMapping[id]?.writeCommand(message)
+        terminalMapping[id]?.writeCommand(message)
     }
 
     fun removeBySession(session: WebSocketSession) {
         sessionMapping.remove(session.id)
-        sshThreadMapping[session.id]?.stopTerminal()
-        sshThreadMapping.remove(session.id)
+        terminalMapping[session.id]?.stopTerminal()
+        terminalMapping.remove(session.id)
     }
 
 }

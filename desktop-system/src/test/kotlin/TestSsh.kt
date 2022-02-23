@@ -1,9 +1,10 @@
-import com.hxl.desktop.system.ssh.SshClient
-import com.hxl.desktop.system.ssh.SshClientFactory
-import com.hxl.desktop.system.ssh.TerminalOutput
+import com.hxl.desktop.system.ssh.ServerConnectionInfo
+import com.hxl.desktop.system.ssh.TerminalResponse
+import com.hxl.desktop.system.ssh.factory.TerminalInstanceFactory
 
 class TestSsh {
 }
 
 fun main() {
+
 }
