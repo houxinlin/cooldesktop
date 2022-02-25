@@ -10,11 +10,11 @@ import kotlin.io.path.isDirectory
 
 object ClipboardManager {
     private const val COPY_COMMAND = "copy";
-    const val PASTE_COMMAND = "paste";
+    private const val PASTE_COMMAND = "paste";
     private const val CUT_COMMAND = "cut";
     private const val NONE_COMMAND = "none";
-    var actionCommand = NONE_COMMAND
-    var memoryFilePath: Any? = null;
+    private var actionCommand = NONE_COMMAND
+    private var memoryFilePath: Any? = null;
 
     fun fileCut(path: String): Boolean {
         if (!path.toFile().exists()) {
@@ -34,6 +34,25 @@ object ClipboardManager {
         return true
     }
 
+    fun filePaste(path: String): FileHandlerResult {
+        try {
+            var file = path.toFile()
+
+            if (!file.exists()) {
+                return FileHandlerResult.NOT_EXIST
+            }
+            if (!file.canWrite()) {
+                return FileHandlerResult.NO_PERMISSION
+            }
+            if (actionCommand == NONE_COMMAND) {
+                return FileHandlerResult.NO_SELECT_FILE
+            }
+            return copyToTarget(path, CUT_COMMAND == actionCommand);
+        } catch (e: Exception) {
+            return FileHandlerResult.create(-1, "", e.message!!)
+        }
+    }
+
     private fun copyToTarget(target: String, deleteSource: Boolean): FileHandlerResult {
         memoryFilePath?.let {
             if (it is String
@@ -48,15 +67,11 @@ object ClipboardManager {
                 if (Files.exists(Paths.get(target, targetFileName))) {
                     return FileHandlerResult.TARGET_EXIST
                 }
-                if (memoryPath.isDirectory()) {
-                    if (targetPath.startsWith(Paths.get(it))) {
-                        return FileHandlerResult.CANNOT_COPY
-                    }
-                    FileSystemUtils.copyRecursively(File((it)), targetPath.toFile())
-                    if (deleteSource) FileSystemUtils.deleteRecursively(File(it))
-                    return FileHandlerResult.OK
+
+                if (targetPath.startsWith(Paths.get(it))) {
+                    return FileHandlerResult.CANNOT_COPY
                 }
-                Files.copy(memoryPath, targetPath)
+                FileSystemUtils.copyRecursively(File((it)), targetPath.toFile())
                 if (deleteSource) FileSystemUtils.deleteRecursively(File(it))
                 return FileHandlerResult.OK
             }
@@ -64,16 +79,5 @@ object ClipboardManager {
         return FileHandlerResult.TARGET_NOT_EXIST
     }
 
-    fun filePaste(path: String): FileHandlerResult {
-        if (!path.toFile().exists()) {
-            return FileHandlerResult.NOT_EXIST
-        }
-        if (actionCommand == COPY_COMMAND) {
-            return copyToTarget(path, false);
-        }
-        if (actionCommand == CUT_COMMAND) {
-            return copyToTarget(path, true);
-        }
-        return FileHandlerResult.NO_SELECT_FILE
-    }
+
 }

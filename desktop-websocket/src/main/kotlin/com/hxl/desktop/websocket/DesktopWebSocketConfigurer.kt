@@ -37,9 +37,10 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
 
     var webSocketSessionMap = ConcurrentHashMap<String, WebSocketSession>()
 
+
     @Autowired
-    fun setTerminalWebSocketConnectionAction(action: TerminalWebSocketConnectionAction) {
-        connectionAction["/topic/ssh"] = action;
+    fun setWebSocketConnectionAction(action: List<WebSocketConnectionAction>) {
+        action.forEach { connectionAction[it.support()] = it }
     }
 
     override fun configureMessageBroker(config: MessageBrokerRegistry) {

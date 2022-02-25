@@ -17,16 +17,16 @@ configurations {
     }
 }
 
-dependencies{
+dependencies {
 
 }
 repositories {
     mavenCentral()
 }
 
-subprojects{
+subprojects {
     apply {
-        apply{
+        apply {
             plugin("io.spring.dependency-management")
             plugin("org.springframework.boot")
             plugin("org.jetbrains.kotlin.plugin.spring")
@@ -35,7 +35,7 @@ subprojects{
 
     }
 
-    if(name!="desktop-web"){
+    if (name != "desktop-web") {
         tasks.bootJar {
             enabled = false
 
@@ -48,15 +48,17 @@ subprojects{
     }
 
     dependencies {
-        if (name!="desktop-common"){
+        if (name != "desktop-common") {
             implementation(project(":desktop-common"))
         }
+//        implementation(files("/home/HouXinLin/project/java/tomcat/desktop-tomcat/apache-tomcat-9.0.58-src/output/embed/tomcat-embed-core.jar"))
         implementation("org.tukaani:xz:1.9")
         implementation("org.apache.commons:commons-compress:1.21")
-
-        implementation("org.springframework.boot:spring-boot-starter-web"){
+        implementation("org.springframework.boot:spring-boot-starter-web") {
 //            exclude(group="org.apache.tomcat.embed",module = "tomcat-embed-core")
         }
+        // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-aop
+        implementation("org.springframework.boot:spring-boot-starter-aop:2.6.3")
         implementation("net.coobird:thumbnailator:0.4.15")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -64,8 +66,9 @@ subprojects{
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         implementation("com.alibaba:fastjson:1.2.79")
+        implementation("org.apache.commons:commons-lang3:3.12.0")
         implementation(files("/home/HouXinLin/project/java/FileMerge/FileMerge/build/libs/FileMerge-1.0-SNAPSHOT.jar"))
-
+        implementation(files("/home/HouXinLin/project/java/desktop-application-definition/build/libs/desktop-application-definition-1.0-SNAPSHOT.jar"))
     }
 
     tasks.withType<KotlinCompile> {

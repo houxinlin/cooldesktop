@@ -1,7 +1,8 @@
 package com.hxl.desktop.web.app.web
 
+import com.desktop.application.definition.application.webmini.WebMiniApplication
 import com.hxl.desktop.loader.application.ApplicationRegister
-import com.hxl.desktop.loader.application.webmini.WebMiniApplication
+import com.hxl.desktop.loader.application.ApplicationWrapper
 import com.hxl.desktop.web.util.MediaUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.ByteArrayResource
@@ -31,26 +32,21 @@ class WebApplicationResourceController {
         response: HttpServletResponse
     ): ResponseEntity<Resource> {
         var webMinApplication = applicationRegister.getWebMinApplication(applicationId)
-        if (webMinApplication == null) {
-            return ResponseEntity.notFound().build()
-        }
-        val restOfTheUrl = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE) as String
-        val res = restOfTheUrl.removePrefix("/desktop/webapplication/${applicationId}")
-        var fileLastValue = Paths.get(restOfTheUrl).last().toString()
-        (webMinApplication as WebMiniApplication)?.let {
-            var loadResource = it.loadResource(res)
-            if (loadResource==null){
-                return ResponseEntity.notFound().build()
+        webMinApplication?.run {
+            val restOfTheUrl = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE) as String
+            val res = restOfTheUrl.removePrefix("/desktop/webapplication/${applicationId}")
+//            var fileLastValue = Paths.get(restOfTheUrl).last().toString()
+            var loadResource = webMinApplication.loadResource(res)
+            loadResource?.run {
+                val resource = ByteArrayResource(loadResource)
+                val header = HttpHeaders()
+                return ResponseEntity.ok()
+                    .headers(header)
+                    .contentLength(resource.contentLength())
+                    .body(resource);
             }
-            val resource = ByteArrayResource(loadResource)
-            val header = HttpHeaders()
-            return ResponseEntity.ok()
-                .headers(header)
-                .contentLength(resource.contentLength())
-                .contentType(MediaUtils.getFileMimeType(fileLastValue))
-                .body(resource);
         }
-
+        return ResponseEntity.notFound().build()
     }
 
 }

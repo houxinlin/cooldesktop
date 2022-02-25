@@ -13,7 +13,13 @@ import kotlin.io.path.*
  * @version:  v1.0
  */
 object Directory {
-    val WORK_DIRECTOR = arrayOf("chunk", "database", "app/webapp")
+    /**
+     * 工作目录
+     */
+    private const val WEP_APP_WORK_DIRECTORY = "app/webapp"
+    private const val CHUNK_DIRECTORY = "fileupload/chunk"
+    private const val DATABASE_DIRECTORY = "database"
+    private val WORK_DIRECTORY = arrayOf(CHUNK_DIRECTORY, DATABASE_DIRECTORY, WEP_APP_WORK_DIRECTORY)
 
 
     private fun getFileSize(path: String): Long {
@@ -24,21 +30,21 @@ object Directory {
     }
 
 
-    fun initWorkEnvironmentDirectory(): String {
-        var file = Paths.get(System.getProperty("user.dir"), "work").toString()
-        if (!Paths.get(file).exists()) {
-            Paths.get(file).createDirectories()
+    private fun initializationWorkDirectoryAndGetRoot(): String {
+        var path = Paths.get(System.getProperty("user.dir"), "work")
+        if (!path.exists()) {
+            path.createDirectories()
         }
-        createDirector(file, *WORK_DIRECTOR)
-        return file
+        createDirector(path.toString(), *WORK_DIRECTORY)
+        return path.toString()
     }
 
     fun getWebAppDirectory(): String {
-        return Paths.get(initWorkEnvironmentDirectory(), "app/webapp").toString();
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), WEP_APP_WORK_DIRECTORY).toString();
     }
 
     fun getChunkDirectory(): String {
-        return Paths.get(initWorkEnvironmentDirectory(), "chunk").toString();
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), CHUNK_DIRECTORY).toString();
     }
 
     fun createChunkDirector(name: String): String {

@@ -1,5 +1,7 @@
 package com.hxl.desktop.file.service
 
+import com.hxl.desktop.common.core.NotifyWebSocket
+import com.hxl.desktop.system.core.AsyncResultWithID
 import common.result.FileHandlerResult
 import common.bean.FileAttribute
 import common.bean.UploadInfo
@@ -16,7 +18,7 @@ interface IFileService {
 
     fun getImageThumbnail(path: String): ByteArrayResource;
 
-    fun checkUploadFile(uploadInfo: UploadInfo): Boolean
+    fun chunkUpload(uploadInfo: UploadInfo): Boolean
 
     fun fileMerge(path: String, name: String, inPath: String): FileHandlerResult;
 
@@ -24,23 +26,23 @@ interface IFileService {
 
     fun fileCopy(path: String): Boolean
 
-    fun filePaste(path: String): FileHandlerResult
-
     fun fileRename(source: String, newName: String): FileHandlerResult
 
     fun fileCut(path: String): Boolean
-
-
-    @Async
-    fun fileCompress(path: String, targetName: String, compressType: String): Future<FileHandlerResult>
-
-    @Async
-    fun fileDecompression(path: String): Future<FileHandlerResult>
 
     fun createFile(parent: String, name: String, type: String): FileHandlerResult
 
     fun getTextFileContent(path: String): FileHandlerResult
 
     fun setTextFileContent(path: String, content: String): FileHandlerResult
+
+    @Async
+    fun filePaste(path: String, taskId: String): Future<FileHandlerResult>
+
+    @Async
+    fun fileCompress(path: String, targetName: String, compressType: String): Future<FileHandlerResult>
+
+    @Async
+    fun fileDecompression(path: String): Future<FileHandlerResult>
 
 }

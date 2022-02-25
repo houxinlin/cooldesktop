@@ -30,7 +30,7 @@ class FileController {
 
 
     @Resource
-    lateinit var iFileService: IFileService;
+    lateinit var fileSystemService: IFileService;
 
     /**
      *file rename
@@ -41,7 +41,7 @@ class FileController {
         @RequestParam("name") name: String,
         @RequestParam("type") type: String
     ): Any {
-        return iFileService.createFile(parent, name, type).asHttpResponseBody()
+        return fileSystemService.createFile(parent, name, type).asHttpResponseBody()
     }
 
     /**
@@ -52,7 +52,7 @@ class FileController {
         @RequestParam("source") source: String,
         @RequestParam("newName") newName: String
     ): Any {
-        return iFileService.fileRename(source, newName).asHttpResponseBody()
+        return fileSystemService.fileRename(source, newName).asHttpResponseBody()
     }
 
     /**
@@ -60,7 +60,7 @@ class FileController {
      */
     @PostMapping("fileCopy")
     fun fileCopy(@RequestParam("path") path: String): Any {
-        return iFileService.fileCopy(path).asHttpResponseBody()
+        return fileSystemService.fileCopy(path).asHttpResponseBody()
     }
 
     /**
@@ -68,7 +68,7 @@ class FileController {
      */
     @PostMapping("fileCut")
     fun fileCut(@RequestParam("path") path: String): Any {
-        return iFileService.fileCut(path).asHttpResponseBody()
+        return fileSystemService.fileCut(path).asHttpResponseBody()
     }
 
 
@@ -77,7 +77,9 @@ class FileController {
      */
     @PostMapping("filePaste")
     fun filePaste(@RequestParam("path") target: String): Any {
-        return iFileService.filePaste(target).asHttpResponseBody()
+        var fileHandlerResult = FileHandlerResult.withAsyncId()
+        fileSystemService.filePaste(target, fileHandlerResult.data.toString())
+        return fileHandlerResult.asHttpResponseBody()
     }
 
     /**
@@ -86,7 +88,7 @@ class FileController {
 
     @PostMapping("chunkUpload")
     fun chunkUpload(uploadInfo: UploadInfo): Any {
-        return iFileService.checkUploadFile(uploadInfo).asHttpResponseBody()
+        return fileSystemService.chunkUpload(uploadInfo).asHttpResponseBody()
     }
 
     /**
@@ -98,7 +100,7 @@ class FileController {
         @RequestParam(value = "targetName") targetName: String,
         @RequestParam(value = "inPath") inPath: String,
     ): Any {
-        return iFileService.fileMerge(name, targetName, inPath).asHttpResponseBody()
+        return fileSystemService.fileMerge(name, targetName, inPath).asHttpResponseBody()
         return "OK";
     }
 
@@ -107,7 +109,7 @@ class FileController {
      */
     @GetMapping("/delete")
     fun delete(@RequestParam("path") root: String): Any {
-        return iFileService.deleteFile(root).asHttpResponseBody()
+        return fileSystemService.deleteFile(root).asHttpResponseBody()
     }
 
     /**
@@ -115,7 +117,7 @@ class FileController {
      */
     @GetMapping("/list")
     fun list(@RequestParam("root") root: String): Any {
-        return iFileService.listDirector(root).asHttpResponseBody()
+        return fileSystemService.listDirector(root).asHttpResponseBody()
     }
 
     /**
@@ -125,7 +127,7 @@ class FileController {
     fun getFileIconByType(@RequestParam("type") path: String): ResponseEntity<org.springframework.core.io.Resource> {
         var header = HttpHeaders();
         header.add(HttpHeaders.CONTENT_TYPE, "image/png")
-        var fileIcon = iFileService.getFileIconByType(path)
+        var fileIcon = fileSystemService.getFileIconByType(path)
         return ResponseEntity.ok()
             .headers(header)
             .contentLength(fileIcon.contentLength())
@@ -139,7 +141,7 @@ class FileController {
     fun getImageThumbnail(@RequestParam("path") path: String): ResponseEntity<org.springframework.core.io.Resource> {
         var header = HttpHeaders();
         header.add(HttpHeaders.CONTENT_TYPE, "image/png")
-        var fileIcon = iFileService.getImageThumbnail(path)
+        var fileIcon = fileSystemService.getImageThumbnail(path)
         return ResponseEntity.ok()
             .headers(header)
             .contentLength(fileIcon.contentLength())
@@ -152,14 +154,14 @@ class FileController {
         @RequestParam("targetName") targetName: String,
         @RequestParam("compressType") compressType: String
     ): Any {
-        return iFileService.fileCompress(path, targetName, compressType)
+        return fileSystemService.fileCompress(path, targetName, compressType)
     }
 
     @PostMapping("fileDecompression")
     fun fileCompress(
         @RequestParam("path") path: String
     ): Any {
-        return iFileService.fileDecompression(path)
+        return fileSystemService.fileDecompression(path)
     }
 
     @PostMapping("getFileAttribute")
@@ -173,14 +175,14 @@ class FileController {
     @GetMapping("getTextFileContent")
     fun getTextFileContent(@RequestParam("path") path: String): Any {
         if (path.toPath().exists()) {
-            return iFileService.getTextFileContent(path).asHttpResponseBody()
+            return fileSystemService.getTextFileContent(path).asHttpResponseBody()
         }
         return FileHandlerResult.NOT_EXIST.asHttpResponseBody()
     }
 
     @PostMapping("setTextFileContent")
     fun setTextFileContent(@RequestParam("path") path: String, @RequestParam("content") content: String): Any {
-        return iFileService.setTextFileContent(path, content).asHttpResponseBody()
+        return fileSystemService.setTextFileContent(path, content).asHttpResponseBody()
     }
 
     @GetMapping("download")

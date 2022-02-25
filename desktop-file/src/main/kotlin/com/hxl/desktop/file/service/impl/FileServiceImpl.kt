@@ -1,5 +1,6 @@
 package com.hxl.desktop.file.service.impl
 
+import com.hxl.desktop.common.core.NotifyWebSocket
 import common.result.FileHandlerResult
 import common.bean.FileAttribute
 import common.bean.UploadInfo
@@ -11,8 +12,9 @@ import com.hxl.desktop.file.extent.*
 import com.hxl.desktop.file.service.IFileService
 import com.hxl.desktop.file.utils.ClassPathUtils
 import com.hxl.desktop.file.utils.Directory
+import com.hxl.desktop.file.utils.ImageUtils
+import com.hxl.desktop.system.core.AsyncResultWithID
 import common.manager.ClipboardManager
-import net.coobird.thumbnailator.Thumbnails
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.ByteArrayResource
@@ -21,8 +23,8 @@ import org.springframework.scheduling.annotation.AsyncResult
 import org.springframework.stereotype.Service
 import org.springframework.util.FileSystemUtils
 import org.tukaani.xz.CorruptedInputException
-import java.io.ByteArrayOutputStream
 import java.io.File
+import java.lang.RuntimeException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.Future
@@ -48,9 +50,15 @@ class FileServiceImpl : IFileService {
         return ClipboardManager.fileCopy(path)
     }
 
+    @NotifyWebSocket(subject = "/file/events", action = "paste")
+    override fun filePaste(path: String, taskId: String): Future<FileHandlerResult> {
+        return AsyncResultWithID(ClipboardManager.filePaste(path), taskId)
+    }
+
     override fun fileRename(source: String, newName: String): FileHandlerResult {
         var sourceFile = source.toFile()
         var target = File(sourceFile.parent, newName)
+
         if (!sourceFile.exists()) {
             return FileHandlerResult.NOT_EXIST
         }
@@ -64,10 +72,6 @@ class FileServiceImpl : IFileService {
         return FileHandlerResult.OK
     }
 
-
-    override fun filePaste(path: String): FileHandlerResult {
-        return ClipboardManager.filePaste(path)
-    }
 
     override fun fileMerge(chunkId: String, name: String, inPath: String): FileHandlerResult {
         var rootPath = Paths.get(Directory.getChunkDirectory(), chunkId).toString();
@@ -86,7 +90,7 @@ class FileServiceImpl : IFileService {
         return FileHandlerResult.OK;
     }
 
-    override fun checkUploadFile(uploadInfo: UploadInfo): Boolean {
+    override fun chunkUpload(uploadInfo: UploadInfo): Boolean {
         var chunkDirector = Paths.get(Directory.createChunkDirector(uploadInfo.chunkId));
         Files.write(
             Paths.get(chunkDirector.toString(), uploadInfo.blobId.toString()),
@@ -102,7 +106,7 @@ class FileServiceImpl : IFileService {
     override fun listDirector(root: String): List<FileAttribute> {
         var files = root.toPath().listRootDirector()
         var mutableListOf = mutableListOf<FileAttribute>()
-        files.forEach { mutableListOf.add(it.toFile().getAttribute(true)) }
+        files.forEach { mutableListOf.add(it.toFile().getAttribute()) }
 
         var folderList = mutableListOf.filter { it.type == FileType.FOLDER.typeName }
         var fileList = mutableListOf.filter { it.type != FileType.FOLDER.typeName }
@@ -112,27 +116,18 @@ class FileServiceImpl : IFileService {
     }
 
     override fun getImageThumbnail(path: String): ByteArrayResource {
-        if (path.toPath().isDirectory()) {
-            var classPathResource = ClassPathResource(ClassPathUtils.getClassPathFullPath("folder"))
-            return ByteArrayResource(classPathResource.inputStream.readBytes())
-        }
-        if ("gif" == path.toFile().getFileSuffixValue().lowercase()) {
-            var classPathResource = ClassPathResource(ClassPathUtils.getClassPathFullPath("gif"))
-            return ByteArrayResource(classPathResource.inputStream.readBytes())
-        }
-        var fileAttribute = path.toFile().getAttribute()
-        fileAttribute?.let {
-            if (fileAttribute.type == "img") {
-                var bufferedOutputStream = ByteArrayOutputStream()
-                try {
-                    Thumbnails.of(path)
-                        .outputQuality(0.3)
-                        .scale(0.3)
-                        .toOutputStream(bufferedOutputStream)
-                    return ByteArrayResource(bufferedOutputStream.toByteArray())
-                } catch (e: Exception) {
-                    e.printStackTrace()
+        if (path.toFile().exists()) {
+            if (path.toPath().isDirectory()) {
+                var classPathResource = ClassPathResource(ClassPathUtils.getClassPathFullPath("folder"))
+                return ByteArrayResource(classPathResource.inputStream.readBytes())
+            }
+            var fileAttribute = path.toFile().getAttribute()
+            if ("image" == fileAttribute.type) {
+                var byteArrayResource = ImageUtils.thumbnails(path)
+                if (byteArrayResource != null) {
+                    return byteArrayResource
                 }
+                return getFileIconByType(fileAttribute.rawType)
             }
         }
         var defaultIcon = ClassPathResource(ClassPathUtils.getClassPathFullPath("file"))

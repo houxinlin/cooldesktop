@@ -43,4 +43,8 @@ class TerminalWebSocketConnectionAction : WebSocketConnectionAction() {
         }
         return null
     }
+
+    override fun support(): String {
+        return "/topic/ssh"
+    }
 }

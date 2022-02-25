@@ -1,28 +1,27 @@
 package com.hxl.desktop.loader.application
 
-import com.hxl.desktop.loader.application.webmini.WebMiniApplication
-import com.hxl.fm.pk.FilePackage.readInt
+import com.desktop.application.definition.application.Application
+import com.desktop.application.definition.application.webmini.WebMiniApplication
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.io.BufferedInputStream
-import java.io.FileInputStream
-import java.nio.ByteBuffer
+import java.util.*
+import java.util.stream.Collectors
 
 @Service
 class ApplicationRegister {
-    var log :Logger=LoggerFactory.getLogger(ApplicationRegister::class.java)
-    private var webMiniApplicationMap = mutableMapOf<String, WebMiniApplication>()
-    fun registerWebApp(webMiniApplication: WebMiniApplication) {
-        log.info("注册WebApplication{}",webMiniApplication)
-        webMiniApplicationMap[webMiniApplication.applicationId] = webMiniApplication
+    var log: Logger = LoggerFactory.getLogger(ApplicationRegister::class.java)
+    private var webMiniApplicationMap = mutableMapOf<String, ApplicationWrapper>()
+    fun registerWebApp(webMiniApplication: ApplicationWrapper) {
+        log.info("注册WebApplication{}", webMiniApplication)
+        webMiniApplicationMap[webMiniApplication.application.applicationId] = webMiniApplication
     }
 
-    fun listApplication(): MutableList<WebMiniApplication> {
-        return webMiniApplicationMap.values.toMutableList()
+    fun listApplication(): MutableList<Application> {
+        return webMiniApplicationMap.values.stream().map { it.application }.collect(Collectors.toList())
     }
 
-    fun getWebMinApplication(id: String): Application? {
+    fun getWebMinApplication(id: String): ApplicationWrapper? {
         return webMiniApplicationMap[id]
     }
 }

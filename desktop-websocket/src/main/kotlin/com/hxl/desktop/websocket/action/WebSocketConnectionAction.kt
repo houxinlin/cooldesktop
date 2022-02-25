@@ -8,4 +8,8 @@ open abstract class WebSocketConnectionAction {
     abstract fun action(webSocketSession: WebSocketSession)
 
     abstract fun closeSession(webSocketSession: WebSocketSession)
+
+    abstract fun support(): String
+
+
 }

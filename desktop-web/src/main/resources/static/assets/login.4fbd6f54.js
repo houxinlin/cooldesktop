@@ -1,1 +1,0 @@
-import{_ as o}from"./index.fe117565.js";import{o as n,g as s,h as e}from"./vendor.4fa71553.js";const t={},_={class:"container"},a=e("div",{class:"login-container"},[e("div",{class:"login-body"},[e("h5",{class:"title"},"\u767B\u5F55"),e("input"),e("button",null,"\u767B\u5F55")])],-1),c=[a];function i(r,l){return n(),s("div",_,c)}var u=o(t,[["render",i]]);export{u as default};

@@ -20,5 +20,6 @@ data class FileAttribute(
     var lastAccessTime: Long,
     var lastModifiedTime: Long,
     var owner: String,
-    var isBinary: Boolean
+    var isBinary: Boolean = false,
+    var mimeType: String
 )
