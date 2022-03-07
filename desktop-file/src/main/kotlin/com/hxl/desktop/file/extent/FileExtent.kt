@@ -2,13 +2,21 @@ package com.hxl.desktop.file.extent
 
 import common.bean.FileAttribute
 import com.hxl.desktop.file.emun.FileType
+import com.hxl.desktop.file.extent.FileExtent.logger
 import com.hxl.desktop.file.utils.FileCompressUtils
 import org.apache.tika.Tika
+import org.slf4j.LoggerFactory
+import org.springframework.core.io.ByteArrayResource
+import org.springframework.core.io.FileSystemResource
+import org.springframework.http.ContentDisposition
+import org.springframework.http.HttpHeaders
+import org.springframework.http.ResponseEntity
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributeView
 
 object FileExtent {
+    var logger = LoggerFactory.getLogger(FileExtent::class.java)
 }
 
 
@@ -16,8 +24,16 @@ object FileExtent {
  * 获取文件类型，主要返回是不是图片、文本、音乐、视频
  */
 fun File.getFileTypeUseMagic(): String {
-    var detect = createTika().detect(this)
-    return detect.substring(0, detect.indexOf("/"))
+    if (!this.canRead()) {
+        return "text"
+    }
+    try {
+        var detect = createTika().detect(this)
+        return detect.substring(0, detect.indexOf("/"))
+    } catch (e: Exception) {
+        logger.info("获取文件类型异常{},{}", e.message, this)
+    }
+    return "text"
 }
 
 fun createTika(): Tika {
@@ -32,9 +48,12 @@ fun File.getFileSuffixValue(): String {
     if (this.isDirectory) {
         return FileType.FOLDER.typeName
     }
-    var suffix = this.name.substring(this.name.lastIndexOf(".") + 1)
-    if (suffix.isNotEmpty()) {
-        return suffix.lowercase();
+    var pointIndex = this.name.lastIndexOf(".")
+    if (pointIndex >= 0) {
+        var suffix = this.name.substring(pointIndex + 1)
+        if (suffix.isNotEmpty()) {
+            return suffix.lowercase();
+        }
     }
     return FileType.NONE.typeName
 }
@@ -68,13 +87,16 @@ fun File.isTextFile(): Boolean {
     }
 
     var fileType = this.getFileTypeUseMagic()
-    return fileType != null && fileType.startsWith("text")
+    return fileType.startsWith("text")
 }
 
 /**
  * 获取Mime类型
  */
 fun File.getMimeType(): String {
+    if (!this.canRead() || this.length() == 0L) {
+        return "text/none"
+    }
     if (this.isDirectory) {
         return FileType.FOLDER.typeName
     }
@@ -85,7 +107,7 @@ fun File.getMimeType(): String {
  * 获取文件属性
  */
 
-fun File.getAttribute(): FileAttribute {
+fun File.getAttribute(): FileAttribute{
     var readAttributes = Files.getFileAttributeView(this.toPath(), BasicFileAttributeView::class.java).readAttributes()
     return FileAttribute(
         this.toString(),
@@ -93,7 +115,6 @@ fun File.getAttribute(): FileAttribute {
         this.getFileSize(),
         this.name,
         this.getFileSuffixValue(),
-        readAttributes,
         readAttributes.creationTime().toMillis(),
         readAttributes.lastAccessTime().toMillis(),
         readAttributes.lastModifiedTime().toMillis(),
@@ -116,4 +137,13 @@ fun File.compress(type: String, targetName: String) {
 fun File.decompression() {
     FileCompressUtils.getCompressByType(FileCompressUtils.getFileType(this.toString()))
         .decompression(this.toString())
+}
+
+fun File.toHttpResponse(): ResponseEntity<FileSystemResource> {
+    val header = HttpHeaders()
+    header.set("Content-Disposition", "attachment; filename=" + this.name)
+    return ResponseEntity.ok()
+        .headers(header)
+        .contentLength(this.length())
+        .body(FileSystemResource(this));
 }

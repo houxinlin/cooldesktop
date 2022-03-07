@@ -1,5 +1,6 @@
 package com.hxl.desktop.file.extent
 
+import common.extent.toPath
 import java.io.IOException
 import java.nio.file.FileVisitResult
 import java.nio.file.Files
@@ -28,7 +29,7 @@ fun Path.walkFileTree(suffix: String = "", onlyFile: Boolean = false): MutableLi
         }
 
         override fun postVisitDirectory(dir: Path, exc: IOException?): FileVisitResult {
-            if (!onlyFile){
+            if (!onlyFile) {
                 if (dir.toString() != this@walkFileTree.toString()) {
                     mutableListOf.add(dir.toString())
                 }
@@ -39,10 +40,13 @@ fun Path.walkFileTree(suffix: String = "", onlyFile: Boolean = false): MutableLi
     return mutableListOf
 }
 
-
+//列举当前目录
 fun Path.listRootDirector(): List<String> {
+    if (!this.toFile().canRead()) return emptyList()
     if (!this.exists()) return emptyList()
     if (!this.isDirectory()) return emptyList()
-    return Files.list(this).map { it.toString() }.collect(Collectors.toList())
+    return Files.list(this).map { it.toString() }.filter {
+        !Files.isSymbolicLink(it.toPath())
+    }.collect(Collectors.toList())
 }
 

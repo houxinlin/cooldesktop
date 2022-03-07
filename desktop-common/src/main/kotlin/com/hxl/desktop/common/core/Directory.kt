@@ -1,4 +1,4 @@
-package com.hxl.desktop.file.utils
+package com.hxl.desktop.common.core
 
 import common.extent.toPath
 import java.io.File
@@ -16,10 +16,16 @@ object Directory {
     /**
      * 工作目录
      */
-    private const val WEP_APP_WORK_DIRECTORY = "app/webapp"
+    private const val WEP_APP_STORAGE_DIRECTORY = "app/webapp"
+    private const val WAR_APP_STORAGE_DIRECTORY = "app/war"
+    private const val TOMCAT_BASE_WORK_DIRECTORY = "app/tomcat_base_dir"
     private const val CHUNK_DIRECTORY = "fileupload/chunk"
     private const val DATABASE_DIRECTORY = "database"
-    private val WORK_DIRECTORY = arrayOf(CHUNK_DIRECTORY, DATABASE_DIRECTORY, WEP_APP_WORK_DIRECTORY)
+    private val WORK_DIRECTORY =
+        arrayOf(
+            CHUNK_DIRECTORY, DATABASE_DIRECTORY, WEP_APP_STORAGE_DIRECTORY, WAR_APP_STORAGE_DIRECTORY,
+            TOMCAT_BASE_WORK_DIRECTORY
+        )
 
 
     private fun getFileSize(path: String): Long {
@@ -40,7 +46,14 @@ object Directory {
     }
 
     fun getWebAppDirectory(): String {
-        return Paths.get(initializationWorkDirectoryAndGetRoot(), WEP_APP_WORK_DIRECTORY).toString();
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), WEP_APP_STORAGE_DIRECTORY).toString();
+    }
+    fun getWarAppDirectory(): String {
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), WAR_APP_STORAGE_DIRECTORY).toString();
+    }
+
+    fun getTomcatBaseDirDirectory(): String {
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), TOMCAT_BASE_WORK_DIRECTORY).toString();
     }
 
     fun getChunkDirectory(): String {

@@ -7,7 +7,9 @@ import common.extent.toFile
 import common.extent.toPath
 import common.result.FileHandlerResult
 import com.hxl.desktop.file.extent.getAttribute
+import com.hxl.desktop.file.extent.toHttpResponse
 import org.springframework.core.io.ByteArrayResource
+import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -21,12 +23,12 @@ import kotlin.io.path.exists
  * @author:   HouXinLin
  * @email:    2606710413@qq.com
  * @date:     20212021/12/18
- * @describe: file controller
+ * @describe: 静态资源控制器
  * @version:  v1.0
  */
 @RequestMapping("/desktop/api/file")
 @RestController()
-class FileController {
+class StaticResourceController {
 
 
     @Resource
@@ -101,7 +103,6 @@ class FileController {
         @RequestParam(value = "inPath") inPath: String,
     ): Any {
         return fileSystemService.fileMerge(name, targetName, inPath).asHttpResponseBody()
-        return "OK";
     }
 
     /**
@@ -186,14 +187,18 @@ class FileController {
     }
 
     @GetMapping("download")
-    fun download(@RequestParam("path") path: String): ResponseEntity<org.springframework.core.io.Resource> {
-        val resource = ByteArrayResource(Files.readAllBytes(Paths.get(path)))
-        val header = HttpHeaders()
-        return ResponseEntity.ok()
-            .headers(header)
-            .contentLength(resource.contentLength())
-            .contentType(MediaType.APPLICATION_OCTET_STREAM)
-            .body(resource);
+    fun download(@RequestParam("path") path: String): ResponseEntity<FileSystemResource> {
+        if (!path.toPath().exists()) {
+            return ResponseEntity.notFound().build()
+        }
+        return path.toFile().toHttpResponse()
+//        val resource = ByteArrayResource(Files.readAllBytes(Paths.get(path)))
+//        val header = HttpHeaders()
+//        return ResponseEntity.ok()
+//            .headers(header)
+//            .contentLength(resource.contentLength())
+//            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+//            .body(resource);
     }
 
 }

@@ -15,11 +15,10 @@ data class FileAttribute(
     var fileSize: Long = -1,
     var name: String = "",
     var rawType: String = "",
-    var baseFileAttribute: BasicFileAttributes,
     var createTimer: Long,
     var lastAccessTime: Long,
     var lastModifiedTime: Long,
     var owner: String,
-    var isBinary: Boolean = false,
+    var isTextType: Boolean = false,
     var mimeType: String
 )

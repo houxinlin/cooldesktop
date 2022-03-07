@@ -14,4 +14,5 @@ abstract class ResourceCache {
     fun getCacheResource(name: String): ByteArray? {
         return map[name]
     }
+    abstract fun init()
 }

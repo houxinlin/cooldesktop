@@ -10,7 +10,7 @@ import org.springframework.web.socket.WebSocketSession
 class SshMessageListener(var session: WebSocketSession) : TerminalResponse {
     override fun output(data: ByteArray) {
         if (session.isOpen)
-            session.sendMessage(TextMessage(createMessage(data)))
+            session.sendMessage(TextMessage(data))
     }
 
     private fun createStompMessageHeader(): MutableMap<String, Any> {

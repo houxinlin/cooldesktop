@@ -1,7 +1,5 @@
 package com.hxl.desktop.file.service
 
-import com.hxl.desktop.common.core.NotifyWebSocket
-import com.hxl.desktop.system.core.AsyncResultWithID
 import common.result.FileHandlerResult
 import common.bean.FileAttribute
 import common.bean.UploadInfo

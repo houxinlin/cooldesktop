@@ -8,13 +8,15 @@ import org.springframework.web.socket.WebSocketSession
 
 @Service
 class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
-    lateinit var coolDesktopEventSocket: WebSocketSession
+    var coolDesktopEventSocket: WebSocketSession? = null
 
     override fun onMessage(message: String, sessionId: String) {
     }
 
-    override fun sender( msg: String,id: String) {
-        coolDesktopEventSocket.sendMessage(TextMessage(WebSocketUtils.createMessage(msg.toByteArray())))
+    override fun sender(msg: String, id: String) {
+        if (coolDesktopEventSocket != null && coolDesktopEventSocket!!.isOpen) {
+            coolDesktopEventSocket!!.sendMessage(TextMessage(WebSocketUtils.createMessage(msg.toByteArray())))
+        }
     }
 
     override fun action(webSocketSession: WebSocketSession) {

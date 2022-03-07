@@ -53,21 +53,11 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
         super.configureWebSocketTransport(registry)
         registry.addDecoratorFactory { handler ->
             object : WebSocketHandlerDecorator(handler) {
-
-                /**
-                 * 连接成功
-                 */
-
                 override fun afterConnectionEstablished(session: WebSocketSession) {
                     super.afterConnectionEstablished(session)
                     webSocketSessionMap[session.id] = session
 
                 }
-
-                /**
-                 * 连接丢失
-                 */
-
                 override fun afterConnectionClosed(session: WebSocketSession, closeStatus: CloseStatus) {
                     super.afterConnectionClosed(session, closeStatus)
                     webSocketSessionMap.remove(session.id)

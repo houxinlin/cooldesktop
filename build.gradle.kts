@@ -15,6 +15,7 @@ configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
+
 }
 
 dependencies {
@@ -34,7 +35,9 @@ subprojects {
         }
 
     }
-
+    configurations.implementation {
+        exclude(group = "org.springframework.boot", module = "spring-boot")
+    }
     if (name != "desktop-web") {
         tasks.bootJar {
             enabled = false
@@ -51,13 +54,23 @@ subprojects {
         if (name != "desktop-common") {
             implementation(project(":desktop-common"))
         }
-//        implementation(files("/home/HouXinLin/project/java/tomcat/desktop-tomcat/apache-tomcat-9.0.58-src/output/embed/tomcat-embed-core.jar"))
+        //tomcat为二次开发的jar，主要功能全局拦截，进行登录，打包的时候会加入，开发的时候使用原本的tomcat
+        compileOnly("org.apache.tomcat.embed:tomcat-embed-core:9.0.58")
+        runtimeOnly(files("/home/HouXinLin/project/java/tomcat/desktop-tomcat/apache-tomcat-9.0.58-src/output/embed/tomcat-embed-core.jar"))
+
+
+        //SpringBoot为二次开发的jar，主要用来提供结构加载第三方应用
+        implementation(files("/home/HouXinLin/project/java/desktop-spring-boot/spring-boot-2.6.1/spring-boot-project/spring-boot/build/libs/spring-boot-2.6.1.jar"))
+
+        //文件合并
+        implementation(files("/home/HouXinLin/project/java/FileMerge/FileMerge/build/libs/FileMerge-1.0-SNAPSHOT.jar"))
+        //应用程序定义
+        implementation(files("/home/HouXinLin/project/java/desktop-application-definition/build/libs/desktop-application-definition-1.0-SNAPSHOT.jar"))
+        
+        implementation("org.springframework.boot:spring-boot-starter-websocket:2.6.2")
         implementation("org.tukaani:xz:1.9")
         implementation("org.apache.commons:commons-compress:1.21")
-        implementation("org.springframework.boot:spring-boot-starter-web") {
-//            exclude(group="org.apache.tomcat.embed",module = "tomcat-embed-core")
-        }
-        // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-aop
+        implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("org.springframework.boot:spring-boot-starter-aop:2.6.3")
         implementation("net.coobird:thumbnailator:0.4.15")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -65,10 +78,10 @@ subprojects {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
+
         implementation("com.alibaba:fastjson:1.2.79")
         implementation("org.apache.commons:commons-lang3:3.12.0")
-        implementation(files("/home/HouXinLin/project/java/FileMerge/FileMerge/build/libs/FileMerge-1.0-SNAPSHOT.jar"))
-        implementation(files("/home/HouXinLin/project/java/desktop-application-definition/build/libs/desktop-application-definition-1.0-SNAPSHOT.jar"))
+
     }
 
     tasks.withType<KotlinCompile> {

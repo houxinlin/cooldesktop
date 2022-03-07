@@ -1,5 +1,6 @@
 package com.hxl.desktop.file.service.impl
 
+import com.hxl.desktop.common.core.Directory
 import com.hxl.desktop.common.core.NotifyWebSocket
 import common.result.FileHandlerResult
 import common.bean.FileAttribute
@@ -11,7 +12,6 @@ import com.hxl.desktop.file.emun.FileType
 import com.hxl.desktop.file.extent.*
 import com.hxl.desktop.file.service.IFileService
 import com.hxl.desktop.file.utils.ClassPathUtils
-import com.hxl.desktop.file.utils.Directory
 import com.hxl.desktop.file.utils.ImageUtils
 import com.hxl.desktop.system.core.AsyncResultWithID
 import common.manager.ClipboardManager
@@ -24,12 +24,10 @@ import org.springframework.stereotype.Service
 import org.springframework.util.FileSystemUtils
 import org.tukaani.xz.CorruptedInputException
 import java.io.File
-import java.lang.RuntimeException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.Future
 import kotlin.io.path.*
-import kotlin.streams.toList
 
 /**
  * @author:   HouXinLin
@@ -104,10 +102,10 @@ class FileServiceImpl : IFileService {
     }
 
     override fun listDirector(root: String): List<FileAttribute> {
+        if (!root.toFile().canRead()) { return emptyList() }
         var files = root.toPath().listRootDirector()
         var mutableListOf = mutableListOf<FileAttribute>()
         files.forEach { mutableListOf.add(it.toFile().getAttribute()) }
-
         var folderList = mutableListOf.filter { it.type == FileType.FOLDER.typeName }
         var fileList = mutableListOf.filter { it.type != FileType.FOLDER.typeName }
         folderList.sortedBy { it.name }
@@ -144,8 +142,7 @@ class FileServiceImpl : IFileService {
     }
 
     override fun hasPermission(path: String): Boolean {
-        var path = Paths.get(path)
-        path.getOwner()?.let {
+        Paths.get(path).getOwner()?.let {
             return (System.getProperty("user.name") == it.name)
         }
         return false;

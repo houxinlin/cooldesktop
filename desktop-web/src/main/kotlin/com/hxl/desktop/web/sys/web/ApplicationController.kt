@@ -1,8 +1,6 @@
 package com.hxl.desktop.web.sys.web
 
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 /**
  * @author:   HouXinLin
@@ -18,4 +16,6 @@ class ApplicationController {
     fun list(): Any {
         return "";
     }
+
+
 }

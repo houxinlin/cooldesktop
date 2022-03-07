@@ -23,4 +23,8 @@ class ApplicationWrapper(var application: Application) : ResourceCache() {
         }
         return getCacheResource(path)
     }
+
+    override fun init() {
+        loadResource("/index.html")
+    }
 }

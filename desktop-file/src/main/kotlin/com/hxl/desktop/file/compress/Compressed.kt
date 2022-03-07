@@ -19,19 +19,19 @@ import kotlin.io.path.isDirectory
 abstract class Compressed() : ICompress {
 
     fun compressByType(path: String, archiveOutputStream: BaseArchiveOutputStream<*, *>) {
-        var file = File(path)
-        if (file.isFile) {
-            archiveOutputStream.putArchiveEntry(file.name, path)
+        var compressfile = File(path)
+        if (compressfile.isFile) {
+            archiveOutputStream.putArchiveEntry(compressfile.name, path)
             archiveOutputStream.close()
             return
         }
-        for (file in path.toPath().walkFileTree()) {
-            if (!file.toPath().isDirectory()) {
-                var archiveName = file.removePrefix(path)
-                archiveOutputStream.putArchiveEntry(archiveName, file)
+        for (fileItem in path.toPath().walkFileTree()) {
+            if (!fileItem.toPath().isDirectory()) {
+                var archiveName = fileItem.removePrefix(path)
+                archiveOutputStream.putArchiveEntry(archiveName, fileItem)
             } else {
-                var archiveEntry = file.removePrefix(path) + "/"
-                archiveOutputStream.putArchiveEntry(archiveEntry, file)
+                var archiveEntry = fileItem.removePrefix(path) + "/"
+                archiveOutputStream.putArchiveEntry(archiveEntry, fileItem)
             }
         }
         archiveOutputStream.close()
@@ -69,7 +69,7 @@ abstract class Compressed() : ICompress {
         }
         var archiveStream = ArchiveStreamFactory().createArchiveInputStream(inputStream)
 
-        var archiveEntry: ArchiveEntry? = null
+        var archiveEntry: ArchiveEntry?
         var targetDirectorName = getArchiveNameByIndex(parentPath, path.toPath().last().toString())
         while (archiveStream.nextEntry.also { archiveEntry = it } != null) {
             var itemName = archiveEntry!!.name

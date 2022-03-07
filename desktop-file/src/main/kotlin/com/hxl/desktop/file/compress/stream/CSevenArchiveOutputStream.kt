@@ -7,7 +7,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 class CSevenArchiveOutputStream(outPath: String) : BaseArchiveOutputStream<SevenZOutputFile, SevenZArchiveEntry> {
-    private lateinit var outputStream: SevenZOutputFile;
+    private  var outputStream: SevenZOutputFile;
 
     init {
         outputStream = SevenZOutputFile(outPath.toFile())

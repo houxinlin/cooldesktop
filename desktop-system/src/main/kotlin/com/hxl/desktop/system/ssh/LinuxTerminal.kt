@@ -3,6 +3,7 @@ package com.hxl.desktop.system.ssh
 import com.jcraft.jsch.ChannelShell
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
+import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -11,6 +12,7 @@ class LinuxTerminal(var serverConnectionInfo: ServerConnectionInfo) : Terminal {
     companion object {
         private const val CONNECTION_TIMEROUT: Int = 1000 * 5
         private val CONNECTION_FAIL = "连接失败".toByteArray()
+        var log = LoggerFactory.getLogger(LinuxTerminal::class.java)
     }
 
     private val jsch = JSch()
@@ -22,6 +24,7 @@ class LinuxTerminal(var serverConnectionInfo: ServerConnectionInfo) : Terminal {
     private var offlineCommand = mutableListOf<String>()
 
     override fun setSize(col: Int, row: Int, w: Int, h: Int) {
+        log.info("设置大小$col ${row}")
         channelShell?.setPty(true)
         channelShell?.setPtySize(col, row, w, h)
     }
@@ -59,6 +62,7 @@ class LinuxTerminal(var serverConnectionInfo: ServerConnectionInfo) : Terminal {
 
     private fun readTerminalData() {
         try {
+            log.info("连接成功")
             channelShell = session!!.openChannel("shell") as ChannelShell
             with(channelShell!!) {
                 terminalInputStream = this.inputStream
@@ -100,6 +104,7 @@ class LinuxTerminal(var serverConnectionInfo: ServerConnectionInfo) : Terminal {
                 return true
             }
         }
+        //连接失败
         serverConnectionInfo.terminalResponse.output(CONNECTION_FAIL);
         return false;
     }

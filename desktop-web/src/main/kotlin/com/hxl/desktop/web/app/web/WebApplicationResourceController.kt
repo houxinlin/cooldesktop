@@ -1,6 +1,7 @@
 package com.hxl.desktop.web.app.web
 
 import com.desktop.application.definition.application.webmini.WebMiniApplication
+import com.hxl.desktop.common.extent.toHttpResponse
 import com.hxl.desktop.loader.application.ApplicationRegister
 import com.hxl.desktop.loader.application.ApplicationWrapper
 import com.hxl.desktop.web.util.MediaUtils
@@ -18,10 +19,17 @@ import java.nio.file.Paths
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+/**
+ * web应用资源
+ */
 
 @RestController
 @RequestMapping("/desktop/webapplication/")
 class WebApplicationResourceController {
+    companion object {
+        const val WEB_MINE_REQUEST_PREFIX = "/desktop/webapplication/"
+    }
+
     @Autowired
     lateinit var applicationRegister: ApplicationRegister
 
@@ -34,16 +42,10 @@ class WebApplicationResourceController {
         var webMinApplication = applicationRegister.getWebMinApplication(applicationId)
         webMinApplication?.run {
             val restOfTheUrl = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE) as String
-            val res = restOfTheUrl.removePrefix("/desktop/webapplication/${applicationId}")
-//            var fileLastValue = Paths.get(restOfTheUrl).last().toString()
-            var loadResource = webMinApplication.loadResource(res)
-            loadResource?.run {
-                val resource = ByteArrayResource(loadResource)
-                val header = HttpHeaders()
-                return ResponseEntity.ok()
-                    .headers(header)
-                    .contentLength(resource.contentLength())
-                    .body(resource);
+            val res = restOfTheUrl.removePrefix("${WEB_MINE_REQUEST_PREFIX}${applicationId}")
+            var requestResource = webMinApplication.loadResource(res)
+            requestResource?.run {
+                return requestResource.toHttpResponse()
             }
         }
         return ResponseEntity.notFound().build()

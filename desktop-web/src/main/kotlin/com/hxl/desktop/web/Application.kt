@@ -9,13 +9,13 @@ import org.springframework.boot.web.servlet.ServletComponentScan
 import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.scheduling.annotation.EnableAsync
 
-@SpringBootApplication(scanBasePackages =["com.hxl.desktop"])
+@SpringBootApplication(scanBasePackages = ["com.hxl.desktop"])
 @ServletComponentScan
 @EnableAsync
 @EnableAspectJAutoProxy
 class Application
 
-fun main(args:Array<String>) {
-    var run = SpringApplication.run(Application::class.java, *args)
+fun main(args: Array<String>) {
+    SpringApplication.run(Application::class.java, *args)
 
 }

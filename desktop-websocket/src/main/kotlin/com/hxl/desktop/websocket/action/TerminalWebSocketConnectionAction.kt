@@ -17,7 +17,9 @@ class TerminalWebSocketConnectionAction : WebSocketConnectionAction() {
     lateinit var systemProperty: SystemProperty
 
     override fun action(webSocketSession: WebSocketSession) {
+        //获取属性
         var userInfo = systemProperty.getSSHUserInfo().apply { terminalResponse = SshMessageListener(webSocketSession) }
+        //创建终端实例
         var terminal = TerminalInstanceFactory.getTerminal(userInfo)
         terminalMapping[webSocketSession] = terminal
 
