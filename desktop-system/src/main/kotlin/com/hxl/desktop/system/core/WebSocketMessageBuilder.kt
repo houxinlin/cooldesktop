@@ -13,7 +13,10 @@ class WebSocketMessageBuilder {
             data["subject"] = subject
             return this
         }
-
+        fun applyAction(action: String): Builder {
+            data["action"] = action
+            return this
+        }
         fun addItem(key: String, value: Any): Builder {
             data[key] = value
             return this

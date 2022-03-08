@@ -1,4 +1,4 @@
-package common.manager
+package com.hxl.desktop.system.manager
 
 import common.extent.toFile
 import common.result.FileHandlerResult
@@ -6,7 +6,6 @@ import org.springframework.util.FileSystemUtils
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.io.path.isDirectory
 
 object ClipboardManager {
     private const val COPY_COMMAND = "copy";

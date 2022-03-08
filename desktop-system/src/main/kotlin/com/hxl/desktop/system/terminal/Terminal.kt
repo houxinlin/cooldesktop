@@ -1,4 +1,4 @@
-package com.hxl.desktop.system.ssh
+package com.hxl.desktop.system.terminal
 
 /**
  * 终端

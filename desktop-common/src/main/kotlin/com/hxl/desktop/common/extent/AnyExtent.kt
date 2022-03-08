@@ -1,5 +1,6 @@
 package common.extent
 
+import com.hxl.desktop.common.core.Constant
 import common.bean.HttpResponseBody
 import common.bean.HttpResponseStatus
 import common.result.BaseHandlerResult
@@ -22,7 +23,7 @@ fun Any.asHttpResponseBody(): HttpResponseBody {
     if (this is BaseHandlerResult) {
         return HttpResponseBody(this.code, this.data, this.msg);
     }
-    return HttpResponseBody(0, this, "OK");
+    return HttpResponseBody(0, this, Constant.StringConstant.OK);
 }
 
 fun Any.asHttpResponseBody(httpStatus: HttpResponseStatus): HttpResponseBody {

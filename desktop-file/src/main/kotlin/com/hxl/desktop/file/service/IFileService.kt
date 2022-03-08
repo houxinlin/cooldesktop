@@ -1,7 +1,7 @@
 package com.hxl.desktop.file.service
 
 import common.result.FileHandlerResult
-import common.bean.FileAttribute
+import com.hxl.desktop.common.bean.FileAttribute
 import common.bean.UploadInfo
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.scheduling.annotation.Async

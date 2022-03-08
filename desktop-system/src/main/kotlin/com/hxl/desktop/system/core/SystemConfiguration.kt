@@ -16,7 +16,6 @@ class SystemConfiguration {
     fun syncThreadThreadPoolTaskExecutor(): AsyncListenableTaskExecutor {
         class Executor : SimpleAsyncTaskExecutor() {
             override fun <T : Any?> submit(task: Callable<T>): Future<T> {
-                println("提交任务")
                 return super.submit(task)
             }
         }

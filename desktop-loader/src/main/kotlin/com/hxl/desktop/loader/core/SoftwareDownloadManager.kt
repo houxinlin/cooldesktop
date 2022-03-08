@@ -41,7 +41,7 @@ class SoftwareDownloadManager {
     @Autowired
     lateinit var applicationRegister: ApplicationRegister
     protected fun sendMessageToWebSocket(msg: String) {
-        webSocketSender.sender(msg)
+        webSocketSender.send(msg)
     }
 
     @PostConstruct

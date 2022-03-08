@@ -1,19 +1,17 @@
 package com.hxl.desktop.file.extent
 
-import common.bean.FileAttribute
+import com.hxl.desktop.common.bean.FileAttribute
 import com.hxl.desktop.file.emun.FileType
 import com.hxl.desktop.file.extent.FileExtent.logger
 import com.hxl.desktop.file.utils.FileCompressUtils
 import org.apache.tika.Tika
 import org.slf4j.LoggerFactory
-import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.FileSystemResource
-import org.springframework.http.ContentDisposition
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import java.io.File
 import java.nio.file.Files
-import java.nio.file.attribute.BasicFileAttributeView
+import java.nio.file.attribute.PosixFileAttributeView
 
 object FileExtent {
     var logger = LoggerFactory.getLogger(FileExtent::class.java)
@@ -107,8 +105,11 @@ fun File.getMimeType(): String {
  * 获取文件属性
  */
 
-fun File.getAttribute(): FileAttribute{
-    var readAttributes = Files.getFileAttributeView(this.toPath(), BasicFileAttributeView::class.java).readAttributes()
+fun File.getAttribute(): FileAttribute {
+    /**
+     * 在jdk17这里有点问题，jackson无法序列化他，原因不知
+     */
+    var readAttributes = Files.getFileAttributeView(this.toPath(), PosixFileAttributeView::class.java).readAttributes()
     return FileAttribute(
         this.toString(),
         this.getFileType(),
@@ -120,7 +121,8 @@ fun File.getAttribute(): FileAttribute{
         readAttributes.lastModifiedTime().toMillis(),
         Files.getOwner(this.toPath()).name,
         isTextFile(),
-        getMimeType()
+        getMimeType(),
+        !readAttributes.isDirectory
     )
 }
 

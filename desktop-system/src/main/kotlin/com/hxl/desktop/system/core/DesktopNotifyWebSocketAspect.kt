@@ -11,7 +11,6 @@ import org.aspectj.lang.reflect.MethodSignature
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.lang.Exception
 
 
 /**
@@ -20,7 +19,7 @@ import java.lang.Exception
 @Aspect
 @Component
 class DesktopNotifyWebSocketAspect {
-    private var log = LoggerFactory.getLogger(DesktopNotifyWebSocketAspect::class.java)
+    private val log = LoggerFactory.getLogger(DesktopNotifyWebSocketAspect::class.java)
 
     @Autowired
     lateinit var coolDesktopEventAction: WebSocketSender
@@ -30,11 +29,15 @@ class DesktopNotifyWebSocketAspect {
         val signature = joinPoint.signature as MethodSignature
         var notifyWebSocket = signature.method.getDeclaredAnnotation(NotifyWebSocket::class.java)
         var args = joinPoint.args
-        coolDesktopEventAction.sender(
+        coolDesktopEventAction.send(
             JSON.toJSONString(
                 mutableMapOf(
                     "id" to args.last(),
-                    "result" to FileHandlerResult.create(-1, exception.message.toString(), "发生异常${exception.message.toString()}"),
+                    "result" to FileHandlerResult.create(
+                        -1,
+                        exception.message.toString(),
+                        "发生异常${exception.message.toString()}"
+                    ),
                     "subject" to notifyWebSocket.subject,
                     "action" to notifyWebSocket.action
                 )
@@ -44,11 +47,13 @@ class DesktopNotifyWebSocketAspect {
 
     @AfterReturning(returning = "data", pointcut = "@annotation(com.hxl.desktop.common.core.NotifyWebSocket)")
     fun notifyAfterReturning(joinPoint: JoinPoint, data: Any) {
+        log.info("通知客户端$data")
         val signature = joinPoint.signature as MethodSignature
         var notifyWebSocket = signature.method.getDeclaredAnnotation(NotifyWebSocket::class.java)
+        //处理结果是AsyncResultWithID的
         if (data is AsyncResultWithID<*> && data.get() is FileHandlerResult) {
             log.info("处理结果{}", data.get())
-            coolDesktopEventAction.sender(
+            coolDesktopEventAction.send(
                 JSON.toJSONString(
                     mutableMapOf(
                         "id" to data.taskId,
@@ -57,6 +62,15 @@ class DesktopNotifyWebSocketAspect {
                         "action" to notifyWebSocket.action
                     )
                 )
+            )
+        }
+        if (data is FileHandlerResult) {
+            coolDesktopEventAction.send(
+                WebSocketMessageBuilder.Builder()
+                    .applySubject(notifyWebSocket.subject)
+                    .applyAction(notifyWebSocket.action)
+                    .addItem("data", data)
+                    .build()
             )
         }
     }

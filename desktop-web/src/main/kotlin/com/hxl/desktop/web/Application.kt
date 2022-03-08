@@ -5,11 +5,12 @@ import com.alibaba.fastjson.JSON
 import common.result.FileHandlerResult
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.web.servlet.ServletComponentScan
 import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.scheduling.annotation.EnableAsync
 
-@SpringBootApplication(scanBasePackages = ["com.hxl.desktop"])
+@SpringBootApplication(scanBasePackages = ["com.hxl.desktop"], exclude = [DataSourceAutoConfiguration::class])
 @ServletComponentScan
 @EnableAsync
 @EnableAspectJAutoProxy

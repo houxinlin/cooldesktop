@@ -3,7 +3,8 @@ package com.hxl.desktop.file.service.impl
 import com.hxl.desktop.common.core.Directory
 import com.hxl.desktop.common.core.NotifyWebSocket
 import common.result.FileHandlerResult
-import common.bean.FileAttribute
+import com.hxl.desktop.common.bean.FileAttribute
+import com.hxl.desktop.common.core.Constant
 import common.bean.UploadInfo
 import common.extent.toFile
 import common.extent.toPath
@@ -14,9 +15,12 @@ import com.hxl.desktop.file.service.IFileService
 import com.hxl.desktop.file.utils.ClassPathUtils
 import com.hxl.desktop.file.utils.ImageUtils
 import com.hxl.desktop.system.core.AsyncResultWithID
-import common.manager.ClipboardManager
+import com.hxl.desktop.system.core.WebSocketMessageBuilder
+import com.hxl.desktop.system.core.WebSocketSender
+import com.hxl.desktop.system.manager.ClipboardManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.ClassPathResource
 import org.springframework.scheduling.annotation.AsyncResult
@@ -38,8 +42,10 @@ import kotlin.io.path.*
  */
 @Service
 class FileServiceImpl : IFileService {
-    var log: Logger = LoggerFactory.getLogger(FileServiceImpl::class.java);
+    private val log: Logger = LoggerFactory.getLogger(FileServiceImpl::class.java);
 
+    @Autowired
+    lateinit var webSocketSender: WebSocketSender
     override fun fileCut(path: String): Boolean {
         return ClipboardManager.fileCut(path)
     }
@@ -48,7 +54,7 @@ class FileServiceImpl : IFileService {
         return ClipboardManager.fileCopy(path)
     }
 
-    @NotifyWebSocket(subject = "/file/events", action = "paste")
+    @NotifyWebSocket(subject = "/event/file", action = "paste")
     override fun filePaste(path: String, taskId: String): Future<FileHandlerResult> {
         return AsyncResultWithID(ClipboardManager.filePaste(path), taskId)
     }
@@ -71,6 +77,7 @@ class FileServiceImpl : IFileService {
     }
 
 
+    @NotifyWebSocket(subject = "test", action = "asdas")
     override fun fileMerge(chunkId: String, name: String, inPath: String): FileHandlerResult {
         var rootPath = Paths.get(Directory.getChunkDirectory(), chunkId).toString();
         var target = Paths.get(inPath, name);
@@ -85,6 +92,13 @@ class FileServiceImpl : IFileService {
         targetOutputStream.flush()
         targetOutputStream.close()
         deleteFile(rootPath);
+        webSocketSender.send(
+            WebSocketMessageBuilder.Builder()
+                .applySubject(Constant.WebSocketSubjectNameConstant.REFRESH_FOLDER)
+                .applyAction("refresh")
+                .addItem("inPath", inPath)
+                .build()
+        )
         return FileHandlerResult.OK;
     }
 
@@ -95,6 +109,7 @@ class FileServiceImpl : IFileService {
             uploadInfo.fileBinary.inputStream.readBytes()
         );
         var currentSize = Files.list(chunkDirector).map { it.fileSize() }.toList().sum();
+        //如果文件大小等于当前文件数量合，和并文件
         if (uploadInfo.total == currentSize) {
             fileMerge(uploadInfo.chunkId, uploadInfo.fileName, uploadInfo.target)
         }
@@ -102,7 +117,9 @@ class FileServiceImpl : IFileService {
     }
 
     override fun listDirector(root: String): List<FileAttribute> {
-        if (!root.toFile().canRead()) { return emptyList() }
+        if (!root.toFile().canRead()) {
+            return emptyList()
+        }
         var files = root.toPath().listRootDirector()
         var mutableListOf = mutableListOf<FileAttribute>()
         files.forEach { mutableListOf.add(it.toFile().getAttribute()) }

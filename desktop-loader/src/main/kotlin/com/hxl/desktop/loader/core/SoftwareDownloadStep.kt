@@ -28,13 +28,13 @@ class SoftwareDownloadStep(var softwareDownloadManager: SoftwareDownloadManager)
             while (inputStream.read(byteArray).also { readSize = it } >= 0) {
                 softwareByteArray.write(byteArray, 0, readSize)
                 var progress = softwareByteArray.size().div(softwareSize) * 100
-                softwareDownloadManager.webSocketSender.sender(createNotifyMessage(id,progress))
+                softwareDownloadManager.webSocketSender.send(createNotifyMessage(id,progress))
             }
             inputStream.close()
             return softwareByteArray.toByteArray()
         } catch (e: Exception) {
             log.info("下载失败:" + e.message)
-            softwareDownloadManager.webSocketSender.sender(createNotifyMessage(id,-1f))
+            softwareDownloadManager.webSocketSender.send(createNotifyMessage(id,-1f))
         }
         return null
     }

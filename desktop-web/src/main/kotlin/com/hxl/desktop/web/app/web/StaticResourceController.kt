@@ -78,10 +78,9 @@ class StaticResourceController {
      * file paste
      */
     @PostMapping("filePaste")
-    fun filePaste(@RequestParam("path") target: String): Any {
-        var fileHandlerResult = FileHandlerResult.withAsyncId()
-        fileSystemService.filePaste(target, fileHandlerResult.data.toString())
-        return fileHandlerResult.asHttpResponseBody()
+    fun filePaste(@RequestParam("path") target: String, @RequestParam("taskId") taskId: String): Any {
+        fileSystemService.filePaste(target, taskId)
+        return FileHandlerResult.TASK_SUBMIT_OK
     }
 
     /**

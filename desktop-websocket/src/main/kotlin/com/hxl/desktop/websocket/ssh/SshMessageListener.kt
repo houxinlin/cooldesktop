@@ -1,6 +1,6 @@
 package com.hxl.desktop.websocket.ssh
 
-import com.hxl.desktop.system.ssh.TerminalResponse
+import com.hxl.desktop.system.terminal.TerminalResponse
 import org.springframework.messaging.simp.SimpMessageType
 import org.springframework.messaging.simp.stomp.StompCommand
 import org.springframework.messaging.simp.stomp.StompEncoder

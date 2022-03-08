@@ -24,6 +24,7 @@ class FileHandlerResult(code: Int, data: Any, msg: String) : BaseHandlerResult(c
         val NO_SELECT_FILE = FileHandlerResult(-8, "", "没有选择任何文件")
         val CANNOT_COPY = FileHandlerResult(-8, "", "无法复制")
         val CREATE_FILE_FAIL = FileHandlerResult(-8, "", "无法创建文件")
+        val TASK_SUBMIT_OK = FileHandlerResult(0, "", "任务提交成功")
         fun create(code: Int, data: Any, msg: String): FileHandlerResult {
             return FileHandlerResult(code, data, msg);
         }

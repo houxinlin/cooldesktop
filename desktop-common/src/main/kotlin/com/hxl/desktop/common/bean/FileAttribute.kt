@@ -1,6 +1,6 @@
-package common.bean
+package com.hxl.desktop.common.bean
 
-import java.nio.file.attribute.BasicFileAttributes
+
 
 /**
  * @author:   HouXinLin
@@ -20,5 +20,6 @@ data class FileAttribute(
     var lastModifiedTime: Long,
     var owner: String,
     var isTextType: Boolean = false,
-    var mimeType: String
+    var mimeType: String,
+    var isFile: Boolean = true
 )

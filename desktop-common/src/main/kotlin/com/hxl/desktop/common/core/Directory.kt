@@ -2,8 +2,11 @@ package com.hxl.desktop.common.core
 
 import common.extent.toPath
 import java.io.File
-import java.nio.file.*
-import kotlin.io.path.*
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import kotlin.io.path.createDirectories
+import kotlin.io.path.exists
 
 /**
  * @author:   HouXinLin
@@ -21,11 +24,17 @@ object Directory {
     private const val TOMCAT_BASE_WORK_DIRECTORY = "app/tomcat_base_dir"
     private const val CHUNK_DIRECTORY = "fileupload/chunk"
     private const val DATABASE_DIRECTORY = "database"
-    private val WORK_DIRECTORY =
-        arrayOf(
-            CHUNK_DIRECTORY, DATABASE_DIRECTORY, WEP_APP_STORAGE_DIRECTORY, WAR_APP_STORAGE_DIRECTORY,
-            TOMCAT_BASE_WORK_DIRECTORY
-        )
+    private const val WALLPAPER_WORK_DIRECTORY = "config/wallpaper"
+    private const val SSH_CONFIG_DIRECTORY = "config/ssh"
+    private val WORK_DIRECTORY = arrayOf(
+        CHUNK_DIRECTORY,
+        DATABASE_DIRECTORY,
+        WEP_APP_STORAGE_DIRECTORY,
+        WAR_APP_STORAGE_DIRECTORY,
+        TOMCAT_BASE_WORK_DIRECTORY,
+        WALLPAPER_WORK_DIRECTORY,
+        SSH_CONFIG_DIRECTORY
+    )
 
 
     private fun getFileSize(path: String): Long {
@@ -36,11 +45,13 @@ object Directory {
     }
 
 
+    @Synchronized
     private fun initializationWorkDirectoryAndGetRoot(): String {
         var path = Paths.get(System.getProperty("user.dir"), "work")
         if (!path.exists()) {
             path.createDirectories()
         }
+        //创建子工作目录
         createDirector(path.toString(), *WORK_DIRECTORY)
         return path.toString()
     }
@@ -48,12 +59,25 @@ object Directory {
     fun getWebAppDirectory(): String {
         return Paths.get(initializationWorkDirectoryAndGetRoot(), WEP_APP_STORAGE_DIRECTORY).toString();
     }
+
     fun getWarAppDirectory(): String {
         return Paths.get(initializationWorkDirectoryAndGetRoot(), WAR_APP_STORAGE_DIRECTORY).toString();
     }
 
+    fun getSecureShellConfigDirectory(): String {
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), SSH_CONFIG_DIRECTORY).toString();
+    }
+
+    fun getDatabaseDirectory(): String {
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), DATABASE_DIRECTORY).toString();
+    }
+
     fun getTomcatBaseDirDirectory(): String {
         return Paths.get(initializationWorkDirectoryAndGetRoot(), TOMCAT_BASE_WORK_DIRECTORY).toString();
+    }
+
+    fun getWallpaperWorkDirectory(): String {
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), WALLPAPER_WORK_DIRECTORY).toString();
     }
 
     fun getChunkDirectory(): String {
@@ -69,7 +93,12 @@ object Directory {
     }
 
     fun createDirector(root: String, vararg child: String) {
-        child.toList().stream().forEach { Paths.get(root, it).createDirectories() }
+        child.toList().stream().forEach {
+            var createPath = Paths.get(root, it)
+            if (!createPath.exists())
+                createPath.createDirectories()
+
+        }
     }
 
     fun exists(path: String): Boolean {

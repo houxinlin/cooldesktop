@@ -1,8 +1,12 @@
 package com.hxl.desktop.websocket.action
 
-import com.hxl.desktop.system.property.SystemProperty
-import com.hxl.desktop.system.ssh.Terminal
-import com.hxl.desktop.system.ssh.factory.TerminalInstanceFactory
+import com.hxl.desktop.common.core.Constant
+import com.hxl.desktop.system.core.WebSocketMessageBuilder
+import com.hxl.desktop.system.terminal.ServerConnectionInfo
+import com.hxl.desktop.system.terminal.ServerConnectionInfoWrap
+import com.hxl.desktop.system.sys.SystemProperty
+import com.hxl.desktop.system.terminal.Terminal
+import com.hxl.desktop.system.terminal.factory.TerminalInstanceFactory
 import com.hxl.desktop.websocket.ssh.SshMessageListener
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -16,11 +20,32 @@ class TerminalWebSocketConnectionAction : WebSocketConnectionAction() {
     @Autowired
     lateinit var systemProperty: SystemProperty
 
+    @Autowired
+    lateinit var coolDesktopEventAction: CoolDesktopEventAction
+
+
+    fun createServerConnectionInfoWrap(
+        connectionInfo: ServerConnectionInfo,
+        session: WebSocketSession
+    ): ServerConnectionInfoWrap {
+        return ServerConnectionInfoWrap(connectionInfo, SshMessageListener(session))
+    }
+
     override fun action(webSocketSession: WebSocketSession) {
         //获取属性
-        var userInfo = systemProperty.getSSHUserInfo().apply { terminalResponse = SshMessageListener(webSocketSession) }
+        var connectionInfo = systemProperty.getServerConnectionInfo()
+        //连接信息不完整
+        if (!connectionInfo.verification()) {
+            coolDesktopEventAction.sendForSubject(
+                WebSocketMessageBuilder().builder()
+                    .applySubject(Constant.WebSocketSubjectNameConstant.TERMINAL_MESSAGE)
+                    .addItem("msg", Constant.StringConstant.TERMINAL_MESSAGE_CONNECT_NOT_FOUND)
+            )
+            return
+        }
         //创建终端实例
-        var terminal = TerminalInstanceFactory.getTerminal(userInfo)
+        var terminal =
+            TerminalInstanceFactory.getTerminal(createServerConnectionInfoWrap(connectionInfo, webSocketSession))
         terminalMapping[webSocketSession] = terminal
 
     }

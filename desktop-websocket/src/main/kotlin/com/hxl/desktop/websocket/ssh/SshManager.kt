@@ -1,8 +1,7 @@
 package com.hxl.desktop.websocket.ssh
 
-import com.hxl.desktop.system.ssh.ServerConnectionInfo
-import com.hxl.desktop.system.ssh.Terminal
-import com.hxl.desktop.system.ssh.factory.TerminalInstanceFactory
+import com.hxl.desktop.system.terminal.ServerConnectionInfo
+import com.hxl.desktop.system.terminal.Terminal
 import org.springframework.stereotype.Service
 import org.springframework.web.socket.WebSocketSession
 import java.util.concurrent.ConcurrentHashMap
@@ -24,8 +23,7 @@ class SshManager {
 
     fun startNewSshClient(id: String, serverInfo: ServerConnectionInfo) {
         var sshMessageListener = SshMessageListener(sessionMapping[id]!!)
-        serverInfo.apply { terminalResponse = sshMessageListener }
-        var sshClient = TerminalInstanceFactory.getTerminal(serverInfo)
+
 //        var sshClient = TerminalInstanceFactory().createSshSshClient(serverInfo)
 //        terminalMapping[id] = sshClient
 
