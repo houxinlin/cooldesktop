@@ -16,7 +16,7 @@ interface IFileService {
 
     fun getImageThumbnail(path: String): ByteArrayResource;
 
-    fun chunkUpload(uploadInfo: UploadInfo): Boolean
+    fun chunkUpload(uploadInfo: UploadInfo): FileHandlerResult
 
     fun fileMerge(path: String, name: String, inPath: String): FileHandlerResult;
 

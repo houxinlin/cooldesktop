@@ -21,6 +21,7 @@ object Directory {
      */
     private const val WEP_APP_STORAGE_DIRECTORY = "app/webapp"
     private const val WAR_APP_STORAGE_DIRECTORY = "app/war"
+    private const val EASY_APP_STORAGE_DIRECTORY = "app/easy"
     private const val TOMCAT_BASE_WORK_DIRECTORY = "app/tomcat_base_dir"
     private const val CHUNK_DIRECTORY = "fileupload/chunk"
     private const val DATABASE_DIRECTORY = "database"
@@ -33,7 +34,8 @@ object Directory {
         WAR_APP_STORAGE_DIRECTORY,
         TOMCAT_BASE_WORK_DIRECTORY,
         WALLPAPER_WORK_DIRECTORY,
-        SSH_CONFIG_DIRECTORY
+        SSH_CONFIG_DIRECTORY,
+        EASY_APP_STORAGE_DIRECTORY
     )
 
 
@@ -54,6 +56,9 @@ object Directory {
         //创建子工作目录
         createDirector(path.toString(), *WORK_DIRECTORY)
         return path.toString()
+    }
+    fun getEasyAppStorageDirectory(): String {
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), EASY_APP_STORAGE_DIRECTORY).toString();
     }
 
     fun getWebAppDirectory(): String {

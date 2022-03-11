@@ -9,7 +9,7 @@ class TerminalCommand {
             processBuilder.command(commandBuilder.commands)
             val process = processBuilder.start()
             process.waitFor()
-            return process.inputStream.readAllBytes().decodeToString()
+            return process.inputStream.readBytes().decodeToString()
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: InterruptedException) {

@@ -9,13 +9,17 @@ import org.springframework.web.bind.annotation.*
  * @describe: application controller
  * @version:  v1.0
  */
-@RequestMapping("/desktop/api/app/")
+@RequestMapping("/desktop/api/sys/")
 @RestController
 class ApplicationController {
-    @GetMapping("list")
-    fun list(): Any {
+    @PostMapping("setAppProperty")
+    fun setAppProperty(): Any {
         return "";
     }
 
+    @PostMapping("getAppProperty")
+    fun getAppProperty(): Any {
+        return "";
+    }
 
 }

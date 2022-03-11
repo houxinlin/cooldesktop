@@ -1,6 +1,7 @@
 package com.hxl.desktop.file.extent
 
 import common.extent.toPath
+import java.io.File
 import java.io.IOException
 import java.nio.file.FileVisitResult
 import java.nio.file.Files
@@ -41,12 +42,13 @@ fun Path.walkFileTree(suffix: String = "", onlyFile: Boolean = false): MutableLi
 }
 
 //列举当前目录
-fun Path.listRootDirector(): List<String> {
+fun Path.listRootDirector(): List<File> {
     if (!this.toFile().canRead()) return emptyList()
     if (!this.exists()) return emptyList()
     if (!this.isDirectory()) return emptyList()
-    return Files.list(this).map { it.toString() }.filter {
+    return Files.list(this).map { it.toFile() }.filter {
         !Files.isSymbolicLink(it.toPath())
     }.collect(Collectors.toList())
 }
+
 

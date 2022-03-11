@@ -15,15 +15,15 @@ import javax.annotation.PostConstruct
 
 //软件下载管理器
 @Service
-class SoftwareDownloadManager {
+class ApplicationDownloadManager {
     companion object {
-        val log: Logger = LoggerFactory.getLogger(SoftwareDownloadManager::class.java)
+        val log: Logger = LoggerFactory.getLogger(ApplicationDownloadManager::class.java)
 
         const val REFRESH_SUBJECT = "/event/refresh/application"
         const val INSTALL_STATUS_SUBJECT = "/event/software/status"
         const val INSTALL_DONE_SUBJECT="/event/install/done"
     }
-    private val softwareInstallQueue = LinkedBlockingQueue<String>()
+    private val applicationInstallQueue = LinkedBlockingQueue<String>()
 
     @Volatile
     private var currentInstallSoftware: String? = null
@@ -52,11 +52,11 @@ class SoftwareDownloadManager {
     fun startConsumer() {
         //一次只能安装一个软件
        while (true){
-           var softwareInstallId = softwareInstallQueue.take()
-           var step = InstallStep.of(SoftwareDownloadStep(this))
-               .addSoftwareInstallStep(SoftwareInstallStep(this))
-           currentInstallSoftware = softwareInstallId
-           step.execute(softwareInstallId);
+           var applicationInstallId = applicationInstallQueue.take()
+           var step = InstallStep.of(ApplicationDownloadStep(this))
+               .addSoftwareInstallStep(ApplicationInstallStep(this))
+           currentInstallSoftware = applicationInstallId
+           step.execute(applicationInstallId);
        }
     }
 
@@ -64,13 +64,15 @@ class SoftwareDownloadManager {
     fun download(id: String) {
         //如果已经安装
         if (applicationRegister.isLoaded(id)) {
-            sendMessageToWebSocket(WebSocketMessageBuilder().builder().applySubject(INSTALL_STATUS_SUBJECT)
+            sendMessageToWebSocket(WebSocketMessageBuilder()
+                .builder()
+                .applySubject(INSTALL_STATUS_SUBJECT)
                 .addItem("data","已经安装")
                 .build())
             return
         }
-        if (!softwareInstallQueue.contains(id)){
-            softwareInstallQueue.offer(id)
+        if (!applicationInstallQueue.contains(id)){
+            applicationInstallQueue.offer(id)
         }
     }
 

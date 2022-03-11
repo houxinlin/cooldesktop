@@ -11,12 +11,16 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.attribute.PosixFileAttributeView
 
 object FileExtent {
     var logger = LoggerFactory.getLogger(FileExtent::class.java)
 }
 
+fun File.canReadAndWrite(): Boolean {
+    return this.canRead() && this.canWrite()
+}
 
 /**
  * 获取文件类型，主要返回是不是图片、文本、音乐、视频

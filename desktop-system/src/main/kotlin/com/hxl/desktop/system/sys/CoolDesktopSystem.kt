@@ -20,6 +20,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
+import java.util.*
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.exists
 import kotlin.random.Random
@@ -49,7 +50,6 @@ class CoolDesktopSystem {
             CoolDesktopDatabaseConfigKeys.SSH_PRIVATE_VALUE.keyName,
             CoolDesktopDatabaseConfigKeys.SSH_PUBLIC_VALUE.keyName
         )
-        const val WALLPAPER_NAME = "wallpaper.png"
         const val RSA_NAME = "cooldesktop"
         const val AUTHORIZED_KEYS = "/root/.ssh/authorized_keys"
     }
@@ -59,11 +59,17 @@ class CoolDesktopSystem {
      */
     @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.REFRESH_WALLPAPER, action = "")
     fun changeWallpaper(file: MultipartFile): FileHandlerResult {
-        file.transferTo(Paths.get(Directory.getWallpaperWorkDirectory(), WALLPAPER_NAME).toFile())
+        val wallpaperName = "${UUID.randomUUID()}.png"
+        file.transferTo(Paths.get(Directory.getWallpaperWorkDirectory(), wallpaperName).toFile())
         val key = CoolDesktopDatabaseConfigKeys.WALLPAPER.keyName
-        val value = "${WALLPAPER_REQUEST_RESOURCE_PATH}${WALLPAPER_NAME}"
+        val oldWallpaperName = coolDesktopDatabase.getSysValue(key)
+        if (oldWallpaperName.isNotEmpty()) {
+            Files.deleteIfExists(Paths.get(Directory.getWallpaperWorkDirectory(), oldWallpaperName))
+        }
+        val value = "${WALLPAPER_REQUEST_RESOURCE_PATH}${wallpaperName}"
+        //存储
         coolDesktopDatabase.saveConfig(key, value)
-        return FileHandlerResult.create(0, "${value}?id=" + Random.nextInt(1, 100), "OK")
+        return FileHandlerResult.create(0, value, "OK")
 
     }
 

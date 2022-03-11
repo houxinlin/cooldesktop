@@ -4,6 +4,8 @@ class Constant {
     object StringConstant {
         const val TERMINAL_MESSAGE_CONNECT_NOT_FOUND = "无法打开终端，信息不完整，请到设置界面配置信息"
         const val OK = "OK"
+        const val UNINSTALL_FAIL = "卸载失败"
+        const val UNINSTALL_SUCCESS = "卸载成功"
         const val CONFIG_FAIL = "配置失败"
         const val CONFIG_FAIL_USER = "配置失败，用户名填写不正确"
         const val SSH_CONNECTION_FAIL = "连接失败，请检查配置"

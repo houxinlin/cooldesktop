@@ -2,7 +2,7 @@ package com.hxl.desktop.web.app.web
 
 import common.extent.asHttpResponseBody
 import com.hxl.desktop.loader.application.ApplicationRegister
-import com.hxl.desktop.loader.core.SoftwareDownloadManager
+import com.hxl.desktop.loader.core.ApplicationDownloadManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 
@@ -13,7 +13,7 @@ class DesktopApplicationController {
     lateinit var applicationRegister: ApplicationRegister
 
     @Autowired
-    lateinit var softwareDownloadManager: SoftwareDownloadManager
+    lateinit var applicationDownloadManager: ApplicationDownloadManager
 
     /**
      * 获取所有应用
@@ -28,6 +28,14 @@ class DesktopApplicationController {
      */
     @PostMapping("install")
     fun install(@RequestParam("id") id: String): Any {
-        return  softwareDownloadManager.download(id)
+        return  applicationDownloadManager.download(id)
+    }
+
+    /**
+     * 安装应用
+     */
+    @PostMapping("uninstall")
+    fun uninstall(@RequestParam("id") id: String): Any {
+        return  applicationRegister.unregister(id).asHttpResponseBody()
     }
 }

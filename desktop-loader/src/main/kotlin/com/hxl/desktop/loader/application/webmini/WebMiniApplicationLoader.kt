@@ -13,6 +13,7 @@ import common.extent.toFile
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import java.nio.ByteBuffer
 import java.nio.file.Files
@@ -25,9 +26,9 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.stream.Collectors
 import javax.annotation.PostConstruct
 
-@Service
+@Component
 class WebMiniApplicationLoader : ApplicationLoader {
-    var log: Logger = LoggerFactory.getLogger(WebMiniApplicationLoader::class.java)
+    private val log: Logger = LoggerFactory.getLogger(WebMiniApplicationLoader::class.java)
 
     @Autowired
     lateinit var applicationRegister: ApplicationRegister
@@ -36,7 +37,7 @@ class WebMiniApplicationLoader : ApplicationLoader {
 
     var loadThreadPool = ThreadPoolExecutor(3, 4, 10, TimeUnit.MINUTES, ArrayBlockingQueue(100))
 
-    @PostConstruct
+
     override fun loadApplication() {
         refresh()
     }
@@ -65,7 +66,6 @@ class WebMiniApplicationLoader : ApplicationLoader {
                 var applicationInfoByte = byteBuffer.readByte(applicationInfoHeaderSize)
                 var webMiniApplication =
                     JSON.parseObject(applicationInfoByte.decodeToString(), WebMiniApplication::class.java)
-
                 webMiniApplication.applicationPath = path
                 webMiniApplication.staticResOffset = 12L + applicationInfoHeaderSize
                 applicationRegister.registerWebApp(ApplicationWrapper(webMiniApplication))

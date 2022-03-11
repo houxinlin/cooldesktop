@@ -3,10 +3,10 @@ package com.hxl.desktop.loader.core
 internal interface InstallStep<I, O> {
     fun execute(value: I): O
      
-    fun <R> addSoftwareInstallStep(softwareInstallStep: InstallStep<O, R>): InstallStep<I, R> {
+    fun <R> addSoftwareInstallStep(applicationInstallStep: InstallStep<O, R>): InstallStep<I, R> {
         return object : InstallStep<I, R> {
             override fun execute(value: I): R {
-                return softwareInstallStep.execute(this@InstallStep.execute(value))
+                return applicationInstallStep.execute(this@InstallStep.execute(value))
             }
         }
     }

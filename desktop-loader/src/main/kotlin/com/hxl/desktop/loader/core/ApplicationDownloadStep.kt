@@ -7,10 +7,12 @@ import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-class SoftwareDownloadStep(var softwareDownloadManager: SoftwareDownloadManager) : InstallStep<String, ByteArray?> {
+class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloadManager) :
+    InstallStep<String, ByteArray?> {
     companion object {
-        val log: Logger = LoggerFactory.getLogger(SoftwareDownloadStep::class.java)
+        val log: Logger = LoggerFactory.getLogger(ApplicationDownloadStep::class.java)
     }
+
     var id: String = ""
     override fun execute(value: String): ByteArray? {
         this.id = value
@@ -24,17 +26,17 @@ class SoftwareDownloadStep(var softwareDownloadManager: SoftwareDownloadManager)
             var inputStream = httpURLConnection.inputStream
             var byteArray = ByteArray(4096)
             var softwareByteArray = ByteArrayOutputStream()
-            var readSize =0
+            var readSize = 0
             while (inputStream.read(byteArray).also { readSize = it } >= 0) {
                 softwareByteArray.write(byteArray, 0, readSize)
                 var progress = softwareByteArray.size().div(softwareSize) * 100
-                softwareDownloadManager.webSocketSender.send(createNotifyMessage(id,progress))
+                applicationDownloadManager.webSocketSender.send(createNotifyMessage(id, progress))
             }
             inputStream.close()
             return softwareByteArray.toByteArray()
         } catch (e: Exception) {
-            log.info("下载失败:" + e.message)
-            softwareDownloadManager.webSocketSender.send(createNotifyMessage(id,-1f))
+            log.info("下载失败:${e.message}  $url" )
+            applicationDownloadManager.webSocketSender.send(createNotifyMessage(id, -1f))
         }
         return null
     }
@@ -49,8 +51,8 @@ class SoftwareDownloadStep(var softwareDownloadManager: SoftwareDownloadManager)
 
     private fun getDownloadUrl(id: String): String {
         var url = StringBuffer()
-        url.append(softwareDownloadManager.coolProperties.softwareServer!!)
-        url.append(softwareDownloadManager.coolProperties.softwareDownloadUrl)
+        url.append(applicationDownloadManager.coolProperties.softwareServer!!)
+        url.append(applicationDownloadManager.coolProperties.softwareDownloadUrl)
         url.append("?id=$id")
         return url.toString()
     }
