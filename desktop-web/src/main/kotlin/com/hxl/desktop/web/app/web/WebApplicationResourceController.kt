@@ -1,21 +1,17 @@
 package com.hxl.desktop.web.app.web
 
-import com.desktop.application.definition.application.webmini.WebMiniApplication
 import com.hxl.desktop.common.extent.toHttpResponse
 import com.hxl.desktop.loader.application.ApplicationRegister
-import com.hxl.desktop.loader.application.ApplicationWrapper
-import com.hxl.desktop.web.util.MediaUtils
+import org.apache.tika.Tika
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource
-import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.HandlerMapping
-import java.nio.file.Paths
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -39,14 +35,15 @@ class WebApplicationResourceController {
         request: HttpServletRequest,
         response: HttpServletResponse
     ): ResponseEntity<Resource> {
-        var webMinApplication = applicationRegister.getWebMinApplication(applicationId)
-        webMinApplication?.run {
-            val restOfTheUrl = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE) as String
-            val res = restOfTheUrl.removePrefix("${WEB_MINE_REQUEST_PREFIX}${applicationId}")
-            var requestResource = webMinApplication.loadResource(res)
-            requestResource?.run {
-                return requestResource.toHttpResponse()
-            }
+        var application = applicationRegister.getApplicationById(applicationId)
+
+        val restOfTheUrl = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE) as String
+        val pathOfApplication = restOfTheUrl.removePrefix("${WEB_MINE_REQUEST_PREFIX}${applicationId}")
+        //加载资源
+        var requestResource = application?.loadResource(pathOfApplication)
+
+        requestResource?.run {
+            return requestResource.toHttpResponse(MediaType.parseMediaType(Tika().detect(pathOfApplication)))
         }
         return ResponseEntity.notFound().build()
     }

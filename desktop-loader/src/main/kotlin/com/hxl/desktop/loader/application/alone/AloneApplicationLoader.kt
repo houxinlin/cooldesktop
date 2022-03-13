@@ -15,17 +15,18 @@ import java.nio.file.Paths
 import javax.annotation.PostConstruct
 
 @Service
-class AloneApplicationLoader : WebServerFactoryCustomizer<ConfigurableTomcatWebServerFactory>, ApplicationLoader {
+class AloneApplicationLoader : WebServerFactoryCustomizer<ConfigurableTomcatWebServerFactory> {
     @Autowired
     lateinit var applicationRegister: ApplicationRegister
     override fun customize(factory: ConfigurableTomcatWebServerFactory) {
 
         var path = Directory.getTomcatBaseDirDirectory();
         factory.setBaseDirectory(path.toFile())
-        if (!File(path, "webapps").exists()) { Files.createDirectories(Paths.get(path,"webapps")) }
+        if (!File(path, "webapps").exists()) {
+            Files.createDirectories(Paths.get(path, "webapps"))
+        }
 //        factory.addWebApp("test", "/home/HouXinLin/project/java/SpringDemo/build/libs/SpringDemo-0.0.1-SNAPSHOT.war")
     }
 
-    override fun loadApplication() {}
 
 }

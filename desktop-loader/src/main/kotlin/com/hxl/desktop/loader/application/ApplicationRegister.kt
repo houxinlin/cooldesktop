@@ -4,49 +4,87 @@ import com.desktop.application.definition.application.Application
 import com.desktop.application.definition.application.easyapp.EasyApplication
 import com.desktop.application.definition.application.webmini.WebMiniApplication
 import com.hxl.desktop.common.core.Constant
+import com.hxl.desktop.common.core.Directory
+import com.hxl.desktop.common.core.NotifyWebSocket
+import com.hxl.desktop.loader.application.easyapp.EasyApplicationLoader
+import com.hxl.desktop.loader.application.easyapp.RequestMappingRegister
+import com.hxl.desktop.loader.application.webmini.WebMiniApplicationLoader
+import com.hxl.desktop.loader.core.ApplicationEvent
+import com.hxl.desktop.system.core.CoolDesktopBeanRegister
+import common.extent.toFile
 import common.extent.toPath
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
+import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.util.FileSystemUtils
+import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
+import java.nio.ByteBuffer
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.*
+import java.util.jar.JarFile
 import java.util.stream.Collectors
+import javax.annotation.Resource
+import kotlin.io.path.deleteExisting
+import kotlin.io.path.exists
 
-@Service
+@Component
 class ApplicationRegister {
     private val log: Logger = LoggerFactory.getLogger(ApplicationRegister::class.java)
     private val webMiniApplicationMap = mutableMapOf<String, ApplicationWrapper>()
-
     private val easyApplicationMap = mutableMapOf<String, ApplicationWrapper>()
+
+
+    @Autowired
+    private lateinit var coolDesktopBeanRegister: CoolDesktopBeanRegister
+
+    @Autowired
+    private lateinit var requestMappingRegister: RequestMappingRegister
 
     /**
      * 注册web应用
      */
-    @Synchronized
-    fun registerWebApp(webMiniApplication: ApplicationWrapper) {
-        log.info("注册Web Application{}", webMiniApplication)
-        register(webMiniApplication, webMiniApplicationMap)
+    fun registerWebApplication(webMiniApplication: ApplicationWrapper): String {
+        log.info("尝试注册Web Application{}", webMiniApplication.application.applicationName)
+
+        return register(webMiniApplication, webMiniApplicationMap)
     }
 
     /**
      * 注册easy应用
      */
-    @Synchronized
-    fun registerEasyApplication(easyApplication: ApplicationWrapper) {
-        log.info("注册Easy Application{}", easyApplication)
-        register(easyApplication, easyApplicationMap)
+    fun registerEasyApplication(easyApplication: ApplicationWrapper): String {
+        log.info("尝试注册Easy Application{}", easyApplication.application.applicationName)
+        return register(easyApplication, easyApplicationMap)
     }
 
-    private fun register(application: ApplicationWrapper, map: MutableMap<String, ApplicationWrapper>) {
+    /**
+     * 应用统一初始化
+     */
+    @Synchronized
+    private fun register(application: ApplicationWrapper, map: MutableMap<String, ApplicationWrapper>): String {
         if (isLoaded(application.application.applicationId)) {
-            return
+            log.info("应用{}已经加载", application.application.applicationName)
+            return Constant.StringConstant.LOAD_APPLICATION_DUPLICATE
         }
         application.init()
         map[application.application.applicationId] = application
+        return Constant.StringConstant.LOAD_APPLICATION_SUCCESS
+    }
+
+    fun unregister(id: String) {
+        webMiniApplicationMap.remove(id)
+        easyApplicationMap.remove(id)
     }
 
     fun isLoaded(id: String): Boolean {
-        return webMiniApplicationMap.containsKey(id)
+        return getApplicationById(id) != null
     }
 
     fun listApplication(): List<Application> {
@@ -63,27 +101,16 @@ class ApplicationRegister {
         return webMiniApplicationMap[id]
     }
 
-    fun unRegisterWebMiniApplication(application: WebMiniApplication): String {
-        FileSystemUtils.deleteRecursively(application.applicationPath.toPath())
-        webMiniApplicationMap.remove(application.applicationId)
-        return Constant.StringConstant.UNINSTALL_SUCCESS
+    fun getWebApplicationCount(): Int {
+        return webMiniApplicationMap.size
     }
 
-    fun unRegisterEasyApplication(application: EasyApplication): String {
-        return Constant.StringConstant.UNINSTALL_FAIL
+    fun getEasyApplicationCount(): Int {
+        return easyApplicationMap.size
     }
 
-    fun unregister(id: String): String {
-        log.info("卸载应用,{}", id)
-        var applicationWrapper = getApplicationById(id)
-        if (applicationWrapper != null) {
-            if (applicationWrapper.application is WebMiniApplication) {
-                return unRegisterWebMiniApplication(applicationWrapper.application as WebMiniApplication)
-            }
-            if (applicationWrapper.application is EasyApplication) {
-                return unRegisterEasyApplication(applicationWrapper.application as EasyApplication)
-            }
-        }
-        return Constant.StringConstant.UNINSTALL_FAIL
+    fun getTotalApplication(): Int {
+        return easyApplicationMap.size + webMiniApplicationMap.size
     }
+
 }

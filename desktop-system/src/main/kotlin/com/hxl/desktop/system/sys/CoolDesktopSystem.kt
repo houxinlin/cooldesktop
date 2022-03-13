@@ -69,7 +69,7 @@ class CoolDesktopSystem {
         val value = "${WALLPAPER_REQUEST_RESOURCE_PATH}${wallpaperName}"
         //存储
         coolDesktopDatabase.saveConfig(key, value)
-        return FileHandlerResult.create(0, value, "OK")
+        return FileHandlerResult.create(0, value, Constant.StringConstant.OK)
 
     }
 

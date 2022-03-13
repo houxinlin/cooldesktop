@@ -29,39 +29,45 @@ class DesktopNotifyWebSocketAspect {
         val signature = joinPoint.signature as MethodSignature
         var notifyWebSocket = signature.method.getDeclaredAnnotation(NotifyWebSocket::class.java)
         var args = joinPoint.args
+
         coolDesktopEventAction.send(
-            JSON.toJSONString(
-                mutableMapOf(
-                    "id" to args.last(),
-                    "result" to FileHandlerResult.create(
-                        -1,
-                        exception.message.toString(),
-                        "发生异常${exception.message.toString()}"
-                    ),
-                    "subject" to notifyWebSocket.subject,
-                    "action" to notifyWebSocket.action
-                )
-            )
+            WebSocketMessageBuilder.Builder()
+                .applySubject(notifyWebSocket.subject)
+                .applyAction(notifyWebSocket.action)
+                .addItem("result", FileHandlerResult.create(-1, exception.message.toString(), "发生异常${exception.message}"))
+                .addItem("id", args.last())
+                .build()
         )
     }
+
+    private fun createBaseTypeMessage(notifyWebSocket: NotifyWebSocket, data: Any): String {
+        return WebSocketMessageBuilder.Builder()
+            .applyAction(notifyWebSocket.action)
+            .applySubject(notifyWebSocket.subject)
+            .addItem("data", data)
+            .build()
+    }
+
 
     @AfterReturning(returning = "data", pointcut = "@annotation(com.hxl.desktop.common.core.NotifyWebSocket)")
     fun notifyAfterReturning(joinPoint: JoinPoint, data: Any) {
         log.info("通知客户端$data")
         val signature = joinPoint.signature as MethodSignature
         var notifyWebSocket = signature.method.getDeclaredAnnotation(NotifyWebSocket::class.java)
+        if (data is String) {
+            coolDesktopEventAction.send(createBaseTypeMessage(notifyWebSocket, data))
+            return
+        }
         //处理结果是AsyncResultWithID的
         if (data is AsyncResultWithID<*> && data.get() is FileHandlerResult) {
             log.info("处理结果{}", data.get())
             coolDesktopEventAction.send(
-                JSON.toJSONString(
-                    mutableMapOf(
-                        "id" to data.taskId,
-                        "result" to data.get(),
-                        "subject" to notifyWebSocket.subject,
-                        "action" to notifyWebSocket.action
-                    )
-                )
+                WebSocketMessageBuilder.Builder()
+                    .applyAction(notifyWebSocket.action)
+                    .applySubject(notifyWebSocket.subject)
+                    .addItem("id", data.taskId)
+                    .addItem("result", data.get())
+                    .build()
             )
         }
         if (data is FileHandlerResult) {

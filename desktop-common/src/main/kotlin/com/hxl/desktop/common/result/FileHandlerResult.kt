@@ -22,10 +22,11 @@ class FileHandlerResult(code: Int, data: Any, msg: String) : BaseHandlerResult(c
         val TARGET_NOT_EXIST = FileHandlerResult(-6, "", "目标不存在")
         val NULL = FileHandlerResult(-7, "", "null object")
         val NO_SELECT_FILE = FileHandlerResult(-8, "", "没有选择任何文件")
-        val CANNOT_COPY = FileHandlerResult(-8, "", "无法复制")
-        val CREATE_FILE_FAIL = FileHandlerResult(-8, "", "无法创建文件")
+        val CANNOT_COPY = FileHandlerResult(-9, "", "无法复制")
+        val CREATE_FILE_FAIL = FileHandlerResult(-10, "", "无法创建文件")
         val TASK_SUBMIT_OK = FileHandlerResult(0, "", "任务提交成功")
-        val CANNOT_MERGE = FileHandlerResult(-1, "", "无法合并")
+        val UPLOAD_FAIL = FileHandlerResult(0, "", "上传失败")
+        val CANNOT_MERGE = FileHandlerResult(-11, "", "无法合并")
         fun create(code: Int, data: Any, msg: String): FileHandlerResult {
             return FileHandlerResult(code, data, msg);
         }

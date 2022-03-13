@@ -26,12 +26,12 @@ abstract class Compressed() : ICompress {
             return
         }
         for (fileItem in path.toPath().walkFileTree()) {
-            if (!fileItem.toPath().isDirectory()) {
-                var archiveName = fileItem.removePrefix(path)
-                archiveOutputStream.putArchiveEntry(archiveName, fileItem)
+            if (!fileItem.isDirectory()) {
+                var archiveName = fileItem.toString().removePrefix(path)
+                archiveOutputStream.putArchiveEntry(archiveName, fileItem.toString())
             } else {
-                var archiveEntry = fileItem.removePrefix(path) + "/"
-                archiveOutputStream.putArchiveEntry(archiveEntry, fileItem)
+                var archiveEntry = fileItem.toString().removePrefix(path) + "/"
+                archiveOutputStream.putArchiveEntry(archiveEntry, fileItem.toString())
             }
         }
         archiveOutputStream.close()
@@ -83,7 +83,7 @@ abstract class Compressed() : ICompress {
             if (!curPaths.toFile().parent.toFile().exists()) {
                 Files.createDirectories(Paths.get(curPaths.toFile().parent))
             }
-            Files.write(curPaths,archiveStream.readBytes())
+            Files.write(curPaths, archiveStream.readBytes())
         }
     }
 

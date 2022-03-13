@@ -8,16 +8,18 @@ class WebSocketMessageBuilder {
     }
 
     class Builder {
-        var data = mutableMapOf<String, Any>()
+        var data = mutableMapOf<String, Any?>()
         fun applySubject(subject: String): Builder {
             data["subject"] = subject
             return this
         }
+
         fun applyAction(action: String): Builder {
             data["action"] = action
             return this
         }
-        fun addItem(key: String, value: Any): Builder {
+
+        fun addItem(key: String, value: Any?): Builder {
             data[key] = value
             return this
         }

@@ -2,9 +2,11 @@ package com.hxl.desktop.web.app.web
 
 import common.extent.asHttpResponseBody
 import com.hxl.desktop.loader.application.ApplicationRegister
+import com.hxl.desktop.loader.application.ApplicationInstallDispatcher
 import com.hxl.desktop.loader.core.ApplicationDownloadManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/desktop/api/application/")
@@ -15,6 +17,9 @@ class DesktopApplicationController {
     @Autowired
     lateinit var applicationDownloadManager: ApplicationDownloadManager
 
+    @Autowired
+    lateinit var applicationInstallDispatcher: ApplicationInstallDispatcher
+
     /**
      * 获取所有应用
      */
@@ -24,18 +29,23 @@ class DesktopApplicationController {
     }
 
     /**
-     * 安装应用
+     * 从中央服务器下载应用
      */
     @PostMapping("install")
     fun install(@RequestParam("id") id: String): Any {
-        return  applicationDownloadManager.download(id)
+        return applicationDownloadManager.download(id)
     }
 
     /**
-     * 安装应用
+     * 卸载应用
      */
     @PostMapping("uninstall")
     fun uninstall(@RequestParam("id") id: String): Any {
-        return  applicationRegister.unregister(id).asHttpResponseBody()
+        return applicationInstallDispatcher.uninstallApplicationDispatcher(id).asHttpResponseBody()
+    }
+
+    @PostMapping("installCustomApplication")
+    fun installCustomApplication(@RequestParam file: MultipartFile): Any {
+        return applicationInstallDispatcher.installCustomApplicationDispatcher(file).asHttpResponseBody()
     }
 }

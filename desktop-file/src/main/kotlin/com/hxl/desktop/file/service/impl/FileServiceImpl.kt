@@ -87,7 +87,7 @@ class FileServiceImpl : IFileService {
     override fun fileMerge(chunkId: String, name: String, inPath: String): FileHandlerResult {
         var rootPath = Paths.get(Directory.getChunkDirectory(), chunkId).toString();
         if (!rootPath.toPath().exists()) {
-            return FileHandlerResult.CANNOT_MERGE
+            return FileHandlerResult.TARGET_NOT_EXIST
         }
         var target = Paths.get(inPath, name);
         //如果目标已经存在
@@ -115,34 +115,44 @@ class FileServiceImpl : IFileService {
     }
 
     override fun chunkUpload(uploadInfo: UploadInfo): FileHandlerResult {
-        if (!uploadInfo.target.toFile().canReadAndWrite()) {
-            return FileHandlerResult.NO_PERMISSION
-        }
-        var chunkLock = fileMergeLockMap.getOrPut(uploadInfo.chunkId) { Any() }
-
-        var chunkDirector = Paths.get(Directory.createChunkDirector(uploadInfo.chunkId));
-        Files.write(
-            Paths.get(chunkDirector.toString(), uploadInfo.blobId.toString()),
-            uploadInfo.fileBinary.inputStream.readBytes()
-        );
-        var currentSize = Files.list(chunkDirector).map { it.fileSize() }.collect(Collectors.toList()).sum();
-        //如果文件大小等于当前文件数量合，和并文件
-
-        //上传完毕后只有一个线程可以进行和并
-        synchronized(chunkLock) {
-            //如果没有找到key，则说明其他线程已经合并了
-            if (!fileMergeLockMap.containsKey(uploadInfo.chunkId)) {
-                return FileHandlerResult.OK;
+        //上传的时候检测目标是否否存在，这要有一个chunk失败了，前端会提示，并且取消其他请求
+        try {
+            var target = Paths.get(uploadInfo.target, uploadInfo.fileName);
+            if (target.exists()) {
+                log.info("目标{}已存在", target)
+                return FileHandlerResult.TARGET_EXIST
             }
-            if (uploadInfo.total == currentSize) {
-                var mergeResult = fileMerge(uploadInfo.chunkId, uploadInfo.fileName, uploadInfo.target)
-                fileMergeLockMap.remove(uploadInfo.chunkId)
-                return mergeResult
+            if (!uploadInfo.target.toFile().canReadAndWrite()) {
+                log.info("目标{}无操作全想", uploadInfo.target)
+                return FileHandlerResult.NO_PERMISSION
             }
-            return FileHandlerResult.CANNOT_MERGE
-        }
+            var chunkLock = fileMergeLockMap.getOrPut(uploadInfo.chunkId) { Any() }
 
-        return FileHandlerResult.OK;
+            var chunkDirector = Paths.get(Directory.createChunkDirector(uploadInfo.chunkId));
+            Files.write(
+                Paths.get(chunkDirector.toString(), uploadInfo.blobId.toString()),
+                uploadInfo.fileBinary.inputStream.readBytes()
+            );
+            var currentSize = Files.list(chunkDirector).map { it.fileSize() }.collect(Collectors.toList()).sum();
+            //如果文件大小等于当前文件数量合，和并文件
+            //上传完毕后只有一个线程可以进行和并
+            synchronized(chunkLock) {
+                //如果没有找到key，则说明其他线程已经合并了
+                if (!fileMergeLockMap.containsKey(uploadInfo.chunkId)) {
+                    return FileHandlerResult.OK;
+                }
+                //判断全部上传成功没，如果成功，则进行合并
+                if (uploadInfo.total == currentSize) {
+                    var mergeResult = fileMerge(uploadInfo.chunkId, uploadInfo.fileName, uploadInfo.target)
+                    fileMergeLockMap.remove(uploadInfo.chunkId)
+                    return mergeResult
+                }
+            }
+            return FileHandlerResult.OK;
+        } catch (e: Exception) {
+            log.info("上传失败{}", e.message)
+        }
+        return FileHandlerResult.UPLOAD_FAIL
     }
 
     override fun listDirector(root: String): List<FileAttribute> {

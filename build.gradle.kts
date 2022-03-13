@@ -66,7 +66,7 @@ subprojects {
         implementation(files("/home/HouXinLin/project/java/FileMerge/FileMerge/build/libs/FileMerge-1.0-SNAPSHOT.jar"))
         //应用程序定义
         implementation(files("/home/HouXinLin/project/java/desktop-application-definition/build/libs/desktop-application-definition-1.0-SNAPSHOT.jar"))
-        
+
         implementation("org.springframework.boot:spring-boot-starter-websocket:2.6.2")
         implementation("org.tukaani:xz:1.9")
         implementation("org.apache.commons:commons-compress:1.21")
@@ -78,10 +78,10 @@ subprojects {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
-
+        implementation("org.apache.tika:tika-core:2.3.0")
         implementation("com.alibaba:fastjson:1.2.79")
         implementation("org.apache.commons:commons-lang3:3.12.0")
-
+        implementation("org.springframework.boot:spring-boot-starter-thymeleaf:2.6.4")
     }
 
     tasks.withType<KotlinCompile> {
