@@ -3,9 +3,6 @@ package com.hxl.desktop.system.core
 import com.alibaba.fastjson.JSON
 
 class WebSocketMessageBuilder {
-    fun builder(): Builder {
-        return Builder()
-    }
 
     class Builder {
         var data = mutableMapOf<String, Any?>()

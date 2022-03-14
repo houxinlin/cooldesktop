@@ -10,6 +10,7 @@ import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.scheduling.annotation.AsyncResult
 import org.springframework.stereotype.Component
 
 
@@ -29,7 +30,6 @@ class DesktopNotifyWebSocketAspect {
         val signature = joinPoint.signature as MethodSignature
         var notifyWebSocket = signature.method.getDeclaredAnnotation(NotifyWebSocket::class.java)
         var args = joinPoint.args
-
         coolDesktopEventAction.send(
             WebSocketMessageBuilder.Builder()
                 .applySubject(notifyWebSocket.subject)
@@ -58,17 +58,17 @@ class DesktopNotifyWebSocketAspect {
             coolDesktopEventAction.send(createBaseTypeMessage(notifyWebSocket, data))
             return
         }
-        //处理结果是AsyncResultWithID的
-        if (data is AsyncResultWithID<*> && data.get() is FileHandlerResult) {
+
+        if (data is AsyncResult<*> && data.get() is FileHandlerResult) {
             log.info("处理结果{}", data.get())
-            coolDesktopEventAction.send(
-                WebSocketMessageBuilder.Builder()
-                    .applyAction(notifyWebSocket.action)
-                    .applySubject(notifyWebSocket.subject)
-                    .addItem("id", data.taskId)
-                    .addItem("result", data.get())
-                    .build()
-            )
+            var messageBuilder = WebSocketMessageBuilder.Builder()
+                .applyAction(notifyWebSocket.action)
+                .applySubject(notifyWebSocket.subject)
+                .addItem("result", data.get())
+            if (data is AsyncResultWithID<*>) {
+                messageBuilder.addItem("id", data.taskId)
+            }
+            coolDesktopEventAction.send(messageBuilder.build())
         }
         if (data is FileHandlerResult) {
             coolDesktopEventAction.send(

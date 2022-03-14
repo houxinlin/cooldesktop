@@ -57,7 +57,7 @@ class ApplicationInstallDispatcher {
     }
 
     //注册应用分发
-    @NotifyWebSocket(subject = "/event/refresh/application", "")
+    @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.REFRESH_APPLICATION)
     fun installCustomApplicationDispatcher(file: MultipartFile): String {
         return installDispatcher(file.inputStream.readBytes())
     }
@@ -65,7 +65,6 @@ class ApplicationInstallDispatcher {
     //安装分发
     @Synchronized
     fun installDispatcher(applicationByte: ByteArray): String {
-        var size = applicationRegister.getTotalApplication()
         applicationLoaders.forEach {
             if (it.support(applicationByte)) {
                 return it.loadApplicationFromByte(applicationByte).message

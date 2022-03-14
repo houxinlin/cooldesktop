@@ -77,8 +77,7 @@ class ApplicationDownloadManager {
         //如果已经安装
         if (applicationRegister.isLoaded(id)) {
             sendMessageToWebSocket(
-                WebSocketMessageBuilder()
-                    .builder()
+                WebSocketMessageBuilder.Builder()
                     .applySubject(INSTALL_STATUS_SUBJECT)
                     .addItem("data", "已经安装")
                     .build()
@@ -102,7 +101,7 @@ class ApplicationDownloadManager {
     //通知客户端刷新列表
     fun refreshClient() {
         sendMessageToWebSocket(
-            WebSocketMessageBuilder().builder().applySubject(INSTALL_DONE_SUBJECT)
+            WebSocketMessageBuilder.Builder().applySubject(INSTALL_DONE_SUBJECT)
                 .addItem("id", currentInstallSoftware!!)
                 .build()
         )

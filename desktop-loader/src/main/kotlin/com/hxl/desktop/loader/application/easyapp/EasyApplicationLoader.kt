@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils
 import org.springframework.beans.factory.support.ManagedMap
+import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.core.io.UrlResource
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory
 import org.springframework.core.type.filter.AnnotationTypeFilter
@@ -63,15 +64,15 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
                 //保存不会重复加载
                 if (applicationRegister.isLoaded(easyApplication.applicationId)) {
                     tempAppStoragePath.deleteExisting()
+                    log.info(
+                        "无法加载，应用程序已经存在name:{},id:{}",
+                        easyApplication.applicationName,
+                        easyApplication.applicationId
+                    )
                     return ApplicationInstallState.DUPLICATE
                 }
                 easyApplication.applicationPath = tempAppStoragePath.toString()
 
-                easyApplication.beans =
-                    getComponentClassBeanDefinition(
-                        easyApplication.classLoader,
-                        JarFile(tempAppStoragePath.toFile())
-                    )
                 registerEasyApplication(easyApplication)
                 return ApplicationInstallState.INSTALL_OK
             }
@@ -172,6 +173,10 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
         classLoader: ClassLoader
     ) {
         var metadataReader = metadataReaderFactory.getMetadataReader(classUrlResource)
+        var springBootApplicationAnnotationTypeFilter = AnnotationTypeFilter(SpringBootApplication::class.java)
+        if (springBootApplicationAnnotationTypeFilter.match(metadataReader, metadataReaderFactory)){
+            return
+        }
         var annotationTypeFilter = AnnotationTypeFilter(Component::class.java)
         //如果是一个@Component类
         if (annotationTypeFilter.match(metadataReader, metadataReaderFactory)) {

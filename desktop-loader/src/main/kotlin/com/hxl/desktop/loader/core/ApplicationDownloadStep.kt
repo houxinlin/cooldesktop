@@ -1,5 +1,6 @@
 package com.hxl.desktop.loader.core
 
+import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -42,8 +43,8 @@ class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloa
     }
 
     private fun createNotifyMessage(id: String, progress: Float): String {
-        return WebSocketMessageBuilder().builder()
-            .applySubject("/event/install/progress")
+        return WebSocketMessageBuilder.Builder()
+            .applySubject(Constant.WebSocketSubjectNameConstant.APPLICATION_PROGRESS)
             .addItem("id", id)
             .addItem("progress", progress)
             .build()

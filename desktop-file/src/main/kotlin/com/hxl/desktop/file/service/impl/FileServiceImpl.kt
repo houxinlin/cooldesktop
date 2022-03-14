@@ -213,36 +213,51 @@ class FileServiceImpl : IFileService {
         return FileHandlerResult.NO_PERMISSION
     }
 
-    override fun fileCompress(path: String, targetName: String, compressType: String): Future<FileHandlerResult> {
+    @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.COMPRESS_RESULT, action = "")
+    override fun fileCompress(
+        path: String,
+        targetName: String,
+        compressType: String,
+        taskId: String
+    ): Future<FileHandlerResult> {
         var archiveName = "$targetName.$compressType"
         var file = path.toFile()
         if (file.isFile && Paths.get(file.parent, archiveName).exists()) {
-            return AsyncResult(FileHandlerResult.TARGET_EXIST)
+            return AsyncResultWithID(FileHandlerResult.TARGET_EXIST, taskId)
         }
         if (Paths.get(path, archiveName).exists()) {
-            return AsyncResult(FileHandlerResult.TARGET_EXIST)
+            return AsyncResultWithID(FileHandlerResult.TARGET_EXIST, taskId)
         }
-        FileCompressUtils.getCompressByType(compressType).compress(path, "$targetName.$compressType")
-        return AsyncResult(FileHandlerResult.OK)
+        FileCompressUtils.getCompressByType(compressType)?.run {
+            this.compress(path, "$targetName.$compressType")
+            return AsyncResultWithID(FileHandlerResult.OK, taskId)
+        }
+        return AsyncResultWithID(FileHandlerResult.COMPRESS_FAIL, taskId)
     }
 
-    override fun fileDecompression(path: String): Future<FileHandlerResult> {
+    @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.COMPRESS_RESULT, action = "")
+    override fun fileDecompression(path: String, taskId: String): Future<FileHandlerResult> {
         var file = path.toFile()
+        if(file.isDirectory){
+            return AsyncResultWithID(FileHandlerResult.IS_DIRECTORY, taskId)
+        }
         if (!file.exists()) {
-            return AsyncResult(FileHandlerResult.TARGET_EXIST)
+            return AsyncResultWithID(FileHandlerResult.TARGET_EXIST, taskId)
         }
         var fileType = FileCompressUtils.getFileType(path)
         if (fileType.isNotEmpty()) {
             try {
-                FileCompressUtils.getCompressByType(fileType).decompression(path)
+                FileCompressUtils.getCompressByType(fileType)?.run {
+                    this.decompression(path)
+                }
             } catch (e: Exception) {
                 if (e is CorruptedInputException) {
                     println(e.message)
                 }
             }
-            return AsyncResult(FileHandlerResult.OK)
+            return AsyncResultWithID(FileHandlerResult.OK, taskId)
         }
-        return AsyncResult(FileHandlerResult.OK)
+        return AsyncResultWithID(FileHandlerResult.OK, taskId)
     }
 
     override fun createFile(parent: String, name: String, type: String): FileHandlerResult {

@@ -27,6 +27,9 @@ class FileHandlerResult(code: Int, data: Any, msg: String) : BaseHandlerResult(c
         val TASK_SUBMIT_OK = FileHandlerResult(0, "", "任务提交成功")
         val UPLOAD_FAIL = FileHandlerResult(0, "", "上传失败")
         val CANNOT_MERGE = FileHandlerResult(-11, "", "无法合并")
+        val COMPRESS_FAIL = FileHandlerResult(-12, "", "压缩失败")
+        val IS_DIRECTORY = FileHandlerResult(-13, "", "文件是目录");
+
         fun create(code: Int, data: Any, msg: String): FileHandlerResult {
             return FileHandlerResult(code, data, msg);
         }

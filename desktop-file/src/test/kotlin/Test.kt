@@ -1,3 +1,6 @@
+import com.hxl.desktop.file.extent.compress
+import com.hxl.desktop.file.extent.decompression
+import common.extent.toFile
 import net.sf.jmimemagic.Magic
 import java.io.File
 import java.nio.file.Files
@@ -15,13 +18,11 @@ object  Test {
 
     @JvmStatic
     fun main(args: Array<String>) {
-
+        "/home/HouXinLin/test/com/aa.7z".toFile().decompression()
     }
 
     init {
-        Magic.initialize()
 
-        println(Magic.getMagicMatch(Files.readAllBytes(Paths.get("/home/HouXinLin/apps/Developer/android-studio-2020.3.1.24-linux.zip"))).mimeType)
     }
 }
 

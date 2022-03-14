@@ -4,6 +4,7 @@ import common.extent.asHttpResponseBody
 import com.hxl.desktop.loader.application.ApplicationRegister
 import com.hxl.desktop.loader.application.ApplicationInstallDispatcher
 import com.hxl.desktop.loader.core.ApplicationDownloadManager
+import common.extent.asHttpResponseBodyOfMessage
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -41,11 +42,11 @@ class DesktopApplicationController {
      */
     @PostMapping("uninstall")
     fun uninstall(@RequestParam("id") id: String): Any {
-        return applicationInstallDispatcher.uninstallApplicationDispatcher(id).asHttpResponseBody()
+        return applicationInstallDispatcher.uninstallApplicationDispatcher(id).asHttpResponseBodyOfMessage(0)
     }
 
     @PostMapping("installCustomApplication")
     fun installCustomApplication(@RequestParam file: MultipartFile): Any {
-        return applicationInstallDispatcher.installCustomApplicationDispatcher(file).asHttpResponseBody()
+        return applicationInstallDispatcher.installCustomApplicationDispatcher(file).asHttpResponseBodyOfMessage(0)
     }
 }

@@ -152,16 +152,18 @@ class StaticResourceController {
     fun fileCompress(
         @RequestParam("path") path: String,
         @RequestParam("targetName") targetName: String,
-        @RequestParam("compressType") compressType: String
+        @RequestParam("compressType") compressType: String,
+        @RequestParam("taskId") taskId: String
     ): Any {
-        return fileSystemService.fileCompress(path, targetName, compressType)
+        return fileSystemService.fileCompress(path, targetName, compressType,taskId)
     }
 
     @PostMapping("fileDecompression")
     fun fileCompress(
-        @RequestParam("path") path: String
+        @RequestParam("path") path: String,
+        @RequestParam("taskId") taskId: String
     ): Any {
-        return fileSystemService.fileDecompression(path)
+        return fileSystemService.fileDecompression(path,taskId)
     }
 
     @PostMapping("getFileAttribute")
@@ -191,13 +193,6 @@ class StaticResourceController {
             return ResponseEntity.notFound().build()
         }
         return path.toFile().toHttpResponse()
-//        val resource = ByteArrayResource(Files.readAllBytes(Paths.get(path)))
-//        val header = HttpHeaders()
-//        return ResponseEntity.ok()
-//            .headers(header)
-//            .contentLength(resource.contentLength())
-//            .contentType(MediaType.APPLICATION_OCTET_STREAM)
-//            .body(resource);
     }
 
 }

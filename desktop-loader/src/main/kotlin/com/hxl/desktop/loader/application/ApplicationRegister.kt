@@ -60,7 +60,6 @@ class ApplicationRegister {
      * 注册easy应用
      */
     fun registerEasyApplication(easyApplication: ApplicationWrapper): String {
-        log.info("尝试注册Easy Application{}", easyApplication.application.applicationName)
         return register(easyApplication, easyApplicationMap)
     }
 
@@ -73,6 +72,7 @@ class ApplicationRegister {
             log.info("应用{}已经加载", application.application.applicationName)
             return Constant.StringConstant.LOAD_APPLICATION_DUPLICATE
         }
+        log.info("注册Easy Application{}", application.application.applicationName)
         application.init()
         map[application.application.applicationId] = application
         return Constant.StringConstant.LOAD_APPLICATION_SUCCESS
@@ -82,6 +82,7 @@ class ApplicationRegister {
         webMiniApplicationMap.remove(id)
         easyApplicationMap.remove(id)
     }
+
 
     fun isLoaded(id: String): Boolean {
         return getApplicationById(id) != null

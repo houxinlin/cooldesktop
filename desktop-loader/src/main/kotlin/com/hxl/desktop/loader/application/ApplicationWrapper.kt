@@ -5,11 +5,16 @@ import com.desktop.application.definition.application.easyapp.EasyApplication
 import com.desktop.application.definition.application.webmini.WebMiniApplication
 import com.hxl.desktop.loader.cache.ResourceCache
 import com.hxl.fm.pk.FilePackage
+import org.slf4j.LoggerFactory
 import java.io.BufferedInputStream
 import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.IOException
 import java.net.URL
+import kotlin.math.log
 
 class ApplicationWrapper(var application: Application) : ResourceCache() {
+    private val log = LoggerFactory.getLogger(ApplicationWrapper::class.java)
     private fun loadByteFromWebApplication(path: String): ByteArray? {
         var webMiniApplication = application as WebMiniApplication
         var bufferedInputStream = BufferedInputStream(FileInputStream(webMiniApplication.applicationPath))
@@ -27,9 +32,13 @@ class ApplicationWrapper(var application: Application) : ResourceCache() {
         if (!applicationPath.startsWith("jar:file:")) {
             applicationPath = "jar:file:$applicationPath!$path"
         }
-        var bytes = URL(applicationPath).openStream().readBytes()
-        addCacheResource(path, bytes)
-        return bytes
+        try {
+            var bytes = URL(applicationPath).openStream().readBytes()
+            addCacheResource(path, bytes)
+        } catch (e: IOException) {
+            log.warn("加载资源异常:" + e.message)
+        }
+        return null
     }
 
     fun loadResource(path: String): ByteArray? {

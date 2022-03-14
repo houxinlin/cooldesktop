@@ -29,3 +29,7 @@ fun Any.asHttpResponseBody(): HttpResponseBody {
 fun Any.asHttpResponseBody(httpStatus: HttpResponseStatus): HttpResponseBody {
     return HttpResponseBody(httpStatus.status, this, httpStatus.msg);
 }
+
+fun Any.asHttpResponseBodyOfMessage(status: Int): HttpResponseBody {
+    return HttpResponseBody(status, "{}", this.toString());
+}

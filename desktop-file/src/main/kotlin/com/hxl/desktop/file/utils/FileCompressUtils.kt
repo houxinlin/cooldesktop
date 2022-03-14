@@ -8,12 +8,12 @@ import org.apache.commons.compress.compressors.CompressorStreamFactory
 
 class FileCompressUtils {
     companion object {
-        fun getCompressByType(type: String): ICompress {
+        fun getCompressByType(type: String): ICompress? {
             if ("zip" == type.lowercase()) return ZipCompress();
             if ("tar" == type.lowercase()) return TarCompress()
             if ("xz" == type.lowercase()) return TarCompress();
             if ("7z" == type.lowercase()) return SEVENZCompress();
-            return null!!
+            return null
         }
 
         fun getFileType(path: String): String {

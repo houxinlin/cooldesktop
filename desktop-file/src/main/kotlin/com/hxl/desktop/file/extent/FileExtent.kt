@@ -134,15 +134,14 @@ fun File.getAttribute(): FileAttribute {
  * 压缩
  */
 fun File.compress(type: String, targetName: String) {
-    FileCompressUtils.getCompressByType(type).compress(this.toString(), targetName)
+    FileCompressUtils.getCompressByType(type)?.compress(this.toString(), targetName)
 }
 
 /**
  * 解压
  */
 fun File.decompression() {
-    FileCompressUtils.getCompressByType(FileCompressUtils.getFileType(this.toString()))
-        .decompression(this.toString())
+    FileCompressUtils.getCompressByType(FileCompressUtils.getFileType(this.toString()))?.decompression(this.toString())
 }
 
 fun File.toHttpResponse(): ResponseEntity<FileSystemResource> {

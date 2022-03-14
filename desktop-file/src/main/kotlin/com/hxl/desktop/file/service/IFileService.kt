@@ -38,9 +38,9 @@ interface IFileService {
     fun filePaste(path: String, taskId: String): Future<FileHandlerResult>
 
     @Async
-    fun fileCompress(path: String, targetName: String, compressType: String): Future<FileHandlerResult>
+    fun fileCompress(path: String, targetName: String, compressType: String,taskId: String): Future<FileHandlerResult>
 
     @Async
-    fun fileDecompression(path: String): Future<FileHandlerResult>
+    fun fileDecompression(path: String,taskId: String): Future<FileHandlerResult>
 
 }

@@ -18,10 +18,13 @@ class Constant {
     }
 
     object WebSocketSubjectNameConstant {
+        const val APPLICATION_PROGRESS: String = "/event/install/progress"
         const val REFRESH_FOLDER: String = "/event/file"
         const val TERMINAL_MESSAGE: String = "/event/message/terminal"
         const val REFRESH_WALLPAPER: String = "/event/refresh/wallpaper"
+        const val REFRESH_APPLICATION: String = "/event/refresh/application"
         const val OPEN_DIRECTORY: String = "/event/open/directory"
+        const val COMPRESS_RESULT: String = "/event/compress/result"
     }
 
     object ApplicationEvent {

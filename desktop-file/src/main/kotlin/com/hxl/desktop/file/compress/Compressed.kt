@@ -46,12 +46,12 @@ abstract class Compressed() : ICompress {
 
     fun getArchiveNameByIndex(parent: String, name: String): String {
         var unCompressName = getDefaultName(name)
-        if (Paths.get(parent, name).exists()) {
+        if (Paths.get(parent, unCompressName).exists()) {
             var count = 1;
-            while (Paths.get(parent, "${name}($count)").exists()) {
+            while (Paths.get(parent, "${unCompressName}($count)").exists()) {
                 count++
             }
-            return "${name}($count)"
+            return "${unCompressName}($count)"
         }
         return unCompressName
     }

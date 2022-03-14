@@ -49,12 +49,6 @@ class RequestMappingRegister : RequestMappingHandlerMapping(), PriorityOrdered, 
 
     fun registerCustomRequestMapping(easyApplication: EasyApplication) {
         //先向容器注册bean
-
-
-//        easyApplication.beans.values.forEach { coolDesktopBeanRegister.register(it as Class<*>) }
-//
-//        easyApplication.beans.values.forEach { coolDesktopBeanRegister.destroyBean(it as Class<*>) }
-//
         easyApplication.beans.values.forEach { coolDesktopBeanRegister.register(it as Class<*>) }
 
 

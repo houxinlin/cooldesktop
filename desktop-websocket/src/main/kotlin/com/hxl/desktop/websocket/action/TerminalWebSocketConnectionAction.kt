@@ -37,7 +37,7 @@ class TerminalWebSocketConnectionAction : WebSocketConnectionAction() {
         //连接信息不完整
         if (!connectionInfo.verification()) {
             coolDesktopEventAction.sendForSubject(
-                WebSocketMessageBuilder().builder()
+                WebSocketMessageBuilder.Builder()
                     .applySubject(Constant.WebSocketSubjectNameConstant.TERMINAL_MESSAGE)
                     .addItem("msg", Constant.StringConstant.TERMINAL_MESSAGE_CONNECT_NOT_FOUND)
             )
