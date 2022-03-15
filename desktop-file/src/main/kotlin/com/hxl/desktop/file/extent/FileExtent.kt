@@ -2,9 +2,9 @@ package com.hxl.desktop.file.extent
 
 import com.hxl.desktop.common.bean.FileAttribute
 import com.hxl.desktop.file.emun.FileType
-import com.hxl.desktop.file.extent.FileExtent.logger
 import com.hxl.desktop.file.utils.FileCompressUtils
 import org.apache.tika.Tika
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpHeaders
@@ -15,8 +15,9 @@ import java.nio.file.Path
 import java.nio.file.attribute.PosixFileAttributeView
 
 object FileExtent {
-    var logger = LoggerFactory.getLogger(FileExtent::class.java)
 }
+
+private var log: Logger = LoggerFactory.getLogger(FileExtent::class.java)
 
 fun File.canReadAndWrite(): Boolean {
     return this.canRead() && this.canWrite()
@@ -30,10 +31,10 @@ fun File.getFileTypeUseMagic(): String {
         return "text"
     }
     try {
-        var detect = createTika().detect(this)
+        val detect = createTika().detect(this)
         return detect.substring(0, detect.indexOf("/"))
     } catch (e: Exception) {
-        logger.info("获取文件类型异常{},{}", e.message, this)
+        log.info("获取文件类型异常{},{}", e.message, this)
     }
     return "text"
 }

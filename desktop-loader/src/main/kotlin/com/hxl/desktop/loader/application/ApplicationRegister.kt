@@ -41,12 +41,6 @@ class ApplicationRegister {
     private val easyApplicationMap = mutableMapOf<String, ApplicationWrapper>()
 
 
-    @Autowired
-    private lateinit var coolDesktopBeanRegister: CoolDesktopBeanRegister
-
-    @Autowired
-    private lateinit var requestMappingRegister: RequestMappingRegister
-
     /**
      * 注册web应用
      */
@@ -89,8 +83,8 @@ class ApplicationRegister {
     }
 
     fun listApplication(): List<Application> {
-        var easy = easyApplicationMap.values.stream().map { it.application }.collect(Collectors.toList())
-        var web = webMiniApplicationMap.values.stream().map { it.application }.collect(Collectors.toList())
+        val easy = easyApplicationMap.values.stream().map { it.application }.collect(Collectors.toList())
+        val web = webMiniApplicationMap.values.stream().map { it.application }.collect(Collectors.toList())
         return easy.plus(web)
     }
 

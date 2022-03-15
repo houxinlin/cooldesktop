@@ -41,7 +41,7 @@ class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
     private val log: Logger = LoggerFactory.getLogger(WebMiniApplicationLoader::class.java)
 
     override fun loadApplicationFromByte(byteArray: ByteArray): ApplicationInstallState {
-        var webMiniApplication = getApplicationFromByte(ByteBuffer.wrap(byteArray))
+        val webMiniApplication = getApplicationFromByte(ByteBuffer.wrap(byteArray))
         //用于保证不会写入两个相同的应用到本地
         if (applicationRegister.isLoaded(webMiniApplication.applicationId)) {
             log.info("应用无法重复加载{}", webMiniApplication.applicationName)
@@ -93,9 +93,9 @@ class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
                 //消费4个字节的魔术
                 byteBuffer.readInt()
             }
-            var applicationInfoHeaderSize = byteBuffer.readInt()
-            var applicationInfoByte = byteBuffer.readByte(applicationInfoHeaderSize)
-            var webMiniApplication =
+            val applicationInfoHeaderSize = byteBuffer.readInt()
+            val applicationInfoByte = byteBuffer.readByte(applicationInfoHeaderSize)
+            val webMiniApplication =
                 JSON.parseObject(applicationInfoByte.decodeToString(), WebMiniApplication::class.java)
             webMiniApplication.staticResOffset = 12L + applicationInfoHeaderSize
             return webMiniApplication
@@ -104,7 +104,7 @@ class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
 
 
     fun refresh() {
-        var webapp = Paths.get(Directory.getWebAppDirectory()).walkFileTree(".webapp", true)
+        val webapp = Paths.get(Directory.getWebAppDirectory()).walkFileTree(".webapp", true)
         log.info("web应用列表{}", webapp.stream().map { it.toFile().name }.collect(Collectors.toList()))
         executorCountDownLatch = CountDownLatch(webapp.size)
         webapp.forEach(this::loadWebApp)

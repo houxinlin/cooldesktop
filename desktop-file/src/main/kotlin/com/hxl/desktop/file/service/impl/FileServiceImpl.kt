@@ -53,6 +53,7 @@ class FileServiceImpl : IFileService {
 
     @Autowired
     lateinit var webSocketSender: WebSocketSender
+
     override fun fileCut(path: String): Boolean {
         return ClipboardManager.fileCut(path)
     }
@@ -61,6 +62,7 @@ class FileServiceImpl : IFileService {
         return ClipboardManager.fileCopy(path)
     }
 
+    //粘贴动作可能时间较长，通过WebSocket通知客户端
     @NotifyWebSocket(subject = "/event/file", action = "paste")
     override fun filePaste(path: String, taskId: String): Future<FileHandlerResult> {
         return AsyncResultWithID(ClipboardManager.filePaste(path), taskId)
@@ -157,9 +159,15 @@ class FileServiceImpl : IFileService {
 
     override fun listDirector(root: String): List<FileAttribute> {
         if (!root.toFile().canRead()) {
+            log.info("无权限操作{}", root)
+            webSocketSender.send(
+                WebSocketMessageBuilder.Builder()
+                    .applySubject(Constant.WebSocketSubjectNameConstant.NOTIFY_MESSAGE)
+                    .addItem("data", Constant.StringConstant.NO_PERMISSION)
+                    .build()
+            )
             return emptyList()
         }
-
         var files = root.toPath().listRootDirector()
         var mutableListOf = mutableListOf<FileAttribute>()
         files.forEach { mutableListOf.add(it.getAttribute()) }
@@ -199,10 +207,7 @@ class FileServiceImpl : IFileService {
     }
 
     override fun hasPermission(path: String): Boolean {
-        Paths.get(path).getOwner()?.let {
-            return (System.getProperty("user.name") == it.name)
-        }
-        return false;
+        return path.toFile().canReadAndWrite()
     }
 
     override fun deleteFile(path: String): FileHandlerResult {
@@ -238,7 +243,7 @@ class FileServiceImpl : IFileService {
     @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.COMPRESS_RESULT, action = "")
     override fun fileDecompression(path: String, taskId: String): Future<FileHandlerResult> {
         var file = path.toFile()
-        if(file.isDirectory){
+        if (file.isDirectory) {
             return AsyncResultWithID(FileHandlerResult.IS_DIRECTORY, taskId)
         }
         if (!file.exists()) {
@@ -262,7 +267,7 @@ class FileServiceImpl : IFileService {
 
     override fun createFile(parent: String, name: String, type: String): FileHandlerResult {
         try {
-            if ("director" == type) {
+            if ("folder" == type) {
                 Paths.get(parent, name).createDirectories()
             }
             if ("file" == type) {

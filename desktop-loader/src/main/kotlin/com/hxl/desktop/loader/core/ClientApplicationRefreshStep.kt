@@ -4,7 +4,11 @@ class ClientApplicationRefreshStep(var applicationDownloadManager: ApplicationDo
     InstallStep<Boolean, Any> {
 
     override fun execute(value: Boolean): Any {
-        applicationDownloadManager.refreshClient()
+        if (value) {
+            applicationDownloadManager.refreshClient()
+            return "FAIL"
+        }
+        applicationDownloadManager.refreshProgressState(InstallStep.INSTALL_FAIL_STATE)
         return "OK"
     }
 }

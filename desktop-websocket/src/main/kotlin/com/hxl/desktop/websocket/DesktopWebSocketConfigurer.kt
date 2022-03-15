@@ -54,6 +54,7 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
                     webSocketSessionMap[session.id] = session
 
                 }
+
                 override fun afterConnectionClosed(session: WebSocketSession, closeStatus: CloseStatus) {
                     super.afterConnectionClosed(session, closeStatus)
                     webSocketSessionMap.remove(session.id)
@@ -75,7 +76,7 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
                     return StompPrincipal(UUID.randomUUID().toString())
                 }
             })
-            .setAllowedOrigins("http://localhost:3000")
+            .setAllowedOrigins("http://localhost:3000")//开发的时候
             .withSockJS()
     }
 

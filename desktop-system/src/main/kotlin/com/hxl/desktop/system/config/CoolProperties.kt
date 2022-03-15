@@ -10,7 +10,4 @@ import org.springframework.context.annotation.PropertySource
 class CoolProperties {
     @Value("\${cool.software.server}")
     var softwareServer: String? = null
-
-    @Value("\${cool.software.download}")
-    var softwareDownloadUrl: String? = null
 }

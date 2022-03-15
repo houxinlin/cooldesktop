@@ -9,26 +9,14 @@ import java.nio.file.Paths
 import java.util.*
 
 class ApplicationInstallStep(var applicationDownloadManager: ApplicationDownloadManager) :
-    InstallStep<ByteArray?, Boolean> {
+    InstallStep<List<ByteArray>, Boolean> {
 
-    override fun execute(value: ByteArray?): Boolean {
-        if (value != null) {
-            var type = ApplicationTypeDetection.detection(ByteBuffer.wrap(value))
-            //如果是web应用,不需要检测存不存在
-            if (type == Application.WEB_MINI_APP) {
-                Files.write(Paths.get(Directory.getWebAppDirectory(), createUUIDFileNameString()), value)
-                applicationDownloadManager.registerWebMiniApplication()
-                return true
-            }
-            if (type == Application.EASY_APP) {
-                applicationDownloadManager.registerEasyApplication(value)
-                return true
-            }
+    override fun execute(list: List<ByteArray>): Boolean {
+        if (list.isEmpty()) {
+            return false
         }
-        return false;
-    }
-
-    private fun createUUIDFileNameString(): String {
-        return "${UUID.randomUUID()}.webapp"
+        applicationDownloadManager.refreshProgressState(InstallStep.INSTALLING_STATE)
+        list.forEach(applicationDownloadManager::installDispatcher)
+        return true;
     }
 }

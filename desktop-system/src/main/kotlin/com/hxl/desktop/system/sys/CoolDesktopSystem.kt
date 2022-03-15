@@ -23,7 +23,6 @@ import java.nio.file.StandardOpenOption
 import java.util.*
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.exists
-import kotlin.random.Random
 
 /**
  * CoolDesktop系统
@@ -43,10 +42,11 @@ class CoolDesktopSystem {
     lateinit var webSocketSender: WebSocketSender
 
     companion object {
-        val log: Logger = LoggerFactory.getLogger(CoolDesktopSystem::class.java)
+        private val log: Logger = LoggerFactory.getLogger(CoolDesktopSystem::class.java)
 
         //敏感key不返回客户端
         val SENSITIVE_KEY = arrayOf(
+            CoolDesktopDatabaseConfigKeys.SSH_USER_NAME.keyName,
             CoolDesktopDatabaseConfigKeys.SSH_PRIVATE_VALUE.keyName,
             CoolDesktopDatabaseConfigKeys.SSH_PUBLIC_VALUE.keyName
         )
@@ -109,6 +109,7 @@ class CoolDesktopSystem {
         )
         val authorizedKeysFile = File(AUTHORIZED_KEYS)
         if (!authorizedKeysFile.canRead()) {
+            log.info("没有权限写入{}", AUTHORIZED_KEYS)
             webSocketSender.sendForDelay(createDelayMessageToOpenDirectory(privateRsaPath.parent.toString()), "", 3)
             return Constant.StringConstant.SSH_WRITE_AUTHOR_FAIL
         }

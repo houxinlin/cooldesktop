@@ -1,5 +1,6 @@
 package com.hxl.desktop.loader.core
 
+import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.loader.application.ApplicationInstallDispatcher
 import com.hxl.desktop.loader.application.ApplicationRegister
 import com.hxl.desktop.loader.application.easyapp.EasyApplicationLoader
@@ -19,8 +20,7 @@ import javax.annotation.PostConstruct
 @Service
 class ApplicationDownloadManager {
     companion object {
-        val log: Logger = LoggerFactory.getLogger(ApplicationDownloadManager::class.java)
-
+        private val log: Logger = LoggerFactory.getLogger(ApplicationDownloadManager::class.java)
         const val REFRESH_SUBJECT = "/event/refresh/application"
         const val INSTALL_STATUS_SUBJECT = "/event/software/status"
         const val INSTALL_DONE_SUBJECT = "/event/install/done"
@@ -38,8 +38,6 @@ class ApplicationDownloadManager {
     @Autowired
     lateinit var webSocketSender: WebSocketSender
 
-    @Autowired
-    lateinit var webMiniApplicationLoader: WebMiniApplicationLoader
 
     @Autowired
     lateinit var applicationRegister: ApplicationRegister
@@ -50,6 +48,9 @@ class ApplicationDownloadManager {
 
     @Autowired
     lateinit var easyApplicationLoader: EasyApplicationLoader
+
+    @Volatile
+    var currentApplicationCount = 0;
 
     protected fun sendMessageToWebSocket(msg: String) {
         webSocketSender.send(msg)
@@ -68,6 +69,7 @@ class ApplicationDownloadManager {
                 .addSoftwareInstallStep(ApplicationInstallStep(this))
                 .addSoftwareInstallStep(ClientApplicationRefreshStep(this))
             currentInstallSoftware = applicationInstallId
+            currentApplicationCount = applicationRegister.getTotalApplication()
             step.execute(applicationInstallId);
         }
     }
@@ -89,21 +91,34 @@ class ApplicationDownloadManager {
         }
     }
 
-    fun registerEasyApplication(byteArray: ByteArray) {
+    fun installDispatcher(byteArray: ByteArray) {
         applicationInstallDispatcher.installDispatcher(byteArray)
-    }
-
-    fun registerWebMiniApplication() {
-        webMiniApplicationLoader.refresh()
-
     }
 
     //通知客户端刷新列表
     fun refreshClient() {
-        sendMessageToWebSocket(
-            WebSocketMessageBuilder.Builder().applySubject(INSTALL_DONE_SUBJECT)
-                .addItem("id", currentInstallSoftware!!)
-                .build()
-        )
+        if (applicationRegister.getTotalApplication() > currentApplicationCount) {
+            log.info("安装成功，通知客户的刷新安装状态{},{}", currentInstallSoftware, InstallStep.INSTALL_OK_STATE)
+            webSocketSender.send(createNotifyMessage(currentInstallSoftware!!, InstallStep.INSTALL_OK_STATE))
+            sendMessageToWebSocket(
+                WebSocketMessageBuilder.Builder().applySubject(REFRESH_SUBJECT)
+                    .build()
+            )
+            return
+        }
+        this.refreshProgressState(InstallStep.INSTALL_FAIL_STATE)
+
+    }
+
+    fun refreshProgressState(i: Int) {
+        webSocketSender.send(createNotifyMessage(currentInstallSoftware!!, i))
+    }
+
+    private fun createNotifyMessage(id: String, progress: Int): String {
+        return WebSocketMessageBuilder.Builder()
+            .applySubject(Constant.WebSocketSubjectNameConstant.APPLICATION_PROGRESS)
+            .addItem("id", id)
+            .addItem("progress", progress)
+            .build()
     }
 }

@@ -34,13 +34,12 @@ class ApplicationInstallDispatcher {
     @Autowired
     private lateinit var applicationRegister: ApplicationRegister
     private lateinit var applicationLoaders: List<ApplicationLoader<*>>
+    private val log: Logger = LoggerFactory.getLogger(ApplicationInstallDispatcher::class.java)
 
     @Autowired
     fun setApplicationLoader(loader: List<ApplicationLoader<*>>) {
         applicationLoaders = loader
     }
-
-    val log: Logger = LoggerFactory.getLogger(ApplicationInstallDispatcher::class.java)
 
 
     //卸载应用分发

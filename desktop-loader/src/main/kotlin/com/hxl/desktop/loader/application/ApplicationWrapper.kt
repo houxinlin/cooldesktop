@@ -16,8 +16,8 @@ import kotlin.math.log
 class ApplicationWrapper(var application: Application) : ResourceCache() {
     private val log = LoggerFactory.getLogger(ApplicationWrapper::class.java)
     private fun loadByteFromWebApplication(path: String): ByteArray? {
-        var webMiniApplication = application as WebMiniApplication
-        var bufferedInputStream = BufferedInputStream(FileInputStream(webMiniApplication.applicationPath))
+        val webMiniApplication = application as WebMiniApplication
+        val bufferedInputStream = BufferedInputStream(FileInputStream(webMiniApplication.applicationPath))
         bufferedInputStream.skip(webMiniApplication.staticResOffset)
         var fileTable = FilePackage.decode(bufferedInputStream.readBytes())
         if (fileTable?.get(path) == null) {
@@ -33,7 +33,7 @@ class ApplicationWrapper(var application: Application) : ResourceCache() {
             applicationPath = "jar:file:$applicationPath!$path"
         }
         try {
-            var bytes = URL(applicationPath).openStream().readBytes()
+            val bytes = URL(applicationPath).openStream().readBytes()
             addCacheResource(path, bytes)
         } catch (e: IOException) {
             log.warn("加载资源异常:" + e.message)

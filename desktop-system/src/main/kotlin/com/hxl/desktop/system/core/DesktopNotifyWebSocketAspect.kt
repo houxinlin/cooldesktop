@@ -34,7 +34,10 @@ class DesktopNotifyWebSocketAspect {
             WebSocketMessageBuilder.Builder()
                 .applySubject(notifyWebSocket.subject)
                 .applyAction(notifyWebSocket.action)
-                .addItem("result", FileHandlerResult.create(-1, exception.message.toString(), "发生异常${exception.message}"))
+                .addItem(
+                    "result",
+                    FileHandlerResult.create(-1, exception.message.toString(), "发生异常${exception.message}")
+                )
                 .addItem("id", args.last())
                 .build()
         )
@@ -60,7 +63,7 @@ class DesktopNotifyWebSocketAspect {
         }
 
         if (data is AsyncResult<*> && data.get() is FileHandlerResult) {
-            log.info("处理结果{}", data.get())
+            log.info("异步处理结果{}", data.get())
             var messageBuilder = WebSocketMessageBuilder.Builder()
                 .applyAction(notifyWebSocket.action)
                 .applySubject(notifyWebSocket.subject)
@@ -71,6 +74,7 @@ class DesktopNotifyWebSocketAspect {
             coolDesktopEventAction.send(messageBuilder.build())
         }
         if (data is FileHandlerResult) {
+            log.info("异步处理结果{}", data)
             coolDesktopEventAction.send(
                 WebSocketMessageBuilder.Builder()
                     .applySubject(notifyWebSocket.subject)

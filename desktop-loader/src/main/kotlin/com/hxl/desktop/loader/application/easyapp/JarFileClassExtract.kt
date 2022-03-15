@@ -16,7 +16,7 @@ class JarFileClassExtract {
                 classUrlResource.inputStream.read(byteArray)
                 //如果是class类型
                 if (isClass(byteArray)) {
-                    var jarEntry = it
+                    val jarEntry = it
                     easyApplicationClassCallback.call(classUrlResource, jarEntry)
 //                    registerIfComponentClass(classUrlResource, it, jarFile, componentClassNames)
                 }
@@ -25,7 +25,7 @@ class JarFileClassExtract {
     }
 
     fun isClass(byteArray: ByteArray): Boolean {
-        var wrap = ByteBuffer.wrap(byteArray)
+        val wrap = ByteBuffer.wrap(byteArray)
         return wrap.limit() == 4 && (wrap.getInt(0) == -889275714)
     }
 

@@ -13,6 +13,7 @@ import com.hxl.desktop.loader.application.ApplicationRegister
 import com.hxl.desktop.loader.application.ApplicationTypeDetection
 import com.hxl.desktop.loader.application.ApplicationWrapper
 import com.hxl.desktop.system.core.CoolDesktopBeanRegister
+import common.extent.toFile
 import common.extent.toPath
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -40,21 +41,19 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     @Autowired
     private lateinit var applicationRegister: ApplicationRegister
 
+    @Autowired
+    private lateinit var requestMappingRegister: RequestMappingRegister
 
     override fun support(application: Application): Boolean {
         return application is EasyApplication
     }
-
-    @Autowired
-    private lateinit var requestMappingRegister: RequestMappingRegister
-
     override fun support(byteArray: ByteArray): Boolean {
         return ApplicationTypeDetection.detection(byteArray) == Application.EASY_APP
     }
 
     override fun loadApplicationFromByte(applicationByte: ByteArray): ApplicationInstallState {
         try {
-            var tempAppStoragePath = Paths.get(Directory.getEasyAppStorageDirectory(), "${UUID.randomUUID()}.jar")
+            val tempAppStoragePath = Paths.get(Directory.getEasyAppStorageDirectory(), "${UUID.randomUUID()}.jar")
             log.info("存储{}", tempAppStoragePath)
             Files.write(tempAppStoragePath, applicationByte)
 
@@ -73,8 +72,9 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
                 }
                 easyApplication.applicationPath = tempAppStoragePath.toString()
 
-                registerEasyApplication(easyApplication)
-                return ApplicationInstallState.INSTALL_OK
+                if (Constant.StringConstant.LOAD_APPLICATION_SUCCESS == registerEasyApplication(easyApplication)) {
+                    return ApplicationInstallState.INSTALL_OK
+                }
             }
             tempAppStoragePath.deleteExisting()
         } catch (e: Exception) {
@@ -83,8 +83,9 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
         return ApplicationInstallState.INSTALL_FAIL
     }
 
+
     override fun loadApplicationFromLocal() {
-        var listJarFile = listJarFile()
+        val listJarFile = listJarFile()
         listJarFile.forEach { doHandlerJarFile(it) }
     }
 
@@ -96,21 +97,15 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             requestMappingRegister.unregisterApplication(application.applicationId)
             //map中移除这个application
             applicationRegister.unregister(application.applicationId)
+
+            application.applicationPath.toFile().delete()
             return ApplicationInstallState.UNINSTALL_OK
 
         }
         return ApplicationInstallState.UNINSTALL_FAIL
     }
 
-    companion object {
-        private val log: Logger = LoggerFactory.getLogger(EasyApplicationLoader::class.java)
-        private val metadataReaderFactory: CachingMetadataReaderFactory = CachingMetadataReaderFactory()
-        const val JAR_FILE_PREFIX = "jar:file:"
-        const val FILE_PREFIX = "file:"
-        const val CLASS_NAME_SUFFIX = ".class"
 
-
-    }
 
     private fun createList(data: String, delimiters: String): List<String> {
         return data.split(delimiters)
@@ -134,9 +129,9 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
 
     //获取应用信息从JarFile
     fun getApplicationInfoByFile(jarFile: JarFile): EasyApplication? {
-        var appPropertiesEntry = jarFile.getJarEntry("app.properties")
+        val appPropertiesEntry = jarFile.getJarEntry("app.properties")
         if (appPropertiesEntry != null) {
-            var properties = UTF8Property()
+            val properties = UTF8Property()
             properties.load(jarFile.getInputStream(appPropertiesEntry))
             if (Application.checkProperty(properties)) {
                 return createApplicationByProperty(properties).apply {
@@ -174,7 +169,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     ) {
         var metadataReader = metadataReaderFactory.getMetadataReader(classUrlResource)
         var springBootApplicationAnnotationTypeFilter = AnnotationTypeFilter(SpringBootApplication::class.java)
-        if (springBootApplicationAnnotationTypeFilter.match(metadataReader, metadataReaderFactory)){
+        if (springBootApplicationAnnotationTypeFilter.match(metadataReader, metadataReaderFactory)) {
             return
         }
         var annotationTypeFilter = AnnotationTypeFilter(Component::class.java)
@@ -222,6 +217,14 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             .filter { it.name.endsWith(".jar") || it.name.endsWith(".JAR") }
             .collect(Collectors.toList())
 
+
+    }
+    companion object {
+        private val log: Logger = LoggerFactory.getLogger(EasyApplicationLoader::class.java)
+        private val metadataReaderFactory: CachingMetadataReaderFactory = CachingMetadataReaderFactory()
+        const val JAR_FILE_PREFIX = "jar:file:"
+        const val FILE_PREFIX = "file:"
+        const val CLASS_NAME_SUFFIX = ".class"
 
     }
 }

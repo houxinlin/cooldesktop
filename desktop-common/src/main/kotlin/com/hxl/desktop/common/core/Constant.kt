@@ -4,6 +4,7 @@ class Constant {
     object StringConstant {
         const val TERMINAL_MESSAGE_CONNECT_NOT_FOUND = "无法打开终端，信息不完整，请到设置界面配置信息"
         const val OK = "OK"
+        const val NO_PERMISSION = "无权限操作"
         const val UNINSTALL_FAIL = "卸载失败"
         const val NOT_FOUND_LOADERS = "找不到加载器，无法卸载"
         const val UNINSTALL_SUCCESS = "卸载成功"
@@ -25,6 +26,7 @@ class Constant {
         const val REFRESH_APPLICATION: String = "/event/refresh/application"
         const val OPEN_DIRECTORY: String = "/event/open/directory"
         const val COMPRESS_RESULT: String = "/event/compress/result"
+        const val NOTIFY_MESSAGE: String = "/event/notify/message"
     }
 
     object ApplicationEvent {

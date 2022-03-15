@@ -12,7 +12,7 @@ object TerminalInstanceFactory {
     private val threadId = AtomicInteger(0)
     private const val THREAD_NAME_PREFIX = "ssh-client-thread-"
     private fun createThread(linuxTerminal: LinuxTerminal): LinuxTerminal {
-        var thread = Thread(linuxTerminal)
+        val thread = Thread(linuxTerminal)
         thread.name = "${THREAD_NAME_PREFIX}${threadId.addAndGet(1)}"
         thread.start()
         return linuxTerminal

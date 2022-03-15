@@ -50,16 +50,12 @@ class RequestMappingRegister : RequestMappingHandlerMapping(), PriorityOrdered, 
     fun registerCustomRequestMapping(easyApplication: EasyApplication) {
         //先向容器注册bean
         easyApplication.beans.values.forEach { coolDesktopBeanRegister.register(it as Class<*>) }
-
-
         easyApplication.beans.values.forEach { value ->
             if (value is Class<*>) {
                 classMap[value] = easyApplication.applicationId
                 detectHandlerMethods(coolDesktopBeanRegister.getBean(value))
             }
         }
-//
-//        classMap.clear()
     }
 
     //将在请求的地址前面加入应用程序id路径
@@ -73,14 +69,21 @@ class RequestMappingRegister : RequestMappingHandlerMapping(), PriorityOrdered, 
             //增加前缀
             var srcPatterns = requestMappingInfo.patternsCondition!!.patterns.first()
             requestMappingInfo.patternsCondition!!.patterns.clear()
-            requestMappingInfo.patternsCondition!!.patterns.add("/" + classMap[method.declaringClass] + srcPatterns)
-            log.info("注册API，地址为{}", srcPatterns)
+            requestMappingInfo.patternsCondition!!.patterns.add(classMap[method.declaringClass] + srcPatterns)
+            log.info("注册API，地址为{}", "/" + classMap[method.declaringClass] + srcPatterns)
         }
         return requestMappingInfo
     }
 
-    fun test() {
-
+    override fun createRequestMappingInfo(
+        requestMapping: RequestMapping,
+        customCondition: RequestCondition<*>?
+    ): RequestMappingInfo {
+        var createRequestMappingInfo = super.createRequestMappingInfo(requestMapping, customCondition)
+        return createRequestMappingInfo
     }
 
+    override fun createHandlerMethod(handler: Any, method: Method): HandlerMethod {
+        return super.createHandlerMethod(handler, method)
+    }
 }

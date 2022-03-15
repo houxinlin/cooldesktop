@@ -18,7 +18,7 @@ class LinuxTerminal(var serverConnectionWrap: ServerConnectionInfoWrap) : Termin
     companion object {
         private const val CONNECTION_TIMEOUT: Int = 1000 * 5
         private val CONNECTION_FAIL = "连接失败".toByteArray()
-        val log: Logger = LoggerFactory.getLogger(LinuxTerminal::class.java)
+        private val log: Logger = LoggerFactory.getLogger(LinuxTerminal::class.java)
     }
 
     private val jsch = JSch()
