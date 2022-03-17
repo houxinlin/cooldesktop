@@ -22,5 +22,8 @@ import java.net.URLClassLoader
 class Application
 
 fun main(args: Array<String>) {
-    var application = SpringApplication.run(Application::class.java, *args)as AnnotationConfigServletWebServerApplicationContext
+    var application =
+        SpringApplication.run(Application::class.java, *args) as AnnotationConfigServletWebServerApplicationContext
+    //移除默认的requestMappingHandlerMapping
+    application.removeBeanDefinition("requestMappingHandlerMapping")
 }

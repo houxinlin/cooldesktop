@@ -3,22 +3,23 @@ package com.hxl.desktop.loader.application.easyapp
 import com.desktop.application.definition.application.Application
 import com.desktop.application.definition.application.ApplicationInstallState
 import com.desktop.application.definition.application.ApplicationLoader
+import com.desktop.application.definition.application.UTF8Property
 import com.desktop.application.definition.application.easyapp.EasyApplication
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
-import com.hxl.desktop.common.core.UTF8Property
 import com.hxl.desktop.file.extent.listRootDirector
-import com.hxl.desktop.loader.application.ApplicationInstallDispatcher
 import com.hxl.desktop.loader.application.ApplicationRegister
 import com.hxl.desktop.loader.application.ApplicationTypeDetection
 import com.hxl.desktop.loader.application.ApplicationWrapper
 import com.hxl.desktop.system.core.CoolDesktopBeanRegister
+import com.hxl.desktop.system.core.RequestMappingRegister
+import com.hxl.desktop.system.core.WebSocketMessageBuilder
+import com.hxl.desktop.system.core.WebSocketSender
 import common.extent.toFile
 import common.extent.toPath
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.support.BeanDefinitionReaderUtils
 import org.springframework.beans.factory.support.ManagedMap
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.core.io.UrlResource
@@ -44,9 +45,13 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     @Autowired
     private lateinit var requestMappingRegister: RequestMappingRegister
 
+    @Autowired
+    private lateinit var webSocketSender: WebSocketSender
+
     override fun support(application: Application): Boolean {
         return application is EasyApplication
     }
+
     override fun support(byteArray: ByteArray): Boolean {
         return ApplicationTypeDetection.detection(byteArray) == Application.EASY_APP
     }
@@ -106,7 +111,6 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     }
 
 
-
     private fun createList(data: String, delimiters: String): List<String> {
         return data.split(delimiters)
     }
@@ -139,6 +143,12 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
                     this.beans = getComponentClassBeanDefinition(this.classLoader, jarFile)
                 }
             }
+            webSocketSender.send(
+                WebSocketMessageBuilder.Builder()
+                    .applySubject(Constant.WebSocketSubjectNameConstant.NOTIFY_MESSAGE_ERROR)
+                    .addItem("data", "无法加载应用${jarFile.name}")
+                    .build()
+            )
             log.info("无法创建应用，原因是无法找到属性，{}", Application.findMissProperty(properties))
             return null
         }
@@ -192,7 +202,17 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     private fun doHandlerJarFile(file: File) {
         var jarFile = JarFile(file.absoluteFile)
         var application = getApplicationInfoByFile(jarFile)
-        if (application != null) {
+        application?.run {
+            if (applicationRegister.isLoaded(application.applicationId)) {
+                webSocketSender.send(
+                    WebSocketMessageBuilder.Builder()
+                        .applySubject(Constant.WebSocketSubjectNameConstant.NOTIFY_MESSAGE_ERROR)
+                        .addItem("data", "无法加载应用${file}")
+                        .build()
+                )
+                log.warn("[{}]已经加载，无法重复加载", application.applicationName)
+                return
+            }
             application.applicationPath = file.absolutePath
             registerEasyApplication(application)
         }
@@ -219,6 +239,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
 
 
     }
+
     companion object {
         private val log: Logger = LoggerFactory.getLogger(EasyApplicationLoader::class.java)
         private val metadataReaderFactory: CachingMetadataReaderFactory = CachingMetadataReaderFactory()

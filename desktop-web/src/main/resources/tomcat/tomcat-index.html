@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="style.css">
-    <title> CSS Login Screen Tutorial </title>
-
+    <title> 登录 </title>
     <style>
         html, body {
             height: 100%;
@@ -114,12 +112,18 @@
         <button onclick="doLogin()">登录</button>
         <p id="message" class="message"></p>
 
+
     </div>
 </div>
-<script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.2.1/jsencrypt.js"></script>
+<script type="text/javascript">
+
     function doLogin() {
         let password = document.getElementById("password").value
-
+	var encrypt = new JSEncrypt();
+	let PUBLIC_KEY="${rsapublic}";
+	encrypt.setPublicKey('-----BEGIN PUBLIC KEY-----' + PUBLIC_KEY + '-----END PUBLIC KEY-----');
+	let encrypted = encrypt.encrypt(password);
         async function postData(url = '', data) {
             // Default options are marked with *
             const response = await fetch(url, {
@@ -134,7 +138,7 @@
             return response.json();
         }
 
-        postData('/tomcat/api/login', "password=" + password)
+        postData('/tomcat/api/login', "password=" + encrypted)
             .then(data => {
                 if (data.status) {
                     window.location.href = "/"

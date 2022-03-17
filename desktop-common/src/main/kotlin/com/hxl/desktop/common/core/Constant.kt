@@ -26,7 +26,8 @@ class Constant {
         const val REFRESH_APPLICATION: String = "/event/refresh/application"
         const val OPEN_DIRECTORY: String = "/event/open/directory"
         const val COMPRESS_RESULT: String = "/event/compress/result"
-        const val NOTIFY_MESSAGE: String = "/event/notify/message"
+        const val NOTIFY_MESSAGE_SUCCESS: String = "/event/notify/message/success"
+        const val NOTIFY_MESSAGE_ERROR: String = "/event/notify/message/error"
     }
 
     object ApplicationEvent {

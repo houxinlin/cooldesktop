@@ -162,7 +162,7 @@ class FileServiceImpl : IFileService {
             log.info("无权限操作{}", root)
             webSocketSender.send(
                 WebSocketMessageBuilder.Builder()
-                    .applySubject(Constant.WebSocketSubjectNameConstant.NOTIFY_MESSAGE)
+                    .applySubject(Constant.WebSocketSubjectNameConstant.NOTIFY_MESSAGE_ERROR)
                     .addItem("data", Constant.StringConstant.NO_PERMISSION)
                     .build()
             )

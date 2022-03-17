@@ -27,14 +27,20 @@ class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloa
     override fun execute(value: String): List<ByteArray> {
         this.id = value
         totalDownloadSize = 0
-        val dependentIds = getDependentIds()
-        //主应用
-        val urls = arrayListOf(getDownloadUrl(value))
-        if (dependentIds.isNotEmpty()) {
-            //依赖应用
-            dependentIds.forEach { urls.add(getDownloadUrl(it.toString())) }
+        try {
+            val dependentIds = getDependentIds()
+            //主应用
+            val urls = arrayListOf(getDownloadUrl(value))
+            if (dependentIds.isNotEmpty()) {
+                //依赖应用
+                dependentIds.forEach { urls.add(getDownloadUrl(it.toString())) }
+            }
+            return installs(urls)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            applicationDownloadManager.refreshProgressState(InstallStep.INSTALL_FAIL_STATE)
         }
-        return installs(urls)
+        return arrayListOf()
     }
 
     private fun installs(url: List<String>): List<ByteArray> {

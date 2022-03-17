@@ -90,7 +90,6 @@ class CoolDesktopSystem {
 
         privateRsaPath.deleteIfExists()
         publicRsaPath.deleteIfExists()
-        println(privateRsaPath)
         TerminalCommand.Builder()
             .add(CommandConstant.SSH_KEYGEN.format(privateRsaPath.toString())).execute()
         if (!privateRsaPath.exists() || !publicRsaPath.exists()) {
