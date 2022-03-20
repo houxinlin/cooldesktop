@@ -3,6 +3,14 @@
 
 CoolDesktop是一个Linux服务器管理软件，CoolDesktop采用全新的操作方式，让您像操作本地系统一样，操作远程Linux，除了基本的文件复制、粘贴、上传、删除、重复名等基本操作，还可以进行终端操作，如果对当前应用不满意，可以自行开发软件，挂载到CoolDesktop上，这和我们平常在系统上安装软件是一个道理。
 
+# 下载体验
+
+  [点击这里](https://github.com/houxinlin/cooldesktop/releases/download/v1.0/desktop-web.jar)
+# 运行 
+默认端口为8080，可增加--server.port=xxx修改端口
+```shell
+java -jar desktop-web.jar --server.port=8080
+```
 # 开发应用
 
 本系统支持加载自定义应用，如您想开发一个定时任务应用，可通过Vue+SpringBoot开发后挂载到CoolDesktop中，详细请查看 [ 开发文档 ](https://houxinlin.com/DeveloperCoolDesktop.html)
