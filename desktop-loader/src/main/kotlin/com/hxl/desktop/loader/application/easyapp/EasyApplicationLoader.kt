@@ -139,7 +139,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             properties.load(jarFile.getInputStream(appPropertiesEntry))
             if (Application.checkProperty(properties)) {
                 return createApplicationByProperty(properties).apply {
-                    this.classLoader = URLClassLoader(arrayOf(URL("file:" + jarFile.name)))
+                    this.classLoader = createClassLoader(jarFile)
                     this.beans = getComponentClassBeanDefinition(this.classLoader, jarFile)
                 }
             }
@@ -154,6 +154,19 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
         }
         log.info("无法创建应用，原因是无法找到属性文件，{}", jarFile.name)
         return null;
+    }
+
+    fun createClassLoader(rootJar: JarFile): ClassLoader {
+        var entries = rootJar.entries()
+        var urls = mutableListOf<URL>()
+        while (entries.hasMoreElements()) {
+            var jar = entries.nextElement()
+            if (jar.name.endsWith(".jar")) {
+                urls.add(URL("jar:file:${rootJar.name}!/${jar.name}/"))
+            }
+        }
+        urls.add(URL("file:" + rootJar.name))
+        return URLClassLoader(urls.toTypedArray())
     }
 
     //获取所有@Componet的class，并且根据classloader实例化

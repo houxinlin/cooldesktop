@@ -6,6 +6,7 @@ import com.hxl.desktop.common.core.NotifyWebSocket
 import com.hxl.desktop.database.CoolDesktopDatabase
 import com.hxl.desktop.database.CoolDesktopDatabaseConfigKeys
 import com.hxl.desktop.system.config.SystemResourceMvcConfigurer.Companion.WALLPAPER_REQUEST_RESOURCE_PATH
+import com.hxl.desktop.system.core.TomcatGlobalAuthenticationPasswordUtils
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
 import com.hxl.desktop.system.terminal.CommandConstant
@@ -83,7 +84,7 @@ class CoolDesktopSystem {
     }
 
     @Synchronized
-    fun configSecureShell(): Any {
+    fun configSecureShell(): String {
         //如果已经配置了密钥，则删除
         val privateRsaPath = Paths.get(Directory.getSecureShellConfigDirectory(), RSA_NAME)
         val publicRsaPath = Paths.get(Directory.getSecureShellConfigDirectory(), "${RSA_NAME}.pub")
@@ -128,11 +129,18 @@ class CoolDesktopSystem {
             .build()
     }
 
-    fun configSecureShellUser(userName: String): Any {
+    fun configSecureShellUser(userName: String): String {
         if (userName.isBlank()) {
             return Constant.StringConstant.CONFIG_FAIL_USER
         }
         coolDesktopDatabase.saveConfig(CoolDesktopDatabaseConfigKeys.SSH_USER_NAME.keyName, userName)
         return Constant.StringConstant.OK
+    }
+
+    fun resetLogoPasswd(): String {
+        if (TomcatGlobalAuthenticationPasswordUtils.reset()) {
+            return Constant.StringConstant.RESET_OK
+        }
+        return Constant.StringConstant.RESET_FAIL
     }
 }

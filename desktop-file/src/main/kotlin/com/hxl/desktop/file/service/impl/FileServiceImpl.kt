@@ -5,10 +5,7 @@ import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
 import com.hxl.desktop.common.core.NotifyWebSocket
 import com.hxl.desktop.file.emun.FileType
-import com.hxl.desktop.file.extent.canReadAndWrite
-import com.hxl.desktop.file.extent.getAttribute
-import com.hxl.desktop.file.extent.getFileSuffixValue
-import com.hxl.desktop.file.extent.listRootDirector
+import com.hxl.desktop.file.extent.*
 import com.hxl.desktop.file.service.IFileService
 import com.hxl.desktop.file.utils.ClassPathUtils
 import com.hxl.desktop.file.utils.FileCompressUtils
@@ -26,6 +23,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.ClassPathResource
+import org.springframework.core.io.FileSystemResource
+import org.springframework.http.ResponseEntity
 import org.springframework.scheduling.annotation.AsyncResult
 import org.springframework.stereotype.Service
 import org.springframework.util.FileSystemUtils
@@ -63,7 +62,7 @@ class FileServiceImpl : IFileService {
     }
 
     //粘贴动作可能时间较长，通过WebSocket通知客户端
-    @NotifyWebSocket(subject = "/event/file", action = "paste")
+    @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.FILE_EVENT, action = "paste")
     override fun filePaste(path: String, taskId: String): Future<FileHandlerResult> {
         return AsyncResultWithID(ClipboardManager.filePaste(path), taskId)
     }
@@ -108,7 +107,7 @@ class FileServiceImpl : IFileService {
         //通知客户端
         webSocketSender.send(
             WebSocketMessageBuilder.Builder()
-                .applySubject(Constant.WebSocketSubjectNameConstant.REFRESH_FOLDER)
+                .applySubject(Constant.WebSocketSubjectNameConstant.FILE_EVENT)
                 .applyAction("refresh")
                 .addItem("inPath", inPath)
                 .build()
@@ -218,7 +217,7 @@ class FileServiceImpl : IFileService {
         return FileHandlerResult.NO_PERMISSION
     }
 
-    @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.COMPRESS_RESULT, action = "")
+    @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.FILE_EVENT, action = "")
     override fun fileCompress(
         path: String,
         targetName: String,
@@ -240,7 +239,7 @@ class FileServiceImpl : IFileService {
         return AsyncResultWithID(FileHandlerResult.COMPRESS_FAIL, taskId)
     }
 
-    @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.COMPRESS_RESULT, action = "")
+    @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.FILE_EVENT, action = "")
     override fun fileDecompression(path: String, taskId: String): Future<FileHandlerResult> {
         var file = path.toFile()
         if (file.isDirectory) {
@@ -252,17 +251,16 @@ class FileServiceImpl : IFileService {
         var fileType = FileCompressUtils.getFileType(path)
         if (fileType.isNotEmpty()) {
             try {
-                FileCompressUtils.getCompressByType(fileType)?.run {
-                    this.decompression(path)
-                }
+                var compressByType = FileCompressUtils.getCompressByType(fileType)
+                compressByType?.decompression(path)
+                return AsyncResultWithID(FileHandlerResult.OK, taskId)
             } catch (e: Exception) {
-                if (e is CorruptedInputException) {
-                    println(e.message)
-                }
+                var msg = e?.message as String
+                return AsyncResultWithID(FileHandlerResult.fail(msg, msg), taskId)
             }
-            return AsyncResultWithID(FileHandlerResult.OK, taskId)
+            return AsyncResultWithID(FileHandlerResult.DECOMPRESSION_FAIL, taskId)
         }
-        return AsyncResultWithID(FileHandlerResult.OK, taskId)
+        return AsyncResultWithID(FileHandlerResult.NOT_SUPPORT_COMPRESS_TYPE, taskId)
     }
 
     override fun createFile(parent: String, name: String, type: String): FileHandlerResult {
@@ -299,5 +297,13 @@ class FileServiceImpl : IFileService {
             return FileHandlerResult.OK
         }
         return FileHandlerResult.NO_PERMISSION
+    }
+
+    override fun download(pathStr: String): ResponseEntity<FileSystemResource> {
+        var path = pathStr.toPath()
+        if (path.isDirectory() || (!path.exists())) {
+            return ResponseEntity.notFound().build()
+        }
+        return path.toFile().toHttpResponse()
     }
 }

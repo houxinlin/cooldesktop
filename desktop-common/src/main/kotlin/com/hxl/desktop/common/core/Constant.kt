@@ -4,6 +4,8 @@ class Constant {
     object StringConstant {
         const val TERMINAL_MESSAGE_CONNECT_NOT_FOUND = "无法打开终端，信息不完整，请到设置界面配置信息"
         const val OK = "OK"
+        const val RESET_OK = "重置成功"
+        const val RESET_FAIL = "重置失败"
         const val NO_PERMISSION = "无权限操作"
         const val UNINSTALL_FAIL = "卸载失败"
         const val NOT_FOUND_LOADERS = "找不到加载器，无法卸载"
@@ -20,7 +22,7 @@ class Constant {
 
     object WebSocketSubjectNameConstant {
         const val APPLICATION_PROGRESS: String = "/event/install/progress"
-        const val REFRESH_FOLDER: String = "/event/file"
+        const val FILE_EVENT: String = "/event/file"
         const val TERMINAL_MESSAGE: String = "/event/message/terminal"
         const val REFRESH_WALLPAPER: String = "/event/refresh/wallpaper"
         const val REFRESH_APPLICATION: String = "/event/refresh/application"

@@ -7,6 +7,16 @@ CoolDesktop是一个Linux服务器管理软件，CoolDesktop采用全新的操�
 
 本系统支持加载自定义应用，如您想开发一个定时任务应用，可通过Vue+SpringBoot开发后挂载到CoolDesktop中，详细请查看 [ 开发文档 ](https://houxinlin.com/DeveloperCoolDesktop.html)
 
+# 软件商店
+
+我们提供软件商店可免费下载您所需要的应用，但它还处于开发阶段，后续，我们会依次上线以下管理软件。
+1. 端口管理
+2. Tomcat管理
+3. Nginx管理
+4. 系统监控
+5. Mysql备份
+
+敬请期待
 # 应用截图
 ![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9e7d2c3166864a87863820b0dabdc5eb~tplv-k3u1fbpfcp-watermark.image?)
 

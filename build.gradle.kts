@@ -59,7 +59,7 @@ subprojects {
         runtimeOnly(files("/home/HouXinLin/project/java/tomcat/desktop-tomcat/apache-tomcat-9.0.58-src/output/embed/tomcat-embed-core.jar"))
 
 
-        //SpringBoot为二次开发的jar，主要用来提供结构加载第三方应用
+        //SpringBoot为二次开发的jar，主要用来提供结构加载第三方应用,但当前版本不支持此功能，将在以后支持
         implementation(files("/home/HouXinLin/project/java/desktop-spring-boot/spring-boot-2.6.1/spring-boot-project/spring-boot/build/libs/spring-boot-2.6.1.jar"))
 
         //文件合并

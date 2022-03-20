@@ -18,6 +18,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import javax.annotation.Resource
 import kotlin.io.path.exists
+import kotlin.io.path.isDirectory
 
 /**
  * @author:   HouXinLin
@@ -189,10 +190,7 @@ class StaticResourceController {
 
     @GetMapping("download")
     fun download(@RequestParam("path") path: String): ResponseEntity<FileSystemResource> {
-        if (!path.toPath().exists()) {
-            return ResponseEntity.notFound().build()
-        }
-        return path.toFile().toHttpResponse()
+        return fileSystemService.download(path)
     }
 
 }

@@ -4,6 +4,8 @@ import common.result.FileHandlerResult
 import com.hxl.desktop.common.bean.FileAttribute
 import common.bean.UploadInfo
 import org.springframework.core.io.ByteArrayResource
+import org.springframework.core.io.FileSystemResource
+import org.springframework.http.ResponseEntity
 import org.springframework.scheduling.annotation.Async
 import java.util.concurrent.Future
 
@@ -42,5 +44,7 @@ interface IFileService {
 
     @Async
     fun fileDecompression(path: String,taskId: String): Future<FileHandlerResult>
+
+    fun download(path: String): ResponseEntity<FileSystemResource>
 
 }

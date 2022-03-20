@@ -38,6 +38,10 @@ class CoolDesktopSystemController {
     fun configSecureShellUser(@RequestParam("userName") userName: String): Any {
         return coolDesktopSystem.configSecureShellUser(userName).asHttpResponseBody()
     }
+    @PostMapping("resetLogoPasswd")
+    fun resetLogoPasswd(): Any {
+        return coolDesktopSystem.resetLogoPasswd()
+    }
 
 
 }

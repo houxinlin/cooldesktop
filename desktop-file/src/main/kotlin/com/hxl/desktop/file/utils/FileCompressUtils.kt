@@ -13,6 +13,7 @@ class FileCompressUtils {
             if ("tar" == type.lowercase()) return TarCompress()
             if ("xz" == type.lowercase()) return TarCompress();
             if ("7z" == type.lowercase()) return SEVENZCompress();
+            if ("gz" == type.lowercase()) return TarCompress();
             return null
         }
 

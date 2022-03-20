@@ -28,10 +28,15 @@ class FileHandlerResult(code: Int, data: Any, msg: String) : BaseHandlerResult(c
         val UPLOAD_FAIL = FileHandlerResult(0, "", "上传失败")
         val CANNOT_MERGE = FileHandlerResult(-11, "", "无法合并")
         val COMPRESS_FAIL = FileHandlerResult(-12, "", "压缩失败")
-        val IS_DIRECTORY = FileHandlerResult(-13, "", "文件是目录");
-
+        val DECOMPRESSION_FAIL = FileHandlerResult(-13, "", "解压失败")
+        val IS_DIRECTORY = FileHandlerResult(-14, "", "文件是目录");
+        val NOT_SUPPORT_COMPRESS_TYPE = FileHandlerResult(-15, "", "不支持此类型的压缩文件");
         fun create(code: Int, data: Any, msg: String): FileHandlerResult {
             return FileHandlerResult(code, data, msg);
+        }
+
+        fun fail(data: Any, msg: String): FileHandlerResult {
+            return FileHandlerResult(-1, data, msg);
         }
 
         fun withAsyncId(): FileHandlerResult {

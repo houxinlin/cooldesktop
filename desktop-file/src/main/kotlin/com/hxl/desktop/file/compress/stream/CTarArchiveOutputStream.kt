@@ -21,6 +21,6 @@ class CTarArchiveOutputStream(outPath: String) : BaseCompressOutputStream(outPat
     }
 
     override fun getAlgorithmName(): String {
-        return CompressorStreamFactory.XZ
+        return CompressorStreamFactory.GZIP
     }
 }
