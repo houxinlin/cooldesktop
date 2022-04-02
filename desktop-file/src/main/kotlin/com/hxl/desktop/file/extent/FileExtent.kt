@@ -9,9 +9,11 @@ import org.slf4j.LoggerFactory
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
+import org.springframework.util.FileSystemUtils
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardOpenOption
 import java.nio.file.attribute.PosixFileAttributeView
 
 object FileExtent {
@@ -152,4 +154,11 @@ fun File.toHttpResponse(): ResponseEntity<FileSystemResource> {
         .headers(header)
         .contentLength(this.length())
         .body(FileSystemResource(this));
+}
+
+fun File.writeStringBuffer(buffer: StringBuffer) {
+    if (!this.exists()) {
+        this.createNewFile()
+    }
+    this.writeBytes(buffer.toString().toByteArray())
 }

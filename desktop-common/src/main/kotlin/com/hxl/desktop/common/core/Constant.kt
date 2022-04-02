@@ -1,12 +1,18 @@
 package com.hxl.desktop.common.core
 
 class Constant {
+    object FileName {
+        const val OPEN_URL = "config"
+    }
+
     object StringConstant {
         const val TERMINAL_MESSAGE_CONNECT_NOT_FOUND = "无法打开终端，信息不完整，请到设置界面配置信息"
         const val OK = "OK"
+        const val CANNOT_BLANK = "不能为空"
         const val RESET_OK = "重置成功"
         const val RESET_FAIL = "重置失败"
         const val NO_PERMISSION = "无权限操作"
+        const val DELETE_SUCCESS = "删除成功"
         const val UNINSTALL_FAIL = "卸载失败"
         const val NOT_FOUND_LOADERS = "找不到加载器，无法卸载"
         const val UNINSTALL_SUCCESS = "卸载成功"

@@ -27,6 +27,7 @@ object Directory {
     private const val DATABASE_DIRECTORY = "database"
     private const val WALLPAPER_WORK_DIRECTORY = "config/wallpaper"
     private const val SSH_CONFIG_DIRECTORY = "config/ssh"
+    private const val OPEN_URL_DIRECTORY = "config/o_urls"
     private val WORK_DIRECTORY = arrayOf(
         CHUNK_DIRECTORY,
         DATABASE_DIRECTORY,
@@ -35,7 +36,8 @@ object Directory {
         TOMCAT_BASE_WORK_DIRECTORY,
         WALLPAPER_WORK_DIRECTORY,
         SSH_CONFIG_DIRECTORY,
-        EASY_APP_STORAGE_DIRECTORY
+        EASY_APP_STORAGE_DIRECTORY,
+        OPEN_URL_DIRECTORY
     )
 
 
@@ -87,6 +89,9 @@ object Directory {
 
     fun getChunkDirectory(): String {
         return Paths.get(initializationWorkDirectoryAndGetRoot(), CHUNK_DIRECTORY).toString();
+    }
+    fun getOpenUrlDirectory(): String {
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), OPEN_URL_DIRECTORY).toString();
     }
 
     fun createChunkDirector(name: String): String {
