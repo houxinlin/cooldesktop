@@ -1,10 +1,7 @@
 package com.hxl.desktop.web
 
 
-import com.alibaba.fastjson.JSON
 import com.hxl.desktop.web.Application.Companion.NOT_SUPPORT
-import common.result.FileHandlerResult
-import org.springframework.beans.factory.config.BeanDefinitionCustomizer
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
@@ -12,9 +9,9 @@ import org.springframework.boot.web.servlet.ServletComponentScan
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext
 import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.scheduling.annotation.EnableAsync
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
-import java.io.File
-import java.net.URLClassLoader
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.text.MessageFormat
 
 @SpringBootApplication(scanBasePackages = ["com.hxl.desktop"], exclude = [DataSourceAutoConfiguration::class])
@@ -41,6 +38,5 @@ fun main(args: Array<String>) {
         error((MessageFormat.format(NOT_SUPPORT, this)))
 
     }
-
 
 }

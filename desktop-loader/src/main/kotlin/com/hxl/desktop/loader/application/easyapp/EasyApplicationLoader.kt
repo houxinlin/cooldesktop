@@ -22,10 +22,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.support.ManagedMap
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.cglib.core.ReflectUtils
 import org.springframework.core.io.UrlResource
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory
 import org.springframework.core.type.filter.AnnotationTypeFilter
 import org.springframework.stereotype.Component
+import org.springframework.util.ReflectionUtils
 import java.io.File
 import java.net.URL
 import java.net.URLClassLoader
@@ -36,6 +38,7 @@ import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.stream.Collectors
 import kotlin.io.path.deleteExisting
+import kotlin.io.path.deleteIfExists
 
 @Component
 class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
@@ -96,14 +99,23 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
 
     override fun unregisterApplication(application: Application): ApplicationInstallState {
         if (application is EasyApplication) {
+            //调用销毁方法
+            application.beans.values.forEach {
+                try {
+                    val uninstallMethod = ReflectUtils.findDeclaredMethod(it as Class<*>, "uninstall", arrayOf())
+                    uninstallMethod?.run { this.invoke(coolDesktopBeanRegister.getBean(it)) }
+                } catch (e: NoSuchMethodException) {
+                }
+            }
             //从spring中销毁bean
+
             application.beans.values.forEach { coolDesktopBeanRegister.destroyBean(it as Class<*>) }
             //反注册所有Controller
             requestMappingRegister.unregisterApplication(application.applicationId)
             //map中移除这个application
             applicationRegister.unregister(application.applicationId)
-
-            application.applicationPath.toFile().delete()
+            //删除文件
+            application.applicationPath.toPath().deleteIfExists()
             return ApplicationInstallState.UNINSTALL_OK
 
         }
@@ -159,6 +171,8 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     fun createClassLoader(rootJar: JarFile): ClassLoader {
         var entries = rootJar.entries()
         var urls = mutableListOf<URL>()
+
+        //同时支持jar中的jar
         while (entries.hasMoreElements()) {
             var jar = entries.nextElement()
             if (jar.name.endsWith(".jar")) {
@@ -166,7 +180,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             }
         }
         urls.add(URL("file:" + rootJar.name))
-        return URLClassLoader(urls.toTypedArray())
+        return URLClassLoader(urls.toTypedArray(), EasyApplication::class.java.classLoader)
     }
 
     //获取所有@Componet的class，并且根据classloader实例化

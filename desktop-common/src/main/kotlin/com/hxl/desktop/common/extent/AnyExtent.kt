@@ -1,7 +1,7 @@
 package common.extent
 
 import com.hxl.desktop.common.core.Constant
-import common.bean.HttpResponseBody
+import com.hxl.desktop.common.bean.HttpResponseBody
 import common.bean.HttpResponseStatus
 import common.result.BaseHandlerResult
 

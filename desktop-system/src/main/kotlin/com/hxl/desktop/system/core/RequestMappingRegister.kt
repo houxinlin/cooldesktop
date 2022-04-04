@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContextAware
 import org.springframework.core.PriorityOrdered
+import org.springframework.core.annotation.AnnotatedElementUtils
 import org.springframework.stereotype.Component
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.mvc.condition.RequestCondition
@@ -43,11 +45,14 @@ class RequestMappingRegister : RequestMappingHandlerMapping(), PriorityOrdered, 
     fun registerCustomRequestMapping(easyApplication: EasyApplication) {
         //先向容器注册bean
         easyApplication.beans.values.forEach { coolDesktopBeanRegister.register(it as Class<*>) }
+        easyApplication.beans.values.forEach { coolDesktopBeanRegister.getBean(it as Class<*>) }
         //增加所有Controller
         easyApplication.beans.values.forEach { value ->
             if (value is Class<*>) {
                 classMap[value] = easyApplication.applicationId
-                coolDesktopBeanRegister.getBean(value)?.run { detectHandlerMethods(this) }
+                coolDesktopBeanRegister.getBean(value)?.run {
+                    detectHandlerMethods(this)
+                }
                 return
             }
         }
@@ -65,7 +70,7 @@ class RequestMappingRegister : RequestMappingHandlerMapping(), PriorityOrdered, 
             var srcPatterns = requestMappingInfo.patternsCondition!!.patterns.first()
             requestMappingInfo.patternsCondition!!.patterns.clear()
             requestMappingInfo.patternsCondition!!.patterns.add("/" + classMap[method.declaringClass] + srcPatterns)
-            log.info("注册API，地址为{}", "/" + classMap[method.declaringClass] + srcPatterns)
+            log.info("{}", "/" + classMap[method.declaringClass] + srcPatterns)
         }
         return requestMappingInfo
     }

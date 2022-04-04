@@ -4,8 +4,7 @@ import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
 import com.hxl.desktop.file.extent.writeStringBuffer
 import com.hxl.desktop.system.sys.CoolDesktopSystem
-import com.hxl.fm.extent.StringExtent.Companion.addPrefix
-import common.bean.failResponse
+import com.hxl.desktop.common.bean.failResponse
 import common.extent.asHttpResponseBody
 import common.extent.asHttpResponseBodyOfMessage
 import org.springframework.beans.factory.annotation.Autowired
@@ -58,6 +57,9 @@ class CoolDesktopSystemController {
     fun addOpenUrl(@RequestParam("url") url: String): Any {
         if (url.isBlank()) {
             return failResponse(Constant.StringConstant.CANNOT_BLANK)
+        }
+        if (url == "/"){
+            return failResponse(Constant.StringConstant.NOT_SUPPORT_PARAMETER)
         }
         val newUrl = if (url.startsWith("/")) url else "/${url}"
         val oldOpenPath = Paths.get(Directory.getOpenUrlDirectory(), Constant.FileName.OPEN_URL)
