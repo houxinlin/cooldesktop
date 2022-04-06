@@ -81,7 +81,9 @@ subprojects {
         implementation("org.apache.tika:tika-core:2.3.0")
         implementation("com.alibaba:fastjson:1.2.79")
         implementation("org.apache.commons:commons-lang3:3.12.0")
-        implementation("org.springframework.boot:spring-boot-starter-thymeleaf:2.6.4")
+//        implementation("org.springframework.boot:spring-boot-starter-thymeleaf:2.6.4")
+        implementation("org.springframework.boot:spring-boot-loader:2.6.1")
+        implementation("org.thymeleaf:thymeleaf:3.1.0.M1")
     }
 
     tasks.withType<KotlinCompile> {

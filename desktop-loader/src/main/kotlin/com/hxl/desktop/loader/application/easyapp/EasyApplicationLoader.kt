@@ -11,23 +11,23 @@ import com.hxl.desktop.file.extent.listRootDirector
 import com.hxl.desktop.loader.application.ApplicationRegister
 import com.hxl.desktop.loader.application.ApplicationTypeDetection
 import com.hxl.desktop.loader.application.ApplicationWrapper
+import com.hxl.desktop.loader.core.ApplicationClassLoader
 import com.hxl.desktop.system.core.CoolDesktopBeanRegister
 import com.hxl.desktop.system.core.RequestMappingRegister
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
-import common.extent.toFile
 import common.extent.toPath
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.support.ManagedMap
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.loader.LaunchedURLClassLoader
 import org.springframework.cglib.core.ReflectUtils
 import org.springframework.core.io.UrlResource
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory
 import org.springframework.core.type.filter.AnnotationTypeFilter
 import org.springframework.stereotype.Component
-import org.springframework.util.ReflectionUtils
 import java.io.File
 import java.net.URL
 import java.net.URLClassLoader
@@ -138,7 +138,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             this.author = properties.getProperty(Application.APP_AUTHOR_PROPERTY_KEY)
             this.singleInstance =
                 properties.getProperty(Application.APP_SINGLE_INSTANCE_PROPERTY_KEY).lowercase() == "true"
-            this.menus = createList(properties.getProperty(Application.APP_AUTHOR_PROPERTY_KEY), ",")
+            this.menus = createList(properties.getProperty(Application.APP_MENU_PROPERTY_KEY), ",")
             this.supportMediaTypes = createList(properties.getProperty(Application.APP_SUPPORT_TYPE_KEY), ",")
         }
     }
@@ -152,6 +152,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             if (Application.checkProperty(properties)) {
                 return createApplicationByProperty(properties).apply {
                     this.classLoader = createClassLoader(jarFile)
+                    classLoader.loadClass("ognl.PropertyAccessor")
                     this.beans = getComponentClassBeanDefinition(this.classLoader, jarFile)
                 }
             }
@@ -171,16 +172,19 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     fun createClassLoader(rootJar: JarFile): ClassLoader {
         var entries = rootJar.entries()
         var urls = mutableListOf<URL>()
-
+        val springJarFile =
+            org.springframework.boot.loader.jar.JarFile(File(rootJar.name))
         //同时支持jar中的jar
         while (entries.hasMoreElements()) {
-            var jar = entries.nextElement()
-            if (jar.name.endsWith(".jar")) {
-                urls.add(URL("jar:file:${rootJar.name}!/${jar.name}/"))
+            var jarEntries = entries.nextElement()
+            if (jarEntries.name.endsWith(".jar")) {
+                val url: URL = springJarFile.getNestedJarFile(springJarFile.getJarEntry(jarEntries.name)).url
+                urls.add(url)
             }
         }
-        urls.add(URL("file:" + rootJar.name))
-        return URLClassLoader(urls.toTypedArray(), EasyApplication::class.java.classLoader)
+        urls.add(URL("file:${rootJar.name}"))
+        var urlClassLoader = ApplicationClassLoader(false,urls.toTypedArray(), EasyApplication::class.java.classLoader)
+        return urlClassLoader
     }
 
     //获取所有@Componet的class，并且根据classloader实例化

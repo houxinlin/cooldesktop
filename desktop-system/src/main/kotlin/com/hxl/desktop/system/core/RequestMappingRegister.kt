@@ -53,7 +53,6 @@ class RequestMappingRegister : RequestMappingHandlerMapping(), PriorityOrdered, 
                 coolDesktopBeanRegister.getBean(value)?.run {
                     detectHandlerMethods(this)
                 }
-                return
             }
         }
     }

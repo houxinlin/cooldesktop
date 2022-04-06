@@ -19,7 +19,7 @@ class ApplicationRegister {
      */
     fun registerWebApplication(webMiniApplication: ApplicationWrapper): String {
         log.info("尝试注册Web Application{}", webMiniApplication.application.applicationName)
-
+        webMiniApplication.application.type=Application.WEB_MINI_APP
         return register(webMiniApplication, webMiniApplicationMap)
     }
 
@@ -27,6 +27,7 @@ class ApplicationRegister {
      * 注册easy应用
      */
     fun registerEasyApplication(easyApplication: ApplicationWrapper): String {
+        easyApplication.application.type=Application.EASY_APP
         return register(easyApplication, easyApplicationMap)
     }
 
