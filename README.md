@@ -5,7 +5,7 @@ CoolDesktop是一个Linux服务器管理软件，CoolDesktop采用全新的操�
 
 # 下载体验
 
-  [点击这里](https://github.com/houxinlin/cooldesktop/releases/download/v1.0/desktop-web.jar)
+  [点击这里](https://github.com/houxinlin/cooldesktop/releases/download/v1.1/desktop-web.jar)
 # 运行 
 默认端口为8080，可增加--server.port=xxx修改端口
 ```shell
