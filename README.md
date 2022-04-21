@@ -30,27 +30,19 @@ java -jar desktop-web.jar --server.port=8080
 
 敬请期待
 # 应用截图
-![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9e7d2c3166864a87863820b0dabdc5eb~tplv-k3u1fbpfcp-watermark.image?)
 
+![9e7d2c3166864a87863820b0dabdc5eb_tplv-k3u1fbpfcp-watermark](https://user-images.githubusercontent.com/38684327/164463617-ef9bfb4f-bc81-4e67-887b-4b0ea99c8db1.jpg)
 
-![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3b6578cb95bd4b948fd4d8af80a51ce1~tplv-k3u1fbpfcp-watermark.image?)
+![2aa28977c8b7475c930b85d0286619fb_tplv-k3u1fbpfcp-watermark](https://user-images.githubusercontent.com/38684327/164464210-48f70250-bfe8-4a56-838a-9aaee23709f2.jpg)
 
+![4a2ba0942d874805bdec637ee9c1f091_tplv-k3u1fbpfcp-watermark](https://user-images.githubusercontent.com/38684327/164464223-636f3429-63d8-43c9-a8f3-5277403c34d0.png)
 
-![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4a2ba0942d874805bdec637ee9c1f091~tplv-k3u1fbpfcp-watermark.image?)
+![b5b07120153641459e99482b5b2cb443_tplv-k3u1fbpfcp-watermark](https://user-images.githubusercontent.com/38684327/164464233-51088e44-7b85-44df-9874-99223963eec9.png)
 
+![c141e2dc79e340eda5bb47a94f71bc66_tplv-k3u1fbpfcp-watermark](https://user-images.githubusercontent.com/38684327/164464246-38653e45-5448-4292-a26e-666783a620e7.png)
 
+![e34b4997b46249b1923d33ac0373fe68_tplv-k3u1fbpfcp-watermark](https://user-images.githubusercontent.com/38684327/164464265-affdf621-5ce8-4938-8d59-fb7565302053.png)
 
-![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2aa28977c8b7475c930b85d0286619fb~tplv-k3u1fbpfcp-watermark.image?)
-
-
-
-
-
-![2022-03-19 13-43-03屏幕截图.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e34b4997b46249b1923d33ac0373fe68~tplv-k3u1fbpfcp-watermark.image?)
-
-![2022-03-19 13-47-28屏幕截图.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b5b07120153641459e99482b5b2cb443~tplv-k3u1fbpfcp-watermark.image?)
-
-![2022-03-19 13-48-37屏幕截图.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c141e2dc79e340eda5bb47a94f71bc66~tplv-k3u1fbpfcp-watermark.image?)
 
 # 更新日志
 **v1.1.2**
