@@ -1,8 +1,8 @@
 package com.hxl.desktop.file.service
 
-import common.result.FileHandlerResult
+import com.hxl.desktop.common.result.FileHandlerResult
 import com.hxl.desktop.common.bean.FileAttribute
-import common.bean.UploadInfo
+import com.hxl.desktop.common.bean.UploadInfo
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.ResponseEntity

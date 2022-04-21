@@ -1,7 +1,7 @@
 package com.hxl.desktop.file.compress
 
-import common.extent.toFile
-import common.extent.toPath
+import com.hxl.desktop.common.extent.toFile
+import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.file.compress.stream.BaseArchiveOutputStream
 import com.hxl.desktop.file.extent.walkFileTree
 import org.apache.commons.compress.archivers.ArchiveEntry

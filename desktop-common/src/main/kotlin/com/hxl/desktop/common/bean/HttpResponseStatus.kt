@@ -1,4 +1,4 @@
-package common.bean
+package com.hxl.desktop.common.bean
 
 /**
  * @author:   HouXinLin

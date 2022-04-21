@@ -1,6 +1,5 @@
 package com.hxl.desktop.file.extent
 
-import common.extent.toPath
 import java.io.File
 import java.io.IOException
 import java.nio.file.FileVisitResult

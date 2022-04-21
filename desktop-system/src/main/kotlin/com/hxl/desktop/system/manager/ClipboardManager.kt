@@ -1,7 +1,7 @@
 package com.hxl.desktop.system.manager
 
-import common.extent.toFile
-import common.result.FileHandlerResult
+import com.hxl.desktop.common.extent.toFile
+import com.hxl.desktop.common.result.FileHandlerResult
 import org.springframework.util.FileSystemUtils
 import java.io.File
 import java.nio.file.Files

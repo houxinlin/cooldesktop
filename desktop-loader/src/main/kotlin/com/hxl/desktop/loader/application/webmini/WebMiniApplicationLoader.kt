@@ -14,14 +14,12 @@ import com.hxl.desktop.loader.application.ApplicationWrapper
 import com.hxl.desktop.loader.core.ApplicationEvent
 import com.hxl.fm.pk.FilePackage.readByte
 import com.hxl.fm.pk.FilePackage.readInt
-import common.extent.toFile
-import common.extent.toPath
+import com.hxl.desktop.common.extent.toPath
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 import org.springframework.util.FileSystemUtils
 import java.nio.ByteBuffer
 import java.nio.file.Files
@@ -32,9 +30,7 @@ import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.stream.Collectors
-import javax.annotation.PostConstruct
 
 @Component
 class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {

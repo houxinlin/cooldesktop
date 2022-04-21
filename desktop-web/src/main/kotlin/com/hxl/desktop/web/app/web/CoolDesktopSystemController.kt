@@ -5,8 +5,8 @@ import com.hxl.desktop.common.core.Directory
 import com.hxl.desktop.file.extent.writeStringBuffer
 import com.hxl.desktop.system.sys.CoolDesktopSystem
 import com.hxl.desktop.common.bean.failResponse
-import common.extent.asHttpResponseBody
-import common.extent.asHttpResponseBodyOfMessage
+import com.hxl.desktop.common.extent.asHttpResponseBody
+import com.hxl.desktop.common.extent.asHttpResponseBodyOfMessage
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping

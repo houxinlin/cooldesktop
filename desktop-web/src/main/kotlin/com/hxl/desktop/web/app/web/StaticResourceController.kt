@@ -1,24 +1,18 @@
 package com.hxl.desktop.web.app.web
 
-import common.bean.UploadInfo
+import com.hxl.desktop.common.bean.UploadInfo
 import com.hxl.desktop.file.service.IFileService
-import common.extent.asHttpResponseBody
-import common.extent.toFile
-import common.extent.toPath
-import common.result.FileHandlerResult
+import com.hxl.desktop.common.extent.asHttpResponseBody
+import com.hxl.desktop.common.extent.toFile
+import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.common.result.FileHandlerResult
 import com.hxl.desktop.file.extent.getAttribute
-import com.hxl.desktop.file.extent.toHttpResponse
-import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.nio.file.Files
-import java.nio.file.Paths
 import javax.annotation.Resource
 import kotlin.io.path.exists
-import kotlin.io.path.isDirectory
 
 /**
  * @author:   HouXinLin

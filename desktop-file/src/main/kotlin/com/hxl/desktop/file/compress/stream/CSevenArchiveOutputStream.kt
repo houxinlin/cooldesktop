@@ -1,6 +1,6 @@
 package com.hxl.desktop.file.compress.stream
 
-import common.extent.toFile
+import com.hxl.desktop.common.extent.toFile
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile
 import java.nio.file.Files

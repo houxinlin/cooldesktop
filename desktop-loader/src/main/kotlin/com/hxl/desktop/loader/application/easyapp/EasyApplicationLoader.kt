@@ -16,13 +16,12 @@ import com.hxl.desktop.system.core.CoolDesktopBeanRegister
 import com.hxl.desktop.system.core.RequestMappingRegister
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
-import common.extent.toPath
+import com.hxl.desktop.common.extent.toPath
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.support.ManagedMap
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.loader.LaunchedURLClassLoader
 import org.springframework.cglib.core.ReflectUtils
 import org.springframework.core.io.UrlResource
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory
@@ -30,7 +29,6 @@ import org.springframework.core.type.filter.AnnotationTypeFilter
 import org.springframework.stereotype.Component
 import java.io.File
 import java.net.URL
-import java.net.URLClassLoader
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*

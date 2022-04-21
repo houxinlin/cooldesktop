@@ -1,9 +1,9 @@
-package common.extent
+package com.hxl.desktop.common.extent
 
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.bean.HttpResponseBody
-import common.bean.HttpResponseStatus
-import common.result.BaseHandlerResult
+import com.hxl.desktop.common.bean.HttpResponseStatus
+import com.hxl.desktop.common.result.BaseHandlerResult
 
 
 /**

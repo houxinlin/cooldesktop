@@ -37,6 +37,7 @@ subprojects {
     }
     configurations.implementation {
         exclude(group = "org.springframework.boot", module = "spring-boot")
+        exclude(group="org.springframework",module="spring-webmvc")
     }
     if (name != "desktop-web") {
         tasks.bootJar {
@@ -62,6 +63,8 @@ subprojects {
         //SpringBoot为二次开发的jar，主要用来提供结构加载第三方应用,但当前版本不支持此功能，将在以后支持
         implementation(files("/home/HouXinLin/project/java/desktop-spring-boot/spring-boot-2.6.1/spring-boot-project/spring-boot/build/libs/spring-boot-2.6.1.jar"))
 
+        //二次开发spring-webmvc模块，主要用来支持thymeleaf
+        implementation(files("/home/HouXinLin/project/java/spring-source/spring-source-5.1.13/spring-framework/spring-webmvc/build/libs/spring-webmvc-5.3.20-SNAPSHOT.jar"))
         //文件合并
         implementation(files("/home/HouXinLin/project/java/FileMerge/FileMerge/build/libs/FileMerge-1.0-SNAPSHOT.jar"))
         //应用程序定义

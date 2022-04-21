@@ -1,4 +1,5 @@
-package common.result
+package com.hxl.desktop.common.result
+
 
 import java.util.*
 
@@ -25,12 +26,13 @@ class FileHandlerResult(code: Int, data: Any, msg: String) : BaseHandlerResult(c
         val CANNOT_COPY = FileHandlerResult(-9, "", "无法复制")
         val CREATE_FILE_FAIL = FileHandlerResult(-10, "", "无法创建文件")
         val TASK_SUBMIT_OK = FileHandlerResult(0, "", "任务提交成功")
-        val UPLOAD_FAIL = FileHandlerResult(0, "", "上传失败")
         val CANNOT_MERGE = FileHandlerResult(-11, "", "无法合并")
         val COMPRESS_FAIL = FileHandlerResult(-12, "", "压缩失败")
         val DECOMPRESSION_FAIL = FileHandlerResult(-13, "", "解压失败")
         val IS_DIRECTORY = FileHandlerResult(-14, "", "文件是目录");
         val NOT_SUPPORT_COMPRESS_TYPE = FileHandlerResult(-15, "", "不支持此类型的压缩文件");
+        val UPLOAD_FAIL = FileHandlerResult(-16, "", "上传失败")
+
         fun create(code: Int, data: Any, msg: String): FileHandlerResult {
             return FileHandlerResult(code, data, msg);
         }

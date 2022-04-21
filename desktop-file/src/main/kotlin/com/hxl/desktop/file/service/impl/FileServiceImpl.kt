@@ -14,10 +14,10 @@ import com.hxl.desktop.system.core.AsyncResultWithID
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
 import com.hxl.desktop.system.manager.ClipboardManager
-import common.bean.UploadInfo
-import common.extent.toFile
-import common.extent.toPath
-import common.result.FileHandlerResult
+import com.hxl.desktop.common.bean.UploadInfo
+import com.hxl.desktop.common.extent.toFile
+import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.common.result.FileHandlerResult
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,14 +25,11 @@ import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.ResponseEntity
-import org.springframework.scheduling.annotation.AsyncResult
 import org.springframework.stereotype.Service
 import org.springframework.util.FileSystemUtils
-import org.tukaani.xz.CorruptedInputException
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Future
 import java.util.stream.Collectors
@@ -86,18 +83,18 @@ class FileServiceImpl : IFileService {
 
 
     override fun fileMerge(chunkId: String, name: String, inPath: String): FileHandlerResult {
-        var rootPath = Paths.get(Directory.getChunkDirectory(), chunkId).toString();
+        val rootPath = Paths.get(Directory.getChunkDirectory(), chunkId).toString();
         if (!rootPath.toPath().exists()) {
             return FileHandlerResult.TARGET_NOT_EXIST
         }
-        var target = Paths.get(inPath, name);
+        val target = Paths.get(inPath, name);
         //如果目标已经存在
         if (target.exists()) {
             deleteFile(rootPath);
             return FileHandlerResult.TARGET_EXIST
         }
-        var fileSize = Files.list(rootPath.toPath()).count()
-        var targetOutputStream = target.outputStream()
+        val fileSize = Files.list(rootPath.toPath()).count()
+        val targetOutputStream = target.outputStream()
         for (i in 0 until fileSize) {
             targetOutputStream.write(Files.readAllBytes(Paths.get(rootPath, i.toString())))
         }
@@ -118,7 +115,7 @@ class FileServiceImpl : IFileService {
     override fun chunkUpload(uploadInfo: UploadInfo): FileHandlerResult {
         //上传的时候检测目标是否否存在，这要有一个chunk失败了，前端会提示，并且取消其他请求
         try {
-            var target = Paths.get(uploadInfo.target, uploadInfo.fileName);
+            val target = Paths.get(uploadInfo.target, uploadInfo.fileName);
             if (target.exists()) {
                 log.info("目标{}已存在", target)
                 return FileHandlerResult.TARGET_EXIST
@@ -127,14 +124,14 @@ class FileServiceImpl : IFileService {
                 log.info("目标{}无操作全想", uploadInfo.target)
                 return FileHandlerResult.NO_PERMISSION
             }
-            var chunkLock = fileMergeLockMap.getOrPut(uploadInfo.chunkId) { Any() }
+            val chunkLock = fileMergeLockMap.getOrPut(uploadInfo.chunkId) { Any() }
 
-            var chunkDirector = Paths.get(Directory.createChunkDirector(uploadInfo.chunkId));
+            val chunkDirector = Paths.get(Directory.createChunkDirector(uploadInfo.chunkId));
             Files.write(
                 Paths.get(chunkDirector.toString(), uploadInfo.blobId.toString()),
                 uploadInfo.fileBinary.inputStream.readBytes()
             );
-            var currentSize = Files.list(chunkDirector).map { it.fileSize() }.collect(Collectors.toList()).sum();
+            val currentSize = Files.list(chunkDirector).map { it.fileSize() }.collect(Collectors.toList()).sum();
             //如果文件大小等于当前文件数量合，和并文件
             //上传完毕后只有一个线程可以进行和并
             synchronized(chunkLock) {
@@ -144,7 +141,7 @@ class FileServiceImpl : IFileService {
                 }
                 //判断全部上传成功没，如果成功，则进行合并
                 if (uploadInfo.total == currentSize) {
-                    var mergeResult = fileMerge(uploadInfo.chunkId, uploadInfo.fileName, uploadInfo.target)
+                    val mergeResult = fileMerge(uploadInfo.chunkId, uploadInfo.fileName, uploadInfo.target)
                     fileMergeLockMap.remove(uploadInfo.chunkId)
                     return mergeResult
                 }
@@ -167,11 +164,11 @@ class FileServiceImpl : IFileService {
             )
             return emptyList()
         }
-        var files = root.toPath().listRootDirector()
-        var mutableListOf = mutableListOf<FileAttribute>()
+        val files = root.toPath().listRootDirector()
+        val mutableListOf = mutableListOf<FileAttribute>()
         files.forEach { mutableListOf.add(it.getAttribute()) }
-        var folderList = mutableListOf.filter { it.type == FileType.FOLDER.typeName }
-        var fileList = mutableListOf.filter { it.type != FileType.FOLDER.typeName }
+        val folderList = mutableListOf.filter { it.type == FileType.FOLDER.typeName }
+        val fileList = mutableListOf.filter { it.type != FileType.FOLDER.typeName }
         folderList.sortedBy { it.name }
         fileList.sortedBy { it.name }
         return folderList.plus(fileList)
@@ -180,28 +177,28 @@ class FileServiceImpl : IFileService {
     override fun getImageThumbnail(path: String): ByteArrayResource {
         if (path.toFile().exists()) {
             if (path.toPath().isDirectory()) {
-                var classPathResource = ClassPathResource(ClassPathUtils.getClassPathFullPath("folder"))
+                val classPathResource = ClassPathResource(ClassPathUtils.getClassPathFullPath("folder"))
                 return ByteArrayResource(classPathResource.inputStream.readBytes())
             }
-            var fileAttribute = path.toFile().getAttribute()
+            val fileAttribute = path.toFile().getAttribute()
             if ("image" == fileAttribute.type) {
-                var byteArrayResource = ImageUtils.thumbnails(path)
+                val byteArrayResource = ImageUtils.thumbnails(path)
                 if (byteArrayResource != null) {
                     return byteArrayResource
                 }
                 return getFileIconByType(fileAttribute.rawType)
             }
         }
-        var defaultIcon = ClassPathResource(ClassPathUtils.getClassPathFullPath("file"))
+        val defaultIcon = ClassPathResource(ClassPathUtils.getClassPathFullPath("file"))
         return ByteArrayResource(defaultIcon.inputStream.readBytes())
     }
 
     override fun getFileIconByType(type: String): ByteArrayResource {
-        var classPathResource = ClassPathResource(ClassPathUtils.getClassPathFullPath(type))
+        val classPathResource = ClassPathResource(ClassPathUtils.getClassPathFullPath(type))
         if (classPathResource.exists()) {
             return ByteArrayResource(classPathResource.inputStream.readBytes())
         }
-        var defaultIcon = ClassPathResource(ClassPathUtils.getClassPathFullPath("file"))
+        val defaultIcon = ClassPathResource(ClassPathUtils.getClassPathFullPath("file"))
         return ByteArrayResource(defaultIcon.inputStream.readBytes())
     }
 
@@ -224,8 +221,8 @@ class FileServiceImpl : IFileService {
         compressType: String,
         taskId: String
     ): Future<FileHandlerResult> {
-        var archiveName = "$targetName.$compressType"
-        var file = path.toFile()
+        val archiveName = "$targetName.$compressType"
+        val file = path.toFile()
         if (file.isFile && Paths.get(file.parent, archiveName).exists()) {
             return AsyncResultWithID(FileHandlerResult.TARGET_EXIST, taskId)
         }
@@ -241,21 +238,21 @@ class FileServiceImpl : IFileService {
 
     @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.FILE_EVENT, action = "")
     override fun fileDecompression(path: String, taskId: String): Future<FileHandlerResult> {
-        var file = path.toFile()
+        val file = path.toFile()
         if (file.isDirectory) {
             return AsyncResultWithID(FileHandlerResult.IS_DIRECTORY, taskId)
         }
         if (!file.exists()) {
             return AsyncResultWithID(FileHandlerResult.TARGET_EXIST, taskId)
         }
-        var fileType = FileCompressUtils.getFileType(path)
+        val fileType = FileCompressUtils.getFileType(path)
         if (fileType.isNotEmpty()) {
             try {
-                var compressByType = FileCompressUtils.getCompressByType(fileType)
+                val compressByType = FileCompressUtils.getCompressByType(fileType)
                 compressByType?.decompression(path)
                 return AsyncResultWithID(FileHandlerResult.OK, taskId)
             } catch (e: Exception) {
-                var msg = e?.message as String
+                val msg = e.message as String
                 return AsyncResultWithID(FileHandlerResult.fail(msg, msg), taskId)
             }
             return AsyncResultWithID(FileHandlerResult.DECOMPRESSION_FAIL, taskId)
@@ -278,9 +275,9 @@ class FileServiceImpl : IFileService {
     }
 
     override fun getTextFileContent(path: String): FileHandlerResult {
-        var file = path.toFile()
+        val file = path.toFile()
         if (file.exists()) {
-            var infoMap = mutableMapOf<String, Any>()
+            val infoMap = mutableMapOf<String, Any>()
             infoMap["content"] = file.bufferedReader().readText()
             infoMap["type"] = file.getFileSuffixValue()
             return FileHandlerResult.create(0, infoMap, "ok")
@@ -289,7 +286,7 @@ class FileServiceImpl : IFileService {
     }
 
     override fun setTextFileContent(path: String, content: String): FileHandlerResult {
-        var file = path.toFile()
+        val file = path.toFile()
         if (!file.exists())
             return FileHandlerResult.NOT_EXIST
         if (hasPermission(file.parent)) {
@@ -300,7 +297,7 @@ class FileServiceImpl : IFileService {
     }
 
     override fun download(pathStr: String): ResponseEntity<FileSystemResource> {
-        var path = pathStr.toPath()
+        val path = pathStr.toPath()
         if (path.isDirectory() || (!path.exists())) {
             return ResponseEntity.notFound().build()
         }

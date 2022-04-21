@@ -1,4 +1,4 @@
-package common.result
+package com.hxl.desktop.common.result
 
 /**
  * @author:   HouXinLin
