@@ -1,11 +1,15 @@
 # CoolDesktop介绍
 
 
-CoolDesktop是一个Linux服务器管理软件，CoolDesktop采用全新的操作方式，让您像操作本地系统一样，操作远程Linux，除了基本的文件复制、粘贴、上传、删除、重复名等基本操作，还可以进行终端操作，如果对当前应用不满意，可以自行开发软件，挂载到CoolDesktop上，这和我们平常在系统上安装软件是一个道理。
+CoolDesktop是一个Linux服务器管理软件，
+CoolDesktop采用全新的操作方式，让您像操作本地系统一样，操作远程Linux，除了基本的文件复制、粘贴、上传、删除、重复名等基本操作，
+还可以进行终端操作，如果对当前应用不满意，可以自行开发软件，挂载到CoolDesktop上，这和我们平常在系统上安装软件是一个道理。
+
+注意，项目使用的部分jar并未上传到maven，所以您clone下来可能无法运行，但不久的将来会上传到maven，但不影响您下载运行
 
 # 下载体验
 
-  [点击这里](https://github.com/houxinlin/cooldesktop/releases/download/v1.1/desktop-web.jar)
+  [点击这里](https://github.com/houxinlin/cooldesktop/releases/download/v1.1.2/desktop-web.jar)
 # 运行 
 默认端口为8080，可增加--server.port=xxx修改端口
 ```shell
@@ -48,6 +52,9 @@ java -jar desktop-web.jar --server.port=8080
 
 ![2022-03-19 13-48-37屏幕截图.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c141e2dc79e340eda5bb47a94f71bc66~tplv-k3u1fbpfcp-watermark.image?)
 
+# 更新日志
+**v1.1.2**
+1. 修复thymeleaf加载问题
 
 # 联系作者
 
