@@ -35,6 +35,7 @@ import java.util.*
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.stream.Collectors
+import javax.annotation.Resource
 import kotlin.io.path.deleteExisting
 import kotlin.io.path.deleteIfExists
 

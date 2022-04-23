@@ -35,8 +35,6 @@ fun main(args: Array<String>) {
                 Application::class.java,
                 *args
             ) as AnnotationConfigServletWebServerApplicationContext
-            //移除默认的requestMappingHandlerMapping
-            application.removeBeanDefinition("requestMappingHandlerMapping")
             return
         }
         error((MessageFormat.format(NOT_SUPPORT, this)))

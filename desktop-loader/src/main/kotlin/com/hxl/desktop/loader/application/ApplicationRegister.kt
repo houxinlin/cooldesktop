@@ -2,24 +2,37 @@ package com.hxl.desktop.loader.application
 
 import com.desktop.application.definition.application.Application
 import com.hxl.desktop.common.core.Constant
+import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.system.core.CoolDesktopApplicationStaticResourceRegister
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.CommandLineRunner
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
 import org.springframework.stereotype.Component
+import org.springframework.web.servlet.DispatcherServlet
+import org.springframework.web.servlet.HandlerMapping
 import java.util.stream.Collectors
 
 @Component
-class ApplicationRegister {
+class ApplicationRegister : CommandLineRunner {
     private val log: Logger = LoggerFactory.getLogger(ApplicationRegister::class.java)
     private val webMiniApplicationMap = mutableMapOf<String, ApplicationWrapper>()
     private val easyApplicationMap = mutableMapOf<String, ApplicationWrapper>()
 
+    @javax.annotation.Resource(name = "dispatcherServlet")
+    lateinit var dispatcherServlet: DispatcherServlet
+
+    @Autowired
+    private lateinit var coolDesktopApplicationStaticResourceRegister: CoolDesktopApplicationStaticResourceRegister
 
     /**
      * 注册web应用
      */
     fun registerWebApplication(webMiniApplication: ApplicationWrapper): String {
         log.info("尝试注册Web Application{}", webMiniApplication.application.applicationName)
-        webMiniApplication.application.type=Application.WEB_MINI_APP
+        webMiniApplication.application.type = Application.WEB_MINI_APP
         return register(webMiniApplication, webMiniApplicationMap)
     }
 
@@ -27,7 +40,11 @@ class ApplicationRegister {
      * 注册easy应用
      */
     fun registerEasyApplication(easyApplication: ApplicationWrapper): String {
-        easyApplication.application.type=Application.EASY_APP
+        easyApplication.application.type = Application.EASY_APP
+        coolDesktopApplicationStaticResourceRegister.register(
+            easyApplication.application.applicationId,
+            easyApplication.application.applicationPath.toPath()
+        )
         return register(easyApplication, easyApplicationMap)
     }
 
@@ -46,9 +63,20 @@ class ApplicationRegister {
         return Constant.StringConstant.LOAD_APPLICATION_SUCCESS
     }
 
+    override fun run(vararg args: String?) {
+        registerStaticResource()
+    }
+
+    fun registerStaticResource() {
+        easyApplicationMap.forEach { (key, value) ->
+            coolDesktopApplicationStaticResourceRegister.register(key, value.application.applicationPath.toPath())
+        }
+    }
+
     fun unregister(id: String) {
         webMiniApplicationMap.remove(id)
         easyApplicationMap.remove(id)
+        coolDesktopApplicationStaticResourceRegister.unregister(id)
     }
 
 

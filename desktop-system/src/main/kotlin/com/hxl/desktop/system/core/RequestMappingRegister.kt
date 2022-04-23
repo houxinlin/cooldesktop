@@ -20,7 +20,7 @@ import java.lang.reflect.Method
  * 自定义RequestMappingRegister，用来统一加前缀，并且提供结构动态删除或者注册API
  */
 
-@Component
+
 class RequestMappingRegister : RequestMappingHandlerMapping(), PriorityOrdered, ApplicationContextAware {
     private val log: Logger = LoggerFactory.getLogger(RequestMappingRegister::class.java)
 

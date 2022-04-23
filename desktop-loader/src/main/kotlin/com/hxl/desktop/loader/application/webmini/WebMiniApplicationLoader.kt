@@ -35,7 +35,10 @@ import java.util.stream.Collectors
 @Component
 class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
     private val log: Logger = LoggerFactory.getLogger(WebMiniApplicationLoader::class.java)
+    @Autowired
+    lateinit var applicationRegister: ApplicationRegister
 
+    lateinit var executorCountDownLatch: CountDownLatch;
     override fun loadApplicationFromByte(byteArray: ByteArray): ApplicationInstallState {
         val webMiniApplication = getApplicationFromByte(ByteBuffer.wrap(byteArray))
         //用于保证不会写入两个相同的应用到本地
@@ -69,10 +72,7 @@ class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
         return ApplicationInstallState.UNINSTALL_OK
     }
 
-    @Autowired
-    lateinit var applicationRegister: ApplicationRegister
 
-    lateinit var executorCountDownLatch: CountDownLatch;
 
     var loadThreadPool = ThreadPoolExecutor(3, 4, 10, TimeUnit.MINUTES, ArrayBlockingQueue(100))
 

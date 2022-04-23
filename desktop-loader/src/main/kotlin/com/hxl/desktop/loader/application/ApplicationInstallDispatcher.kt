@@ -17,7 +17,7 @@ class ApplicationInstallDispatcher {
     private val log: Logger = LoggerFactory.getLogger(ApplicationInstallDispatcher::class.java)
 
     @Autowired
-    fun setApplicationLoader(loader: List<ApplicationLoader<*>>) {
+    fun setApplicationLoader(loader: MutableList<ApplicationLoader<*>>) {
         applicationLoaders = loader
     }
 
