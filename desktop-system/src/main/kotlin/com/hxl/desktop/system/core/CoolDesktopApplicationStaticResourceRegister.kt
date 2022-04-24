@@ -54,7 +54,9 @@ class CoolDesktopApplicationStaticResourceRegister : ApplicationContextAware {
 
     fun unregister(urlPath: String) {
         val newUrlPath = getUrlPath(urlPath)
-        getHandlerMappings()?.remove(resourceMapping[newUrlPath] as SimpleUrlHandlerMapping)
+        if (resourceMapping.containsKey(newUrlPath)) {
+            getHandlerMappings()?.remove(resourceMapping[newUrlPath] as SimpleUrlHandlerMapping)
+        }
     }
 
     private fun getHandlerMappings(): MutableList<HandlerMapping>? {

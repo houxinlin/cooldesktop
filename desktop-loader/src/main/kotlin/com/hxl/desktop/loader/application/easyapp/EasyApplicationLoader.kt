@@ -17,6 +17,8 @@ import com.hxl.desktop.system.core.RequestMappingRegister
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
 import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.common.utils.VersionUtils
+import com.hxl.desktop.system.config.CoolProperties
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,6 +29,7 @@ import org.springframework.core.io.UrlResource
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory
 import org.springframework.core.type.filter.AnnotationTypeFilter
 import org.springframework.stereotype.Component
+import org.springframework.util.StringUtils
 import java.io.File
 import java.net.URL
 import java.nio.file.Files
@@ -35,7 +38,6 @@ import java.util.*
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.stream.Collectors
-import javax.annotation.Resource
 import kotlin.io.path.deleteExisting
 import kotlin.io.path.deleteIfExists
 
@@ -50,6 +52,8 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     @Autowired
     private lateinit var webSocketSender: WebSocketSender
 
+    @Autowired
+    private lateinit var coolProperties: CoolProperties
     override fun support(application: Application): Boolean {
         return application is EasyApplication
     }
@@ -65,7 +69,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             Files.write(tempAppStoragePath, applicationByte)
 
             //尝试从这个jar中读取信息，可能会失败，主要原因是没有app.properties,或者配置信息不全
-            var easyApplication = getApplicationInfoByFile(JarFile(tempAppStoragePath.toFile()))
+            var easyApplication = getApplicationFromFile(JarFile(tempAppStoragePath.toFile()))
             easyApplication?.run {
                 //保存不会重复加载
                 if (applicationRegister.isLoaded(easyApplication.applicationId)) {
@@ -123,49 +127,97 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
 
 
     private fun createList(data: String, delimiters: String): List<String> {
-        return data.split(delimiters)
+        if (StringUtils.hasLength(data)) {
+            return data.split(delimiters)
+        }
+        return emptyList()
+    }
+
+    private fun <T> getPropertiesOrDefault(properties: Properties, key: String, def: T): T {
+        return if (properties.containsKey(key)) {
+            (properties.getProperty(key)) as T
+        } else {
+            def
+        }
     }
 
 
-    private fun createApplicationByProperty(properties: Properties): EasyApplication {
+    private fun loadApplicationFromProperty(properties: Properties): EasyApplication {
         return EasyApplication().apply {
+            //程序ID
             this.applicationId = properties.getProperty(Application.APP_ID_PROPERTY_KEY)
+            //程序名称
             this.applicationName = properties.getProperty(Application.APP_NAME_PROPERTY_KEY)
+            //在启动器中是否可见
             this.visibilityIsDesktop =
                 properties.getProperty(Application.APP_VISIBILITY_PROPERTY_KEY).lowercase() == "true"
+            //app版本
             this.applicationVersion = properties.getProperty(Application.APP_VERSION_PROPERTY_KEY)
+            //作者
             this.author = properties.getProperty(Application.APP_AUTHOR_PROPERTY_KEY)
+            //是否支持多开
             this.singleInstance =
                 properties.getProperty(Application.APP_SINGLE_INSTANCE_PROPERTY_KEY).lowercase() == "true"
+            //菜单
             this.menus = createList(properties.getProperty(Application.APP_MENU_PROPERTY_KEY), ",")
+            //所支持的媒体类型
             this.supportMediaTypes = createList(properties.getProperty(Application.APP_SUPPORT_TYPE_KEY), ",")
+
+            //背景颜色
+            this.windowBackground =
+                getPropertiesOrDefault(properties, Application.APP_WEB_WINDOW_BACKGROUND, this.windowBackground)
+            //最低运行版本
+            this.environmentVersion =
+                getPropertiesOrDefault(properties, Application.APP_ENVIRONMENT_VERSION, this.environmentVersion)
         }
     }
 
     //获取应用信息从JarFile
-    fun getApplicationInfoByFile(jarFile: JarFile): EasyApplication? {
+    fun getApplicationFromFile(jarFile: JarFile): EasyApplication? {
         val appPropertiesEntry = jarFile.getJarEntry("app.properties")
-        if (appPropertiesEntry != null) {
+        var errorMsg = ""
+        appPropertiesEntry?.run {
             val properties = UTF8Property()
             properties.load(jarFile.getInputStream(appPropertiesEntry))
             if (Application.checkProperty(properties)) {
-                return createApplicationByProperty(properties).apply {
-                    this.classLoader = createClassLoader(jarFile)
-                    classLoader.loadClass("ognl.PropertyAccessor")
-                    this.beans = getComponentClassBeanDefinition(this.classLoader, jarFile)
+                //从属性文件中转换为Application
+                val easyApplication = loadApplicationFromProperty(properties)
+                if (versionCheck(easyApplication)) {
+                    return easyApplication.apply {
+                        //创建类加载器
+                        this.classLoader = createClassLoader(jarFile)
+                        //所有bean
+                        this.beans = getComponentClassBeanDefinition(this.classLoader, jarFile)
+                    }
                 }
+                errorMsg = "系统版本过低"
+
             }
-            webSocketSender.send(
-                WebSocketMessageBuilder.Builder()
-                    .applySubject(Constant.WebSocketSubjectNameConstant.NOTIFY_MESSAGE_ERROR)
-                    .addItem("data", "无法加载应用${jarFile.name}")
-                    .build()
-            )
+            errorMsg = "无法找到属性"
             log.info("无法创建应用，原因是无法找到属性，{}", Application.findMissProperty(properties))
-            return null
+
         }
+        errorMsg = "无法找到属性文件"
         log.info("无法创建应用，原因是无法找到属性文件，{}", jarFile.name)
+        notifyClientState(jarFile.name, errorMsg)
         return null;
+    }
+
+    private fun notifyClientState(appName: String, errorMsg: String) {
+        webSocketSender.send(
+            WebSocketMessageBuilder.Builder()
+                .applySubject(Constant.WebSocketSubjectNameConstant.NOTIFY_MESSAGE_ERROR)
+                .addItem("data", "无法加载应用${appName}，原因:${errorMsg}")
+                .build()
+        )
+    }
+
+    private fun versionCheck(easyApplication: EasyApplication): Boolean {
+        if (VersionUtils.isLz(easyApplication.environmentVersion, coolProperties.coolVersion) == 1) {
+            log.warn("${easyApplication.applicationName}无法在本系统上加载，系统版本过低")
+            return false
+        }
+        return true
     }
 
     fun createClassLoader(rootJar: JarFile): ClassLoader {
@@ -182,8 +234,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             }
         }
         urls.add(URL("file:${rootJar.name}"))
-        var urlClassLoader = ApplicationClassLoader(false,urls.toTypedArray(), EasyApplication::class.java.classLoader)
-        return urlClassLoader
+        return ApplicationClassLoader(false, urls.toTypedArray(), EasyApplication::class.java.classLoader)
     }
 
     //获取所有@Componet的class，并且根据classloader实例化
@@ -231,7 +282,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     //系统启动时候执行
     private fun doHandlerJarFile(file: File) {
         var jarFile = JarFile(file.absoluteFile)
-        var application = getApplicationInfoByFile(jarFile)
+        var application = getApplicationFromFile(jarFile)
         application?.run {
             if (applicationRegister.isLoaded(application.applicationId)) {
                 webSocketSender.send(
@@ -247,6 +298,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             registerEasyApplication(application)
         }
     }
+
 
     //对外开放，用来注册EasyApplication，各个地方入口统一走这里
     fun registerEasyApplication(easyApplication: EasyApplication): String {

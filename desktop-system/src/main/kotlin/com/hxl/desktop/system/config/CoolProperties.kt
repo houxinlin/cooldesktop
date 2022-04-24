@@ -10,4 +10,7 @@ import org.springframework.context.annotation.PropertySource
 class CoolProperties {
     @Value("\${cool.software.server}")
     var softwareServer: String? = null
+
+    @Value("\${cool.version}")
+    var coolVersion: String = 1.0f.toString()
 }

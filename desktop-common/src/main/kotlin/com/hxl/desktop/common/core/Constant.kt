@@ -15,7 +15,7 @@ class Constant {
         const val NO_PERMISSION = "无权限操作"
         const val DELETE_SUCCESS = "删除成功"
         const val UNINSTALL_FAIL = "卸载失败"
-        const val NOT_FOUND_LOADERS = "找不到加载器，无法卸载"
+        const val NOT_FOUND_LOADERS = "找不到加载器，无法执行此操作"
         const val UNINSTALL_SUCCESS = "卸载成功"
         const val CONFIG_FAIL = "配置失败"
         const val CONFIG_FAIL_USER = "配置失败，用户名填写不正确"

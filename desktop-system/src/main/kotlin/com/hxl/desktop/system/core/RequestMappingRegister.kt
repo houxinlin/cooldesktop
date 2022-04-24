@@ -5,6 +5,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContextAware
+import org.springframework.context.annotation.Bean
 import org.springframework.core.PriorityOrdered
 import org.springframework.core.annotation.AnnotatedElementUtils
 import org.springframework.stereotype.Component
@@ -19,7 +20,6 @@ import java.lang.reflect.Method
 /**
  * 自定义RequestMappingRegister，用来统一加前缀，并且提供结构动态删除或者注册API
  */
-
 
 class RequestMappingRegister : RequestMappingHandlerMapping(), PriorityOrdered, ApplicationContextAware {
     private val log: Logger = LoggerFactory.getLogger(RequestMappingRegister::class.java)

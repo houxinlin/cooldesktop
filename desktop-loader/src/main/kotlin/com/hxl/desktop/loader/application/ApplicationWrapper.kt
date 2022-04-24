@@ -44,10 +44,10 @@ class ApplicationWrapper(var application: Application) : ResourceCache() {
     fun loadResource(path: String): ByteArray? {
         if (!inCache(path)) {
             if (application is WebMiniApplication) {
-                return loadByteFromWebApplication(path)
+                loadByteFromWebApplication(path)
             }
             if (application is EasyApplication) {
-                return loadByteFromEasyApplication(path)
+                loadByteFromEasyApplication(path)
             }
         }
         return getCacheResource(path)
