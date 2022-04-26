@@ -10,6 +10,7 @@ plugins {
 group = "com.hxl"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
+val CooldesktopRoot=layout.projectDirectory.toString()
 
 configurations {
     compileOnly {
@@ -23,8 +24,20 @@ dependencies {
 }
 repositories {
     mavenCentral()
+    flatDir {
+        dirs("desktop-lib")
+    }
 }
 
+tasks.register<Copy>("copyLib") {
+    from(
+        "/home/HouXinLin/project/java/desktop-spring-boot/spring-boot-2.6.1/spring-boot-project/spring-boot/build/libs/spring-boot-2.6.1.jar",
+        "/home/HouXinLin/project/java/tomcat/desktop-tomcat/apache-tomcat-9.0.58-src/output/embed/tomcat-embed-core.jar",
+        "/home/HouXinLin/project/java/spring-source/spring-source-5.1.13/spring-framework/spring-webmvc/build/libs/spring-webmvc-5.3.20-SNAPSHOT.jar",
+        "/home/HouXinLin/project/java/desktop-application-definition/build/libs/desktop-application-definition-1.0-SNAPSHOT.jar",
+        "/home/HouXinLin/project/java/FileMerge/FileMerge/build/libs/FileMerge-1.0-SNAPSHOT.jar")
+    into(layout.projectDirectory.dir("desktop-lib"))
+}
 subprojects {
     apply {
         apply {
@@ -55,20 +68,15 @@ subprojects {
         if (name != "desktop-common") {
             implementation(project(":desktop-common"))
         }
+
         //tomcat为二次开发的jar，主要功能全局拦截，进行登录，打包的时候会加入，开发的时候使用原本的tomcat
         compileOnly("org.apache.tomcat.embed:tomcat-embed-core:9.0.58")
-        runtimeOnly(files("/home/HouXinLin/project/java/tomcat/desktop-tomcat/apache-tomcat-9.0.58-src/output/embed/tomcat-embed-core.jar"))
 
-
-        //SpringBoot为二次开发的jar，主要用来提供结构加载第三方应用,但当前版本不支持此功能，将在以后支持
-        implementation(files("/home/HouXinLin/project/java/desktop-spring-boot/spring-boot-2.6.1/spring-boot-project/spring-boot/build/libs/spring-boot-2.6.1.jar"))
-
-        //二次开发spring-webmvc模块，主要用来支持thymeleaf
-        implementation(files("/home/HouXinLin/project/java/spring-source/spring-source-5.1.13/spring-framework/spring-webmvc/build/libs/spring-webmvc-5.3.20-SNAPSHOT.jar"))
-        //文件合并
-        implementation(files("/home/HouXinLin/project/java/FileMerge/FileMerge/build/libs/FileMerge-1.0-SNAPSHOT.jar"))
-        //应用程序定义
-        implementation(files("/home/HouXinLin/project/java/desktop-application-definition/build/libs/desktop-application-definition-1.0-SNAPSHOT.jar"))
+        implementation(files("${CooldesktopRoot}/desktop-lib/spring-boot-2.6.1.jar"))
+        implementation(files("${CooldesktopRoot}/desktop-lib/desktop-application-definition-1.0-SNAPSHOT.jar"))
+        implementation(files("${CooldesktopRoot}/desktop-lib/FileMerge-1.0-SNAPSHOT.jar"))
+        implementation(files("${CooldesktopRoot}/desktop-lib/spring-webmvc-5.3.20-SNAPSHOT.jar"))
+        runtimeOnly(files("${CooldesktopRoot}/desktop-lib/tomcat-embed-core.jar"))
 
         implementation("org.springframework.boot:spring-boot-starter-websocket:2.6.2")
         implementation("org.tukaani:xz:1.9")
