@@ -16,19 +16,6 @@ class SshManager {
     fun registerSession(id: String, session: WebSocketSession) {
         sessionMapping[id] = session
     }
-
-    fun registerSession(session: WebSocketSession) {
-        registerSession(session.id, session)
-    }
-
-    fun startNewSshClient(id: String, serverInfo: ServerConnectionInfo) {
-        var sshMessageListener = SshMessageListener(sessionMapping[id]!!)
-
-//        var sshClient = TerminalInstanceFactory().createSshSshClient(serverInfo)
-//        terminalMapping[id] = sshClient
-
-    }
-
     fun writeCommand(id: String, message: String) {
         terminalMapping[id]?.writeCommand(message)
     }

@@ -1,12 +1,12 @@
 package com.hxl.desktop.web.app.web
 
-import com.hxl.desktop.common.bean.UploadInfo
-import com.hxl.desktop.file.service.IFileService
 import com.hxl.desktop.common.extent.asHttpResponseBody
 import com.hxl.desktop.common.extent.toFile
 import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.common.result.FileHandlerResult
+import com.hxl.desktop.file.bean.UploadInfo
 import com.hxl.desktop.file.extent.getAttribute
+import com.hxl.desktop.file.service.IFileService
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity

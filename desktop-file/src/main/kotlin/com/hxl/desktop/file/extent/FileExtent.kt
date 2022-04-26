@@ -1,6 +1,6 @@
 package com.hxl.desktop.file.extent
 
-import com.hxl.desktop.common.bean.FileAttribute
+import com.hxl.desktop.file.bean.FileAttribute
 import com.hxl.desktop.file.emun.FileType
 import com.hxl.desktop.file.utils.FileCompressUtils
 import org.apache.tika.Tika
@@ -9,11 +9,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
-import org.springframework.util.FileSystemUtils
 import java.io.File
 import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.StandardOpenOption
 import java.nio.file.attribute.PosixFileAttributeView
 
 object FileExtent {

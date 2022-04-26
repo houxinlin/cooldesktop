@@ -9,5 +9,5 @@ package com.hxl.desktop.common.bean
  */
 enum class HttpResponseStatus(var status: Int, var msg: String) {
     SUCCESS(0, "OK"),
-    FAIL(-1, "无")
+    FAIL(-1, "失败")
 }

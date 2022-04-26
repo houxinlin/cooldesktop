@@ -11,6 +11,3 @@ data class HttpResponseBody(var status: Int, var data: Any, var msg: String) {
 
 }
 
-fun failResponse(msg: String): HttpResponseBody {
-    return HttpResponseBody(-1, "", msg)
-}

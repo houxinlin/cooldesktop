@@ -6,7 +6,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 
-class ByteArrayExtent
 
 fun ByteArray.toHttpResponse(mediaType: MediaType): ResponseEntity<Resource> {
     val resource = ByteArrayResource(this)

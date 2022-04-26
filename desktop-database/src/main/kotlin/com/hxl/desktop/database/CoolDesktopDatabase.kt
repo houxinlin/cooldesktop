@@ -1,8 +1,7 @@
 package com.hxl.desktop.database
 
-import org.springframework.jdbc.core.*
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
-import java.sql.ResultSet
 import javax.annotation.PostConstruct
 import javax.annotation.Resource
 
@@ -10,6 +9,12 @@ import javax.annotation.Resource
 class CoolDesktopDatabase {
     @Resource
     lateinit var sqliteJdbcTemplate: JdbcTemplate
+
+    companion object {
+        const val SELECT_SYS_CONFIG = "select count(sys_key) from sys_config where sys_key=?"
+        const val UPDATE_SYS_CONFIG = "update  sys_config  set sys_value =? where sys_key=?"
+        const val INSERT_SYS_CONFIG = "INSERT INTO sys_config (sys_key, sys_value) VALUES(?, ?)"
+    }
 
     @PostConstruct
     fun init() {
@@ -22,16 +27,11 @@ class CoolDesktopDatabase {
 
     @Synchronized
     fun saveConfig(key: String, value: String) {
-        if (sqliteJdbcTemplate.queryForObject(
-                "select count(sys_key) from sys_config where sys_key=?",
-                Int::class.java,
-                key
-            ) > 0
-        ) {
-            sqliteJdbcTemplate.update("update  sys_config  set sys_value =? where sys_key=?", value, key)
+        if (sqliteJdbcTemplate.queryForObject(SELECT_SYS_CONFIG, Int::class.java, key) > 0) {
+            sqliteJdbcTemplate.update(UPDATE_SYS_CONFIG, value, key)
             return
         }
-        sqliteJdbcTemplate.update("INSERT INTO sys_config (sys_key, sys_value) VALUES(?, ?)", key, value)
+        sqliteJdbcTemplate.update(INSERT_SYS_CONFIG, key, value)
     }
 
     fun listConfigs(): MutableMap<String, String> {

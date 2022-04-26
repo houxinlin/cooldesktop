@@ -1,4 +1,4 @@
-package com.hxl.desktop.common.core
+package com.hxl.desktop.common.core.ano
 
 /**
  * 异步处理时候将返回值通过WebSocket发送给客户端

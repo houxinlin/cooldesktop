@@ -1,8 +1,8 @@
 package com.hxl.desktop.common.extent
 
-import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.bean.HttpResponseBody
 import com.hxl.desktop.common.bean.HttpResponseStatus
+import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.result.BaseHandlerResult
 
 
@@ -13,8 +13,6 @@ import com.hxl.desktop.common.result.BaseHandlerResult
  * @describe: any extent
  * @version:  v1.0
  */
-class AnyExtent {
-}
 
 fun Any.asHttpResponseBody(): HttpResponseBody {
     if (this is HttpResponseBody) {

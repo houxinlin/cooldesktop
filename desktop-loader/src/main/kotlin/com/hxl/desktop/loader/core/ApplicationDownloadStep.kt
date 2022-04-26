@@ -1,8 +1,6 @@
 package com.hxl.desktop.loader.core
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.hxl.desktop.common.core.Constant
-import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayOutputStream
@@ -10,11 +8,8 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.text.MessageFormat
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.atomic.AtomicLong
 
-class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloadManager) :
-    InstallStep<String, List<ByteArray>> {
+class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloadManager) : InstallStep<String, List<ByteArray>> {
     companion object {
         val log: Logger = LoggerFactory.getLogger(ApplicationDownloadStep::class.java)
         const val GET_DEPENDENT_ID: String = "/software/api/dependent/get?id={0}"
@@ -29,7 +24,6 @@ class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloa
         totalDownloadSize = 0
         try {
             val dependentIds = getDependentIds()
-            //主应用
             val urls = arrayListOf(getDownloadUrl(value))
             if (dependentIds.isNotEmpty()) {
                 //依赖应用
@@ -88,14 +82,10 @@ class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloa
             completableFuture.add(CompletableFuture.supplyAsync {
                 val httpURLConnection = URL(it).openConnection() as HttpURLConnection
                 val lengthLong = httpURLConnection.contentLengthLong
-                if (lengthLong == -1L) {
-                    0
-                } else lengthLong
+                if (lengthLong == -1L) { 0 } else lengthLong
             })
         }
-        completableFuture.forEach {
-            total += it.get()
-        }
+        completableFuture.forEach { total += it.get() }
         return total
     }
 

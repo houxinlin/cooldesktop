@@ -1,24 +1,25 @@
 package com.hxl.desktop.common.utils
 
+import com.hxl.desktop.common.extent.fillZero
+
 object VersionUtils {
     fun isLz(v1: String, v2: String): Int {
-        var v1Split = v1.split(".")
-        var v2Split = v2.split(".")
-        var min = v1Split.size.coerceAtMost(v2Split.size)
+        var v1Split = v1.split(".").toMutableList()
+        var v2Split = v2.split(".").toMutableList()
+
+        var max = v1Split.size.coerceAtLeast(v2Split.size)
+        v1Split.fillZero(max)
+        v2Split.fillZero(max)
         var index = 0;
-        while (index < min) {
-            if (v2Split[index] == v1Split[index]) {
+        while (index < max) {
+            if (v2Split[index].toInt() == v1Split[index].toInt()) {
                 index++
                 continue
             }
-            if (v2Split[index] > v1Split[index]) {
-                return -1
-            }
-            if (v2Split[index] < v1Split[index]) {
-                return 1
-            }
-            index++
+            if (v2Split[index].toInt() > v1Split[index].toInt()) return -1
+            if (v2Split[index].toInt() < v1Split[index].toInt()) return 1
         }
+
         return 0
     }
 }

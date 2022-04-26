@@ -18,6 +18,7 @@ import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
 import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.common.utils.VersionUtils
+import com.hxl.desktop.loader.utils.ApplicationConvertFunction
 import com.hxl.desktop.system.config.CoolProperties
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -54,6 +55,17 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
 
     @Autowired
     private lateinit var coolProperties: CoolProperties
+
+    companion object {
+        private val log: Logger = LoggerFactory.getLogger(EasyApplicationLoader::class.java)
+        private val metadataReaderFactory: CachingMetadataReaderFactory = CachingMetadataReaderFactory()
+        const val JAR_FILE_PREFIX = "jar:file:"
+        const val FILE_PREFIX = "file:"
+        const val CLASS_NAME_SUFFIX = ".class"
+        const val APP_PROPERTIES="app.properties"
+        const val JAR_SUFFIX=".jar"
+
+    }
     override fun support(application: Application): Boolean {
         return application is EasyApplication
     }
@@ -64,7 +76,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
 
     override fun loadApplicationFromByte(applicationByte: ByteArray): ApplicationInstallState {
         try {
-            val tempAppStoragePath = Paths.get(Directory.getEasyAppStorageDirectory(), "${UUID.randomUUID()}.jar")
+            val tempAppStoragePath = Paths.get(Directory.getEasyAppStorageDirectory(), "${UUID.randomUUID()}${JAR_SUFFIX}")
             log.info("存储{}", tempAppStoragePath)
             Files.write(tempAppStoragePath, applicationByte)
 
@@ -74,11 +86,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
                 //保存不会重复加载
                 if (applicationRegister.isLoaded(easyApplication.applicationId)) {
                     tempAppStoragePath.deleteExisting()
-                    log.info(
-                        "无法加载，应用程序已经存在name:{},id:{}",
-                        easyApplication.applicationName,
-                        easyApplication.applicationId
-                    )
+                    log.info("无法加载，应用程序已经存在name:{},id:{}", easyApplication.applicationName, easyApplication.applicationId)
                     return ApplicationInstallState.DUPLICATE
                 }
                 easyApplication.applicationPath = tempAppStoragePath.toString()
@@ -87,6 +95,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
                     return ApplicationInstallState.INSTALL_OK
                 }
             }
+            //加载这个应用失败，则删除
             tempAppStoragePath.deleteExisting()
         } catch (e: Exception) {
             log.info(e.message)
@@ -97,21 +106,23 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
 
     override fun loadApplicationFromLocal() {
         val listJarFile = listJarFile()
-        listJarFile.forEach { doHandlerJarFile(it) }
+        listJarFile.forEach { doHandlerLoadJarFile(it) }
     }
 
+    private fun callUninstallMethodIfExist(application: EasyApplication){
+        application.beans.values.forEach {
+            try {
+                val uninstallMethod = ReflectUtils.findDeclaredMethod(it as Class<*>, "uninstall", arrayOf())
+                uninstallMethod?.run { this.invoke(coolDesktopBeanRegister.getBean(it)) }
+            } catch (e: NoSuchMethodException) {
+            }
+        }
+    }
     override fun unregisterApplication(application: Application): ApplicationInstallState {
         if (application is EasyApplication) {
             //调用销毁方法
-            application.beans.values.forEach {
-                try {
-                    val uninstallMethod = ReflectUtils.findDeclaredMethod(it as Class<*>, "uninstall", arrayOf())
-                    uninstallMethod?.run { this.invoke(coolDesktopBeanRegister.getBean(it)) }
-                } catch (e: NoSuchMethodException) {
-                }
-            }
+            callUninstallMethodIfExist(application)
             //从spring中销毁bean
-
             application.beans.values.forEach { coolDesktopBeanRegister.destroyBean(it as Class<*>) }
             //反注册所有Controller
             requestMappingRegister.unregisterApplication(application.applicationId)
@@ -126,63 +137,20 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     }
 
 
-    private fun createList(data: String, delimiters: String): List<String> {
-        if (StringUtils.hasLength(data)) {
-            return data.split(delimiters)
-        }
-        return emptyList()
-    }
-
-    private fun <T> getPropertiesOrDefault(properties: Properties, key: String, def: T): T {
-        return if (properties.containsKey(key)) {
-            (properties.getProperty(key)) as T
-        } else {
-            def
-        }
-    }
-
-
-    private fun loadApplicationFromProperty(properties: Properties): EasyApplication {
-        return EasyApplication().apply {
-            //程序ID
-            this.applicationId = properties.getProperty(Application.APP_ID_PROPERTY_KEY)
-            //程序名称
-            this.applicationName = properties.getProperty(Application.APP_NAME_PROPERTY_KEY)
-            //在启动器中是否可见
-            this.visibilityIsDesktop =
-                properties.getProperty(Application.APP_VISIBILITY_PROPERTY_KEY).lowercase() == "true"
-            //app版本
-            this.applicationVersion = properties.getProperty(Application.APP_VERSION_PROPERTY_KEY)
-            //作者
-            this.author = properties.getProperty(Application.APP_AUTHOR_PROPERTY_KEY)
-            //是否支持多开
-            this.singleInstance =
-                properties.getProperty(Application.APP_SINGLE_INSTANCE_PROPERTY_KEY).lowercase() == "true"
-            //菜单
-            this.menus = createList(properties.getProperty(Application.APP_MENU_PROPERTY_KEY), ",")
-            //所支持的媒体类型
-            this.supportMediaTypes = createList(properties.getProperty(Application.APP_SUPPORT_TYPE_KEY), ",")
-
-            //背景颜色
-            this.windowBackground =
-                getPropertiesOrDefault(properties, Application.APP_WEB_WINDOW_BACKGROUND, this.windowBackground)
-            //最低运行版本
-            this.environmentVersion =
-                getPropertiesOrDefault(properties, Application.APP_ENVIRONMENT_VERSION, this.environmentVersion)
-        }
-    }
-
-    //获取应用信息从JarFile
+    /**
+     * 获取应用信息从JarFile
+     */
     fun getApplicationFromFile(jarFile: JarFile): EasyApplication? {
-        val appPropertiesEntry = jarFile.getJarEntry("app.properties")
+        val appPropertiesEntry = jarFile.getJarEntry(APP_PROPERTIES)
         var errorMsg = ""
         appPropertiesEntry?.run {
             val properties = UTF8Property()
             properties.load(jarFile.getInputStream(appPropertiesEntry))
             if (Application.checkProperty(properties)) {
                 //从属性文件中转换为Application
-                val easyApplication = loadApplicationFromProperty(properties)
+                val easyApplication = ApplicationConvertFunction().apply(properties)
                 if (versionCheck(easyApplication)) {
+
                     return easyApplication.apply {
                         //创建类加载器
                         this.classLoader = createClassLoader(jarFile)
@@ -195,7 +163,6 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             }
             errorMsg = "无法找到属性"
             log.info("无法创建应用，原因是无法找到属性，{}", Application.findMissProperty(properties))
-
         }
         errorMsg = "无法找到属性文件"
         log.info("无法创建应用，原因是无法找到属性文件，{}", jarFile.name)
@@ -223,26 +190,28 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     fun createClassLoader(rootJar: JarFile): ClassLoader {
         var entries = rootJar.entries()
         var urls = mutableListOf<URL>()
-        val springJarFile =
-            org.springframework.boot.loader.jar.JarFile(File(rootJar.name))
+        val springJarFile = org.springframework.boot.loader.jar.JarFile(File(rootJar.name))
         //同时支持jar中的jar
         while (entries.hasMoreElements()) {
             var jarEntries = entries.nextElement()
-            if (jarEntries.name.endsWith(".jar")) {
+            if (jarEntries.name.endsWith(JAR_SUFFIX)) {
                 val url: URL = springJarFile.getNestedJarFile(springJarFile.getJarEntry(jarEntries.name)).url
                 urls.add(url)
             }
         }
-        urls.add(URL("file:${rootJar.name}"))
+        urls.add(URL("${FILE_PREFIX}${rootJar.name}"))
         return ApplicationClassLoader(false, urls.toTypedArray(), EasyApplication::class.java.classLoader)
     }
 
-    //获取所有@Componet的class，并且根据classloader实例化
+    /**
+     * 获取所有@Componet的class，并且根据classloader实例化
+     */
     private fun getComponentClassBeanDefinition(
         classLoader: ClassLoader,
         jarFile: JarFile
     ): ManagedMap<String, Any> {
         var componentClassNames = ManagedMap<String, Any>()
+
         JarFileClassExtract().extract(jarFile, object : EasyApplicationClassCallback {
             override fun call(urlResource: UrlResource, jarEntry: JarEntry) {
                 registerIfComponentClass(urlResource, jarEntry, componentClassNames, classLoader)
@@ -251,7 +220,9 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
         return componentClassNames
     }
 
-    //如果是@Component类
+    /**
+     * 如果是@Component类
+     */
     private fun registerIfComponentClass(
         classUrlResource: UrlResource,
         jarEntry: JarEntry,
@@ -278,9 +249,10 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
         return ApplicationWrapper(application)
     }
 
-
-    //系统启动时候执行
-    private fun doHandlerJarFile(file: File) {
+    /**
+     * 系统启动时候执行
+     */
+    private fun doHandlerLoadJarFile(file: File) {
         var jarFile = JarFile(file.absoluteFile)
         var application = getApplicationFromFile(jarFile)
         application?.run {
@@ -300,9 +272,11 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     }
 
 
-    //对外开放，用来注册EasyApplication，各个地方入口统一走这里
+    /**
+     * 对外开放，用来注册EasyApplication，各个地方入口统一走这里
+     */
     fun registerEasyApplication(easyApplication: EasyApplication): String {
-//        向Spring中注册Controller，再次之前，需要保证新jar中的class已经在spring容器中
+         // 向Spring中注册Controller，再次之前，需要保证新jar中的class已经在spring容器中
         requestMappingRegister.registerCustomRequestMapping(easyApplication)
         return applicationRegister.registerEasyApplication(createApplicationWrapper(easyApplication))
     }
@@ -322,12 +296,4 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
 
     }
 
-    companion object {
-        private val log: Logger = LoggerFactory.getLogger(EasyApplicationLoader::class.java)
-        private val metadataReaderFactory: CachingMetadataReaderFactory = CachingMetadataReaderFactory()
-        const val JAR_FILE_PREFIX = "jar:file:"
-        const val FILE_PREFIX = "file:"
-        const val CLASS_NAME_SUFFIX = ".class"
-
-    }
 }

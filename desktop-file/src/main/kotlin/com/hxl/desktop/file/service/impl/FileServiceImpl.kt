@@ -1,9 +1,9 @@
 package com.hxl.desktop.file.service.impl
 
-import com.hxl.desktop.common.bean.FileAttribute
+import com.hxl.desktop.file.bean.FileAttribute
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
-import com.hxl.desktop.common.core.NotifyWebSocket
+import com.hxl.desktop.common.core.ano.NotifyWebSocket
 import com.hxl.desktop.file.emun.FileType
 import com.hxl.desktop.file.extent.*
 import com.hxl.desktop.file.service.IFileService
@@ -14,7 +14,7 @@ import com.hxl.desktop.system.core.AsyncResultWithID
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
 import com.hxl.desktop.system.manager.ClipboardManager
-import com.hxl.desktop.common.bean.UploadInfo
+import com.hxl.desktop.file.bean.UploadInfo
 import com.hxl.desktop.common.extent.toFile
 import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.common.result.FileHandlerResult

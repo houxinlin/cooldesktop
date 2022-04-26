@@ -1,4 +1,4 @@
-package com.hxl.desktop.common.bean
+package com.hxl.desktop.file.bean
 
 
 

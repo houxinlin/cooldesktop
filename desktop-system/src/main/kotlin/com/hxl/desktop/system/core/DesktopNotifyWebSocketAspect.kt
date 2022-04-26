@@ -1,6 +1,6 @@
 package com.hxl.desktop.system.core
 
-import com.hxl.desktop.common.core.NotifyWebSocket
+import com.hxl.desktop.common.core.ano.NotifyWebSocket
 import com.hxl.desktop.common.result.FileHandlerResult
 import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.annotation.AfterReturning
@@ -24,7 +24,7 @@ class DesktopNotifyWebSocketAspect {
     @Autowired
     lateinit var coolDesktopEventAction: WebSocketSender
 
-    @AfterThrowing(throwing = "exception", pointcut = "@annotation(com.hxl.desktop.common.core.NotifyWebSocket)")
+    @AfterThrowing(throwing = "exception", pointcut = "@annotation(com.hxl.desktop.common.core.ano.NotifyWebSocket)")
     fun notifyAfter(joinPoint: JoinPoint, exception: Throwable) {
         val signature = joinPoint.signature as MethodSignature
         var notifyWebSocket = signature.method.getDeclaredAnnotation(NotifyWebSocket::class.java)
@@ -51,7 +51,7 @@ class DesktopNotifyWebSocketAspect {
     }
 
 
-    @AfterReturning(returning = "data", pointcut = "@annotation(com.hxl.desktop.common.core.NotifyWebSocket)")
+    @AfterReturning(returning = "data", pointcut = "@annotation(com.hxl.desktop.common.core.ano.NotifyWebSocket)")
     fun notifyAfterReturning(joinPoint: JoinPoint, data: Any) {
         log.info("通知客户端$data")
         val signature = joinPoint.signature as MethodSignature

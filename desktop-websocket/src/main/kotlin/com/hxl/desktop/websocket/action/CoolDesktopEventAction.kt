@@ -39,7 +39,9 @@ class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
         delayQueue.put(DelayEvent(msg, second))
     }
 
-    //所有消息统一走这里
+    /**
+     * 所有消息统一走这里
+     */
     override fun send(msg: String, id: String) {
         if (coolDesktopEventSocket != null && coolDesktopEventSocket!!.isOpen) {
             coolDesktopEventSocket!!.sendMessage(TextMessage(WebSocketUtils.createMessage(msg.toByteArray())))

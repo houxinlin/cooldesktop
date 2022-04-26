@@ -1,9 +1,11 @@
 package com.hxl.desktop.loader.application
 
 import com.desktop.application.definition.application.Application
+import com.desktop.application.definition.application.easyapp.EasyApplication
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.system.core.CoolDesktopApplicationStaticResourceRegister
+import com.hxl.desktop.system.manager.OpenUrlManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,10 +43,14 @@ class ApplicationRegister : CommandLineRunner {
      */
     fun registerEasyApplication(easyApplication: ApplicationWrapper): String {
         easyApplication.application.type = Application.EASY_APP
+
+        //注册静态资源
         coolDesktopApplicationStaticResourceRegister.register(
             easyApplication.application.applicationId,
             easyApplication.application.applicationPath.toPath()
         )
+
+        easyApplication.application.urlExclude.forEach(OpenUrlManager::register)
         return register(easyApplication, easyApplicationMap)
     }
 
@@ -74,6 +80,7 @@ class ApplicationRegister : CommandLineRunner {
     }
 
     fun unregister(id: String) {
+        getApplicationById(id)?.run { if (this.application is EasyApplication) this.application.urlExclude.forEach(OpenUrlManager::unregister) }
         webMiniApplicationMap.remove(id)
         easyApplicationMap.remove(id)
         coolDesktopApplicationStaticResourceRegister.unregister(id)

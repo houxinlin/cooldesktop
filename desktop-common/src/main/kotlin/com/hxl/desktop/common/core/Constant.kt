@@ -22,6 +22,7 @@ class Constant {
         const val SSH_CONNECTION_FAIL = "连接失败，请检查配置"
         const val LOAD_APPLICATION_SUCCESS = "应用加载成功"
         const val LOAD_APPLICATION_DUPLICATE = "无法重复加载相同ID应用"
+        const val DUPLICATE = "重复的数据"
         const val LOAD_APPLICATION_FAIL = "加载应用失败"
         var SSH_WRITE_AUTHOR_FAIL =
             "生成密钥成功，但无法写入到authorized_keys文件中，请尝试手动复制\r,系统将在3秒后为您弹出资源目录，请将cooldes.pub中的文件复制到/root/.ssh/authorized_keys中"
