@@ -8,7 +8,7 @@ CoolDesktop采用全新的操作方式，让您像操作本地系统一样，操
 
 # 🛫 安装
 
-  [点击这里下载](https://github.com/houxinlin/cooldesktop/releases/download/v1.1.2/desktop-web.jar)
+  [点击这里下载](https://github.com/houxinlin/cooldesktop/releases/download/v2.0.0/desktop-web-2.0.0.jar)
 
   使用scp命令或者xftp上传到您的服务器
 
