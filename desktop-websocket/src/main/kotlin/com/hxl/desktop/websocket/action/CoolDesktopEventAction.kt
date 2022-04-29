@@ -44,6 +44,7 @@ class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
      */
     override fun send(msg: String, id: String) {
         if (coolDesktopEventSocket != null && coolDesktopEventSocket!!.isOpen) {
+            log.info("WebSocket发送数据{}",msg)
             coolDesktopEventSocket!!.sendMessage(TextMessage(WebSocketUtils.createMessage(msg.toByteArray())))
             return
         }
@@ -57,8 +58,7 @@ class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
 
     override fun action(webSocketSession: WebSocketSession) {
         coolDesktopEventSocket = webSocketSession
-        while (offlineMessageQueue.poll()?.also { send(it) } != null) {
-        }
+        while (offlineMessageQueue.poll()?.also { send(it) } != null) { }
     }
 
     override fun closeSession(webSocketSession: WebSocketSession) {

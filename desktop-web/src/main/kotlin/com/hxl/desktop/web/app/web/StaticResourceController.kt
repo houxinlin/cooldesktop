@@ -30,7 +30,26 @@ class StaticResourceController {
     lateinit var fileSystemService: IFileService;
 
     /**
-     *file rename
+     * 停止一个jar文件，如果存在此路径下多个进程，则终止失败
+     */
+    @PostMapping("stopJar")
+    fun stopJar(@RequestParam("path") path: String): Any {
+        return fileSystemService.stopJar(path).asHttpResponseBody()
+    }
+
+    /**
+     * 运行一个Jar文件
+     */
+    @PostMapping("runJar")
+    fun runJarFile(
+        @RequestParam("path") path: String,
+        @RequestParam(value = "arg", required = false, defaultValue = "") arg: String
+    ): Any {
+        return fileSystemService.runJarFile(path, arg).asHttpResponseBody()
+    }
+
+    /**
+     *创建文件
      */
     @PostMapping("createFile")
     fun createFile(
@@ -42,7 +61,7 @@ class StaticResourceController {
     }
 
     /**
-     *file rename
+     * 文件重命名
      */
     @PostMapping("fileRename")
     fun fileCopy(
@@ -53,7 +72,7 @@ class StaticResourceController {
     }
 
     /**
-     * file copy
+     * 文件复制
      */
     @PostMapping("fileCopy")
     fun fileCopy(@RequestParam("path") path: String): Any {
@@ -61,7 +80,7 @@ class StaticResourceController {
     }
 
     /**
-     * file cut
+     * 文件剪切
      */
     @PostMapping("fileCut")
     fun fileCut(@RequestParam("path") path: String): Any {
@@ -70,7 +89,7 @@ class StaticResourceController {
 
 
     /**
-     * file paste
+     * 文件粘贴
      */
     @PostMapping("filePaste")
     fun filePaste(@RequestParam("path") target: String, @RequestParam("taskId") taskId: String): Any {
@@ -79,7 +98,7 @@ class StaticResourceController {
     }
 
     /**
-     * chunk file upload
+     * 文件上传
      */
 
     @PostMapping("chunkUpload")
@@ -88,7 +107,7 @@ class StaticResourceController {
     }
 
     /**
-     * chunk file mearge
+     * 合并块文件
      */
     @PostMapping("chunkFileMerge")
     fun chunkFileMerge(
@@ -100,7 +119,7 @@ class StaticResourceController {
     }
 
     /**
-     * delete files
+     * 文件删除
      */
     @GetMapping("/delete")
     fun delete(@RequestParam("path") root: String): Any {
@@ -108,7 +127,7 @@ class StaticResourceController {
     }
 
     /**
-     * list files
+     * 文件list
      */
     @GetMapping("/list")
     fun list(@RequestParam("root") root: String): Any {
@@ -116,7 +135,7 @@ class StaticResourceController {
     }
 
     /**
-     * get file preview image
+     * 获取文件icon
      */
     @GetMapping("getFileIconByType")
     fun getFileIconByType(@RequestParam("type") path: String): ResponseEntity<org.springframework.core.io.Resource> {
@@ -130,7 +149,7 @@ class StaticResourceController {
     }
 
     /**
-     * get file preview image
+     * 文件预览图
      */
     @GetMapping("getImageThumbnail")
     fun getImageThumbnail(@RequestParam("path") path: String): ResponseEntity<org.springframework.core.io.Resource> {
@@ -143,6 +162,9 @@ class StaticResourceController {
             .body(fileIcon);
     }
 
+    /**
+     * 文件压缩
+     */
     @PostMapping("fileCompress")
     fun fileCompress(
         @RequestParam("path") path: String,
@@ -150,17 +172,23 @@ class StaticResourceController {
         @RequestParam("compressType") compressType: String,
         @RequestParam("taskId") taskId: String
     ): Any {
-        return fileSystemService.fileCompress(path, targetName, compressType,taskId)
+        return fileSystemService.fileCompress(path, targetName, compressType, taskId)
     }
 
+    /**
+     * 文件解压
+     */
     @PostMapping("fileDecompression")
     fun fileCompress(
         @RequestParam("path") path: String,
         @RequestParam("taskId") taskId: String
     ): Any {
-        return fileSystemService.fileDecompression(path,taskId)
+        return fileSystemService.fileDecompression(path, taskId)
     }
 
+    /**
+     * 文件属性
+     */
     @PostMapping("getFileAttribute")
     fun getFileAttribute(@RequestParam("path") path: String): Any {
         if (path.toPath().exists()) {
@@ -169,6 +197,9 @@ class StaticResourceController {
         return FileHandlerResult.NOT_EXIST.asHttpResponseBody()
     }
 
+    /**
+     * 获取文本内容
+     */
     @GetMapping("getTextFileContent")
     fun getTextFileContent(@RequestParam("path") path: String): Any {
         if (path.toPath().exists()) {
@@ -177,11 +208,17 @@ class StaticResourceController {
         return FileHandlerResult.NOT_EXIST.asHttpResponseBody()
     }
 
+    /**
+     * 设置文本内容
+     */
     @PostMapping("setTextFileContent")
     fun setTextFileContent(@RequestParam("path") path: String, @RequestParam("content") content: String): Any {
         return fileSystemService.setTextFileContent(path, content).asHttpResponseBody()
     }
 
+    /**
+     * 下载
+     */
     @GetMapping("download")
     fun download(@RequestParam("path") path: String): ResponseEntity<FileSystemResource> {
         return fileSystemService.download(path)

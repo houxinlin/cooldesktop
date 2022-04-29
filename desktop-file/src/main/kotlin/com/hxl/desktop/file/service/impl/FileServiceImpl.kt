@@ -18,6 +18,7 @@ import com.hxl.desktop.file.bean.UploadInfo
 import com.hxl.desktop.common.extent.toFile
 import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.common.result.FileHandlerResult
+import com.hxl.desktop.system.utils.JarUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -255,7 +256,6 @@ class FileServiceImpl : IFileService {
                 val msg = e.message as String
                 return AsyncResultWithID(FileHandlerResult.fail(msg, msg), taskId)
             }
-            return AsyncResultWithID(FileHandlerResult.DECOMPRESSION_FAIL, taskId)
         }
         return AsyncResultWithID(FileHandlerResult.NOT_SUPPORT_COMPRESS_TYPE, taskId)
     }
@@ -296,11 +296,30 @@ class FileServiceImpl : IFileService {
         return FileHandlerResult.NO_PERMISSION
     }
 
-    override fun download(pathStr: String): ResponseEntity<FileSystemResource> {
-        val path = pathStr.toPath()
-        if (path.isDirectory() || (!path.exists())) {
+    override fun download(path: String): ResponseEntity<FileSystemResource> {
+        val downloadPath = path.toPath()
+        if (downloadPath.isDirectory() || (!downloadPath.exists())) {
             return ResponseEntity.notFound().build()
         }
-        return path.toFile().toHttpResponse()
+        return downloadPath.toFile().toHttpResponse()
+    }
+
+    override fun runJarFile(path: String, arg: String): Boolean {
+        if ((!path.toFile().exists()) || path.toFile().isDirectory) return false
+
+        val maxWaitSecond = 5L //最大等待秒数
+        JarUtils.getProcessIds(path).let {
+            //指定路径中是否已经有一个或者多个在运行,有多个检查的时候需要排除
+            JarUtils.run(path, arg)
+            return JarUtils.isRun(path, it, maxWaitSecond)
+        }
+    }
+
+    override fun stopJar(path: String): String {
+        if (!path.toFile().exists()) return Constant.StringConstant.FILE_NOT_EXIST
+        if (JarUtils.getProcessIds(path).isEmpty()) return Constant.StringConstant.STOP_JAR_PROCESS_FAIL_EMPTY
+        if (JarUtils.getProcessIds(path).size > 1) return Constant.StringConstant.STOP_JAR_PROCESS_FAIL_MULTI
+        JarUtils.stopJar(path)
+        return Constant.StringConstant.STOP_JAR_PROCESS_SUCCESS
     }
 }

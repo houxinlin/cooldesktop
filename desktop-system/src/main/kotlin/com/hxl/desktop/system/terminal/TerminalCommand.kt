@@ -3,7 +3,9 @@ package com.hxl.desktop.system.terminal
 import java.io.IOException
 
 class TerminalCommand {
-    fun execute(commandBuilder: Builder): String {
+    private constructor()
+
+    private fun execute(commandBuilder: Builder): String {
         try {
             val processBuilder = ProcessBuilder()
             processBuilder.command(commandBuilder.commands)
@@ -19,7 +21,7 @@ class TerminalCommand {
     }
 
     class Builder {
-         var commands = mutableListOf<String>()
+        var commands = mutableListOf<String>()
 
         init {
             commands.add("bash")

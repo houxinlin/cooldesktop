@@ -30,7 +30,11 @@ repositories {
 }
 
 tasks.register<Copy>("copyLib") {
+    val javaHome =System.getProperty("java.home")
+    val parent =File(javaHome).parent
+    val toolsPath = "$parent/lib/tools.jar"
     from(
+        toolsPath,
         "/home/HouXinLin/project/java/desktop-spring-boot/spring-boot-2.6.1/spring-boot-project/spring-boot/build/libs/spring-boot-2.6.1.jar",
         "/home/HouXinLin/project/java/tomcat/desktop-tomcat/apache-tomcat-9.0.58-src/output/embed/tomcat-embed-core.jar",
         "/home/HouXinLin/project/java/spring-source/spring-source-5.1.13/spring-framework/spring-webmvc/build/libs/spring-webmvc-5.3.20-SNAPSHOT.jar",
@@ -71,7 +75,7 @@ subprojects {
 
         //tomcat为二次开发的jar，主要功能全局拦截，进行登录，打包的时候会加入，开发的时候使用原本的tomcat
         compileOnly("org.apache.tomcat.embed:tomcat-embed-core:9.0.58")
-
+        implementation(files("${CooldesktopRoot}/desktop-lib/tools.jar"))
         implementation(files("${CooldesktopRoot}/desktop-lib/spring-boot-2.6.1.jar"))
         implementation(files("${CooldesktopRoot}/desktop-lib/desktop-application-definition-1.0-SNAPSHOT.jar"))
         implementation(files("${CooldesktopRoot}/desktop-lib/FileMerge-1.0-SNAPSHOT.jar"))

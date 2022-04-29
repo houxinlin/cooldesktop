@@ -24,6 +24,10 @@ class Constant {
         const val LOAD_APPLICATION_DUPLICATE = "无法重复加载相同ID应用"
         const val DUPLICATE = "重复的数据"
         const val LOAD_APPLICATION_FAIL = "加载应用失败"
+        const val STOP_JAR_PROCESS_FAIL_MULTI = "终止失败，发现多个此路径进程，请手动终止"
+        const val STOP_JAR_PROCESS_FAIL_EMPTY = "未运行"
+        const val STOP_JAR_PROCESS_SUCCESS = "已终止"
+        const val FILE_NOT_EXIST = "文件不存在"
         var SSH_WRITE_AUTHOR_FAIL =
             "生成密钥成功，但无法写入到authorized_keys文件中，请尝试手动复制\r,系统将在3秒后为您弹出资源目录，请将cooldes.pub中的文件复制到/root/.ssh/authorized_keys中"
     }

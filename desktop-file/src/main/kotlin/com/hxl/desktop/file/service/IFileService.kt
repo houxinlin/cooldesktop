@@ -20,7 +20,7 @@ interface IFileService {
 
     fun chunkUpload(uploadInfo: UploadInfo): FileHandlerResult
 
-    fun fileMerge(path: String, name: String, inPath: String): FileHandlerResult;
+    fun fileMerge(chunkId: String, name: String, inPath: String): FileHandlerResult;
 
     fun hasPermission(path: String): Boolean;
 
@@ -46,5 +46,9 @@ interface IFileService {
     fun fileDecompression(path: String,taskId: String): Future<FileHandlerResult>
 
     fun download(path: String): ResponseEntity<FileSystemResource>
+
+    fun runJarFile(path: String,arg:String):Boolean
+
+    fun stopJar(path: String): String
 
 }
