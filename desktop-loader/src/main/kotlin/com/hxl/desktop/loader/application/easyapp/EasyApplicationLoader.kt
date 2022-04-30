@@ -62,10 +62,11 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
         const val JAR_FILE_PREFIX = "jar:file:"
         const val FILE_PREFIX = "file:"
         const val CLASS_NAME_SUFFIX = ".class"
-        const val APP_PROPERTIES="app.properties"
-        const val JAR_SUFFIX=".jar"
+        const val APP_PROPERTIES = "app.properties"
+        const val JAR_SUFFIX = ".jar"
 
     }
+
     override fun support(application: Application): Boolean {
         return application is EasyApplication
     }
@@ -76,7 +77,8 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
 
     override fun loadApplicationFromByte(applicationByte: ByteArray): ApplicationInstallState {
         try {
-            val tempAppStoragePath = Paths.get(Directory.getEasyAppStorageDirectory(), "${UUID.randomUUID()}${JAR_SUFFIX}")
+            val tempAppStoragePath =
+                Paths.get(Directory.getEasyAppStorageDirectory(), "${UUID.randomUUID()}${JAR_SUFFIX}")
             log.info("存储{}", tempAppStoragePath)
             Files.write(tempAppStoragePath, applicationByte)
 
@@ -86,7 +88,11 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
                 //保存不会重复加载
                 if (applicationRegister.isLoaded(easyApplication.applicationId)) {
                     tempAppStoragePath.deleteExisting()
-                    log.info("无法加载，应用程序已经存在name:{},id:{}", easyApplication.applicationName, easyApplication.applicationId)
+                    log.info(
+                        "无法加载，应用程序已经存在name:{},id:{}",
+                        easyApplication.applicationName,
+                        easyApplication.applicationId
+                    )
                     return ApplicationInstallState.DUPLICATE
                 }
                 easyApplication.applicationPath = tempAppStoragePath.toString()
@@ -109,7 +115,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
         listJarFile.forEach { doHandlerLoadJarFile(it) }
     }
 
-    private fun callUninstallMethodIfExist(application: EasyApplication){
+    private fun callUninstallMethodIfExist(application: EasyApplication) {
         application.beans.values.forEach {
             try {
                 val uninstallMethod = ReflectUtils.findDeclaredMethod(it as Class<*>, "uninstall", arrayOf())
@@ -118,6 +124,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             }
         }
     }
+
     override fun unregisterApplication(application: Application): ApplicationInstallState {
         if (application is EasyApplication) {
             //调用销毁方法
@@ -142,7 +149,6 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
      */
     fun getApplicationFromFile(jarFile: JarFile): EasyApplication? {
         val appPropertiesEntry = jarFile.getJarEntry(APP_PROPERTIES)
-        var errorMsg = ""
         appPropertiesEntry?.run {
             val properties = UTF8Property()
             properties.load(jarFile.getInputStream(appPropertiesEntry))
@@ -150,7 +156,6 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
                 //从属性文件中转换为Application
                 val easyApplication = ApplicationConvertFunction().apply(properties)
                 if (versionCheck(easyApplication)) {
-
                     return easyApplication.apply {
                         //创建类加载器
                         this.classLoader = createClassLoader(jarFile)
@@ -158,16 +163,19 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
                         this.beans = getComponentClassBeanDefinition(this.classLoader, jarFile)
                     }
                 }
-                errorMsg = "系统版本过低"
+                return returnNullAndNotify(jarFile.name, "系统版本过低")
 
             }
-            errorMsg = "无法找到属性"
             log.info("无法创建应用，原因是无法找到属性，{}", Application.findMissProperty(properties))
+            return returnNullAndNotify(jarFile.name, "无法找到属性${Application.findMissProperty(properties)}")
         }
-        errorMsg = "无法找到属性文件"
         log.info("无法创建应用，原因是无法找到属性文件，{}", jarFile.name)
-        notifyClientState(jarFile.name, errorMsg)
-        return null;
+        return returnNullAndNotify(jarFile.name, "无法找到属性文件")
+    }
+
+    private fun returnNullAndNotify(appName: String, errorMsg: String): EasyApplication? {
+        notifyClientState(appName, errorMsg)
+        return null
     }
 
     private fun notifyClientState(appName: String, errorMsg: String) {
@@ -276,7 +284,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
      * 对外开放，用来注册EasyApplication，各个地方入口统一走这里
      */
     fun registerEasyApplication(easyApplication: EasyApplication): String {
-         // 向Spring中注册Controller，再次之前，需要保证新jar中的class已经在spring容器中
+        // 向Spring中注册Controller，再次之前，需要保证新jar中的class已经在spring容器中
         requestMappingRegister.registerCustomRequestMapping(easyApplication)
         return applicationRegister.registerEasyApplication(createApplicationWrapper(easyApplication))
     }

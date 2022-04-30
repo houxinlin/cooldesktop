@@ -6,6 +6,7 @@ import com.hxl.desktop.common.core.ano.NotifyWebSocket
 import com.hxl.desktop.common.result.FileHandlerResult
 import com.hxl.desktop.database.CoolDesktopDatabase
 import com.hxl.desktop.database.CoolDesktopDatabaseConfigKeys
+import com.hxl.desktop.system.config.CoolProperties
 import com.hxl.desktop.system.config.SystemResourceMvcConfigurer.Companion.WALLPAPER_REQUEST_RESOURCE_PATH
 import com.hxl.desktop.system.core.TomcatGlobalAuthenticationPasswordUtils
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
@@ -41,6 +42,9 @@ class CoolDesktopSystem {
 
     @Autowired
     lateinit var webSocketSender: WebSocketSender
+
+    @Autowired
+    lateinit var coolProperties: CoolProperties
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(CoolDesktopSystem::class.java)
@@ -79,7 +83,9 @@ class CoolDesktopSystem {
      */
     fun getCoolDesktopProperty(): MutableMap<String, String> {
         var listConfigs = coolDesktopDatabase.listConfigs()
+        //排除敏感信息
         SENSITIVE_KEY.forEach { listConfigs.remove(it) }
+        listConfigs["cooldesktop.version"] = coolProperties.coolVersion
         return listConfigs
     }
 
