@@ -36,7 +36,9 @@ class FileHandlerResult(code: Int, data: Any, msg: String) : BaseHandlerResult(c
         fun create(code: Int, data: Any, msg: String): FileHandlerResult {
             return FileHandlerResult(code, data, msg);
         }
-
+        fun createOK( data: Any): FileHandlerResult {
+            return FileHandlerResult(0, data, "OK");
+        }
         fun fail(data: Any, msg: String): FileHandlerResult {
             return FileHandlerResult(-1, data, msg);
         }

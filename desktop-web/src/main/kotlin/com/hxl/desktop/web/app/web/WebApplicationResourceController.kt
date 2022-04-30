@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse
 /**
  * web应用资源
  */
-
 @RestController
 @RequestMapping("/desktop/webapplication/")
 class WebApplicationResourceController {

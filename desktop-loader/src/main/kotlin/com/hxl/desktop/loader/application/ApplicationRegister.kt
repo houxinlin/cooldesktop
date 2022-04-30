@@ -33,7 +33,6 @@ class ApplicationRegister : CommandLineRunner {
      * 注册web应用
      */
     fun registerWebApplication(webMiniApplication: ApplicationWrapper): String {
-        log.info("尝试注册Web Application{}", webMiniApplication.application.applicationName)
         webMiniApplication.application.type = Application.WEB_MINI_APP
         return register(webMiniApplication, webMiniApplicationMap)
     }
@@ -63,7 +62,7 @@ class ApplicationRegister : CommandLineRunner {
             log.info("应用{}已经加载", application.application.applicationName)
             return Constant.StringConstant.LOAD_APPLICATION_DUPLICATE
         }
-        log.info("注册Easy Application{}", application.application.applicationName)
+        log.info("注册应用程序{}", application.application.applicationName)
         application.init()
         map[application.application.applicationId] = application
         return Constant.StringConstant.LOAD_APPLICATION_SUCCESS

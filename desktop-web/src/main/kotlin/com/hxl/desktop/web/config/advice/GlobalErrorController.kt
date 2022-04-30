@@ -1,4 +1,4 @@
-package com.hxl.desktop.system.config
+package com.hxl.desktop.web.config.advice
 
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -10,7 +10,7 @@ class GlobalErrorController {
 
     @ExceptionHandler(Exception::class)
     fun handlerGlobalError(exception: java.lang.Exception): Any {
-        logger.error(exception.message)
+        exception.printStackTrace()
         return mutableMapOf("code" to -1, "msg" to "请求失败")
     }
 
