@@ -28,6 +28,7 @@ class Constant {
         const val STOP_JAR_PROCESS_FAIL_EMPTY = "未运行"
         const val STOP_JAR_PROCESS_SUCCESS = "已终止"
         const val FILE_NOT_EXIST = "文件不存在"
+        const val SHELL_EXEC_RESULT = "shell脚本执行输出如下\n\r"
         var SSH_WRITE_AUTHOR_FAIL =
             "生成密钥成功，但无法写入到authorized_keys文件中，请尝试手动复制\r,系统将在3秒后为您弹出资源目录，请将cooldes.pub中的文件复制到/root/.ssh/authorized_keys中"
     }
@@ -42,6 +43,7 @@ class Constant {
         const val COMPRESS_RESULT: String = "/event/compress/result"
         const val NOTIFY_MESSAGE_SUCCESS: String = "/event/notify/message/success"
         const val NOTIFY_MESSAGE_ERROR: String = "/event/notify/message/error"
+        const val NOTIFY_SHELL_EXEC_RESULT: String = "/event/shell/message"
     }
 
     object ApplicationEvent {

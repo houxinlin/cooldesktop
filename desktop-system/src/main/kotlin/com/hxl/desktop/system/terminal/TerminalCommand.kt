@@ -32,7 +32,6 @@ class TerminalCommand {
             commands.add(command)
             return this
         }
-
         fun execute(): String {
             return TerminalCommand().execute(this)
         }

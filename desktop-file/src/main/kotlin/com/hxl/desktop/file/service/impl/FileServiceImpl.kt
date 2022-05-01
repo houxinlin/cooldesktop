@@ -18,6 +18,9 @@ import com.hxl.desktop.file.bean.UploadInfo
 import com.hxl.desktop.common.extent.toFile
 import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.common.result.FileHandlerResult
+import com.hxl.desktop.system.terminal.CommandConstant
+import com.hxl.desktop.system.terminal.LinuxShell
+import com.hxl.desktop.system.terminal.TerminalCommand
 import com.hxl.desktop.system.utils.JarUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,6 +29,7 @@ import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.ResponseEntity
+import org.springframework.scheduling.annotation.AsyncResult
 import org.springframework.stereotype.Service
 import org.springframework.util.FileSystemUtils
 import java.io.File
@@ -321,5 +325,13 @@ class FileServiceImpl : IFileService {
         if (JarUtils.getProcessIds(path).size > 1) return Constant.StringConstant.STOP_JAR_PROCESS_FAIL_MULTI
         JarUtils.stopJar(path)
         return Constant.StringConstant.STOP_JAR_PROCESS_SUCCESS
+    }
+
+    /**
+     * 将执行结果通过websocket通知到客户端
+     */
+    @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.NOTIFY_MESSAGE_SUCCESS, action = "show")
+    override fun runShell(path: String): Future<String> {
+        return AsyncResult(Constant.StringConstant.SHELL_EXEC_RESULT + LinuxShell(path).run())
     }
 }

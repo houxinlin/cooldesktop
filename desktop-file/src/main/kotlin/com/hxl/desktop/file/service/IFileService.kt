@@ -51,4 +51,7 @@ interface IFileService {
 
     fun stopJar(path: String): String
 
+    @Async
+    fun runShell(path: String): Future<String>
+
 }

@@ -88,15 +88,10 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
                 //保存不会重复加载
                 if (applicationRegister.isLoaded(easyApplication.applicationId)) {
                     tempAppStoragePath.deleteExisting()
-                    log.info(
-                        "无法加载，应用程序已经存在name:{},id:{}",
-                        easyApplication.applicationName,
-                        easyApplication.applicationId
-                    )
+                    log.info("无法加载，应用程序已经存在name:{},id:{}", easyApplication.applicationName, easyApplication.applicationId)
                     return ApplicationInstallState.DUPLICATE
                 }
                 easyApplication.applicationPath = tempAppStoragePath.toString()
-
                 if (Constant.StringConstant.LOAD_APPLICATION_SUCCESS == registerEasyApplication(easyApplication)) {
                     return ApplicationInstallState.INSTALL_OK
                 }
@@ -152,28 +147,29 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
         appPropertiesEntry?.run {
             val properties = UTF8Property()
             properties.load(jarFile.getInputStream(appPropertiesEntry))
-            if (Application.checkProperty(properties)) {
-                //从属性文件中转换为Application
-                val easyApplication = ApplicationConvertFunction().apply(properties)
-                if (versionCheck(easyApplication)) {
-                    return easyApplication.apply {
-                        //创建类加载器
-                        this.classLoader = createClassLoader(jarFile)
-                        //所有bean
-                        this.beans = getComponentClassBeanDefinition(this.classLoader, jarFile)
-                    }
-                }
-                return returnNullAndNotify(jarFile.name, "系统版本过低")
-
-            }
-            log.info("无法创建应用，原因是无法找到属性，{}", Application.findMissProperty(properties))
-            return returnNullAndNotify(jarFile.name, "无法找到属性${Application.findMissProperty(properties)}")
+            //如果没有通过属性验证
+            if (!Application.checkProperty(properties)) return returnNullAndNotify(jarFile.name, "无法找到属性${Application.findMissProperty(properties)}")
+            //根据properties填充一个基本的EasyApplication
+            val easyApplication = ApplicationConvertFunction().apply(properties)
+            //如果没有通过版本检测
+            if (!versionCheck(easyApplication)) return returnNullAndNotify(jarFile.name, "系统版本过低")
+            //创建一个完整的EasyApplication
+            return createEasyApplication(easyApplication, jarFile)
         }
-        log.info("无法创建应用，原因是无法找到属性文件，{}", jarFile.name)
         return returnNullAndNotify(jarFile.name, "无法找到属性文件")
     }
 
+    private fun createEasyApplication(easyApplication: EasyApplication, jarFile: JarFile): EasyApplication {
+        return easyApplication.apply {
+            //创建类加载器
+            this.classLoader = createClassLoader(jarFile)
+            //所有bean
+            this.beans = getComponentClassBeanDefinition(this.classLoader, jarFile)
+        }
+    }
+
     private fun returnNullAndNotify(appName: String, errorMsg: String): EasyApplication? {
+        log.info("无法创建应用，原因:{}", errorMsg)
         notifyClientState(appName, errorMsg)
         return null
     }
