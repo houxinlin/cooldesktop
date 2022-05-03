@@ -147,7 +147,8 @@
                     window.location.href = "/"
                     return
                 }
-                document.getElementById("message").innerText = "密码错误"
+                let tip = data["msg"] || "密码错误"
+                document.getElementById("message").innerText =tip
             });
     }
 </script>

@@ -75,12 +75,13 @@ subprojects {
 
         //tomcat为二次开发的jar，主要功能全局拦截，进行登录，打包的时候会加入，开发的时候使用原本的tomcat
         compileOnly("org.apache.tomcat.embed:tomcat-embed-core:9.0.58")
+        runtimeOnly(files("${CooldesktopRoot}/desktop-lib/tomcat-embed-core.jar"))
+
         implementation(files("${CooldesktopRoot}/desktop-lib/tools.jar"))
         implementation(files("${CooldesktopRoot}/desktop-lib/spring-boot-2.6.1.jar"))
         implementation(files("${CooldesktopRoot}/desktop-lib/desktop-application-definition-1.0-SNAPSHOT.jar"))
         implementation(files("${CooldesktopRoot}/desktop-lib/FileMerge-1.0-SNAPSHOT.jar"))
         implementation(files("${CooldesktopRoot}/desktop-lib/spring-webmvc-5.3.20-SNAPSHOT.jar"))
-        runtimeOnly(files("${CooldesktopRoot}/desktop-lib/tomcat-embed-core.jar"))
 
         implementation("org.springframework.boot:spring-boot-starter-websocket:2.6.2")
         implementation("org.tukaani:xz:1.9")
