@@ -55,6 +55,7 @@ subprojects {
     configurations.implementation {
         exclude(group = "org.springframework.boot", module = "spring-boot")
         exclude(group="org.springframework",module="spring-webmvc")
+
     }
     if (name != "desktop-web") {
         tasks.bootJar {
@@ -76,17 +77,20 @@ subprojects {
         //tomcat为二次开发的jar，主要功能全局拦截，进行登录，打包的时候会加入，开发的时候使用原本的tomcat
         compileOnly("org.apache.tomcat.embed:tomcat-embed-core:9.0.58")
         runtimeOnly(files("${CooldesktopRoot}/desktop-lib/tomcat-embed-core.jar"))
-
         implementation(files("${CooldesktopRoot}/desktop-lib/tools.jar"))
         implementation(files("${CooldesktopRoot}/desktop-lib/spring-boot-2.6.1.jar"))
         implementation(files("${CooldesktopRoot}/desktop-lib/desktop-application-definition-1.0-SNAPSHOT.jar"))
         implementation(files("${CooldesktopRoot}/desktop-lib/FileMerge-1.0-SNAPSHOT.jar"))
         implementation(files("${CooldesktopRoot}/desktop-lib/spring-webmvc-5.3.20-SNAPSHOT.jar"))
 
-        implementation("org.springframework.boot:spring-boot-starter-websocket:2.6.2")
+        implementation("org.springframework.boot:spring-boot-starter-websocket:2.6.2"){
+            exclude(group="org.apache.tomcat.embed",module="tomcat-embed-core")
+        }
         implementation("org.tukaani:xz:1.9")
         implementation("org.apache.commons:commons-compress:1.21")
-        implementation("org.springframework.boot:spring-boot-starter-web")
+        implementation("org.springframework.boot:spring-boot-starter-web"){
+            exclude(group="org.apache.tomcat.embed",module="tomcat-embed-core")
+        }
         implementation("org.springframework.boot:spring-boot-starter-aop:2.6.3")
         implementation("net.coobird:thumbnailator:0.4.15")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -95,8 +99,6 @@ subprojects {
         annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         implementation("org.apache.tika:tika-core:2.3.0")
-        implementation("com.alibaba:fastjson:1.2.79")
-        implementation("org.apache.commons:commons-lang3:3.12.0")
 //        implementation("org.springframework.boot:spring-boot-starter-thymeleaf:2.6.4")
         implementation("org.springframework.boot:spring-boot-loader:2.6.1")
         implementation("org.thymeleaf:thymeleaf:3.1.0.M1")

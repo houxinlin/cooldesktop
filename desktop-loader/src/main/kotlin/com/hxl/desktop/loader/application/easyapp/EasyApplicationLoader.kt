@@ -75,12 +75,12 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
         return ApplicationTypeDetection.detection(byteArray) == Application.EASY_APP
     }
 
-    override fun loadApplicationFromByte(applicationByte: ByteArray): ApplicationInstallState {
+    override fun loadApplicationFromByte(byteArray: ByteArray): ApplicationInstallState {
         try {
             val tempAppStoragePath =
                 Paths.get(Directory.getEasyAppStorageDirectory(), "${UUID.randomUUID()}${JAR_SUFFIX}")
             log.info("存储{}", tempAppStoragePath)
-            Files.write(tempAppStoragePath, applicationByte)
+            Files.write(tempAppStoragePath, byteArray)
 
             //尝试从这个jar中读取信息，可能会失败，主要原因是没有app.properties,或者配置信息不全
             var easyApplication = getApplicationFromFile(JarFile(tempAppStoragePath.toFile()))

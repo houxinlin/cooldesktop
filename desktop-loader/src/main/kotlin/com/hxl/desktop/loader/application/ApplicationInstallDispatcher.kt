@@ -26,10 +26,12 @@ class ApplicationInstallDispatcher {
     @Synchronized
     fun uninstallApplicationDispatcher(id: String): String {
         log.info("卸载应用,{}", id)
-        var applicationWrapper = applicationRegister.getApplicationById(id)
-        applicationLoaders.forEach {
-            if (it.support(applicationWrapper!!.application)) {
-                return it.unregisterApplication(applicationWrapper!!.application).message
+        val applicationWrapper = applicationRegister.getApplicationById(id)
+        applicationWrapper?.run {
+            applicationLoaders.forEach {
+                if (it.support(applicationWrapper.application)) {
+                    return it.unregisterApplication(applicationWrapper.application).message
+                }
             }
         }
         return Constant.StringConstant.NOT_FOUND_LOADERS

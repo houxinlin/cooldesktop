@@ -31,10 +31,7 @@ fun main(args: Array<String>) {
 
     System.getProperty("os.name").run {
         if (this.lowercase().startsWith("linux")) {
-            var application = SpringApplication.run(
-                Application::class.java,
-                *args
-            ) as AnnotationConfigServletWebServerApplicationContext
+            SpringApplication.run(Application::class.java, *args)
             return
         }
         error((MessageFormat.format(NOT_SUPPORT, this)))

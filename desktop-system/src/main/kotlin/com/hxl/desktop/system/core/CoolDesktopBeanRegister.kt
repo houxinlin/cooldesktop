@@ -49,7 +49,7 @@ class CoolDesktopBeanRegister : ApplicationContextAware {
         }
         var bean = applicationContext.defaultListableBeanFactory.getBean(beanClass.name)
 
-        if (beanClass.classLoader == bean!!.javaClass.classLoader) {
+        if (beanClass.classLoader == bean.javaClass.classLoader) {
             return bean as T
         }
         log.warn("出现两个应用相同包名情况,包为{}", beanClass)

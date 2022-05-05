@@ -15,3 +15,10 @@ fun String.toFile(): File {
     return File(this);
 }
 
+fun String.randomString(size: Int): String {
+    var result = StringBuffer()
+    for (i in 0 until size) {
+        result.append(this.random())
+    }
+    return result.toString()
+}

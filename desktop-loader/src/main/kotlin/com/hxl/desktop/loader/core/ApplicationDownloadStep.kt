@@ -72,7 +72,6 @@ class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloa
             log.info("下载失败:${e.message}  $url")
             throw  DownLoadException(e.message.toString())
         }
-        return null
     }
 
     private fun getTotalContentSize(url: List<String>): Long {

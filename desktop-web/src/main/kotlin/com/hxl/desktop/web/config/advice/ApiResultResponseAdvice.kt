@@ -34,7 +34,7 @@ class ApiResultResponseAdvice : ResponseBodyAdvice<Any> {
     ): Any? {
         if (body is Resource) return body
         if (body is Future<*>) return body
-        //如果是String类型，不能返回其他类型数据
+        //如果是String类型，不能返回其他类型数据,直接把它封装为HttpResponseBody
         if (body is String) return objectMapper.writeValueAsString(body.asHttpResponseBody())
         return body?.asHttpResponseBody()
     }

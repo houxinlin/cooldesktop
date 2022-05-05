@@ -1,6 +1,5 @@
 package com.hxl.desktop.web.app.web
 
-import com.hxl.desktop.common.extent.asHttpResponseBody
 import com.hxl.desktop.common.extent.toFile
 import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.common.result.FileHandlerResult
@@ -30,12 +29,13 @@ class StaticResourceController {
     lateinit var fileSystemService: IFileService;
 
     /**
-     *
+     *运行一个shell
      */
     @PostMapping("runShell")
     fun runShell(@RequestParam("path") path: String): Future<String> {
         return fileSystemService.runShell(path)
     }
+
     /**
      * 停止一个jar文件，如果存在此路径下多个进程，则终止失败
      */

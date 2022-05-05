@@ -1,6 +1,5 @@
 package com.hxl.desktop.loader.application.webmini
 
-import com.alibaba.fastjson.JSON
 import com.desktop.application.definition.application.Application
 import com.desktop.application.definition.application.ApplicationInstallState
 import com.desktop.application.definition.application.ApplicationLoader
@@ -15,6 +14,7 @@ import com.hxl.desktop.loader.core.ApplicationEvent
 import com.hxl.fm.pk.FilePackage.readByte
 import com.hxl.fm.pk.FilePackage.readInt
 import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.common.utils.JSON
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

@@ -1,6 +1,7 @@
 package com.hxl.desktop.system.core
 
-import com.alibaba.fastjson.JSON
+import com.fasterxml.jackson.databind.ObjectMapper
+
 
 class WebSocketMessageBuilder {
     class Builder {
@@ -21,7 +22,8 @@ class WebSocketMessageBuilder {
         }
 
         fun build(): String {
-            return JSON.toJSONString(data)
+            var objectMapper = ObjectMapper()
+            return objectMapper.writeValueAsString(data)
         }
     }
 }
