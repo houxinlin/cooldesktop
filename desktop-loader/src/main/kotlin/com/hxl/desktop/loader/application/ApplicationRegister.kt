@@ -49,6 +49,7 @@ class ApplicationRegister : CommandLineRunner {
             easyApplication.application.applicationPath.toPath()
         )
 
+        //注册开放路径
         easyApplication.application.urlExclude.forEach(OpenUrlManager::register)
         return register(easyApplication, easyApplicationMap)
     }

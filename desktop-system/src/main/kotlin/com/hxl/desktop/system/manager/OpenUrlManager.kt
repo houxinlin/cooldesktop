@@ -34,7 +34,10 @@ object OpenUrlManager {
 
     fun getOpenUrl(): MutableList<String> {
         val openUrlPath = Paths.get(Directory.getOpenUrlDirectory(), Constant.FileName.OPEN_URL)
-        if (openUrlPath.notExists()) mutableListOf<String>()
+        if (openUrlPath.notExists()) {
+            Files.createFile(openUrlPath)
+            return mutableListOf<String>()
+        }
         return Files.readAllLines(openUrlPath)
     }
 }
