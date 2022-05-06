@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct
 
 @Service
 class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
-    private var coolDesktopEventSocket: WebSocketSession? = null
+    private var coolDesktopEventSocket: MutableList<WebSocketSession> = mutableListOf()
 
     private val delayQueue = DelayQueue<DelayEvent>()
 
@@ -43,25 +43,33 @@ class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
      * 所有消息统一走这里
      */
     override fun send(msg: String, id: String) {
-        if (coolDesktopEventSocket != null && coolDesktopEventSocket!!.isOpen) {
-            log.info("WebSocket发送数据{}",msg)
-            coolDesktopEventSocket!!.sendMessage(TextMessage(WebSocketUtils.createMessage(msg.toByteArray())))
-            return
+        var flag = false
+        coolDesktopEventSocket.forEach {
+            if (it.isOpen) {
+                log.info("WebSocket发送数据{}", msg)
+                it.sendMessage(TextMessage(WebSocketUtils.createMessage(msg.toByteArray())))
+                flag = true
+            }
         }
-        offlineMessageQueue.offer(msg)
+        if (!flag) offlineMessageQueue.offer(msg)
     }
 
     fun sendForSubject(messageBuilder: WebSocketMessageBuilder.Builder) {
         send(messageBuilder.build())
     }
 
-
+    /**
+     * 当新的socket连接后走这里
+     */
     override fun action(webSocketSession: WebSocketSession) {
-        coolDesktopEventSocket = webSocketSession
-        while (offlineMessageQueue.poll()?.also { send(it) } != null) { }
+        coolDesktopEventSocket.add(webSocketSession)
+        //推送离线消息
+        while (offlineMessageQueue.poll()?.also { send(it) } != null) {
+        }
     }
 
     override fun closeSession(webSocketSession: WebSocketSession) {
+        coolDesktopEventSocket.remove(webSocketSession)
     }
 
     override fun support(): String {
