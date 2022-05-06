@@ -310,7 +310,6 @@ class FileServiceImpl : IFileService {
 
     override fun runJarFile(path: String, arg: String): Boolean {
         if ((!path.toFile().exists()) || path.toFile().isDirectory) return false
-
         val maxWaitSecond = 5L //最大等待秒数
         JarUtils.getProcessIds(path).let {
             //指定路径中是否已经有一个或者多个在运行,有多个检查的时候需要排除

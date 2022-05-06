@@ -1,5 +1,6 @@
 package com.hxl.desktop.system.terminal
 
+import com.hxl.desktop.common.extent.toFile
 import java.io.IOException
 
 class TerminalCommand {
@@ -8,6 +9,7 @@ class TerminalCommand {
     private fun execute(commandBuilder: Builder): String {
         try {
             val processBuilder = ProcessBuilder()
+            commandBuilder.home?.run { processBuilder.directory(commandBuilder.home!!.toFile()) }
             processBuilder.command(commandBuilder.commands)
             val process = processBuilder.start()
             process.waitFor()
@@ -22,6 +24,8 @@ class TerminalCommand {
 
     class Builder {
         var commands = mutableListOf<String>()
+        var home: String? = null
+
 
         init {
             commands.add("bash")
@@ -32,6 +36,12 @@ class TerminalCommand {
             commands.add(command)
             return this
         }
+
+        fun setWorkHome(home: String): Builder {
+            this.home = home
+            return this
+        }
+
         fun execute(): String {
             return TerminalCommand().execute(this)
         }
