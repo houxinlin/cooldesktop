@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component
  */
 @Aspect
 @Component
-class DesktopNotifyWebSocketAspect {
+class CoolDesktopNotifyWebSocketAspect {
     private val webSocketNotifyMessageConvert: List<WebSocketNotifyMessageConvert> = arrayListOf(
         AsyncFileHandlerMessageConvert(),
         AsyncStringMessageConvert(),

@@ -20,7 +20,7 @@ class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
     private val offlineMessageQueue = LinkedBlockingQueue<String>()
 
     private val log = LoggerFactory.getLogger(CoolDesktopEventAction::class.java)
-
+    private val MAX_OFFINE_MESSAGE_QUEUE: Int = 5;
 
     @PostConstruct
     fun init() {
@@ -51,6 +51,8 @@ class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
                 flag = true
             }
         }
+        //如果一个连接也没有，则加入离线队列
+        if (offlineMessageQueue.size >= MAX_OFFcINE_MESSAGE_QUEUE) return
         if (!flag) offlineMessageQueue.offer(msg)
     }
 

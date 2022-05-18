@@ -11,18 +11,21 @@ import org.springframework.web.multipart.MultipartFile
 
 @Component
 class ApplicationInstallDispatcher {
+    private val  log: Logger = LoggerFactory.getLogger(ApplicationInstallDispatcher::class.java)
+
+
     @Autowired
     private lateinit var applicationRegister: ApplicationRegister
     private lateinit var applicationLoaders: List<ApplicationLoader<*>>
-    private val log: Logger = LoggerFactory.getLogger(ApplicationInstallDispatcher::class.java)
 
     @Autowired
     fun setApplicationLoader(loader: MutableList<ApplicationLoader<*>>) {
         applicationLoaders = loader
     }
 
-
-    //卸载应用分发
+    /**
+     * 卸载应用分发
+     */
     @Synchronized
     fun uninstallApplicationDispatcher(id: String): String {
         log.info("卸载应用,{}", id)
@@ -37,13 +40,19 @@ class ApplicationInstallDispatcher {
         return Constant.StringConstant.NOT_FOUND_LOADERS
     }
 
-    //注册应用分发
+    /**
+     * 注册应用分发,并主动通知客户端进行应用程序刷新
+     */
     @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.REFRESH_APPLICATION)
     fun installCustomApplicationDispatcher(file: MultipartFile): String {
         return installDispatcher(file.inputStream.readBytes())
     }
 
-    //安装分发
+    /**
+     * 安装分发
+     *
+     * 返回安装状态
+     */
     @Synchronized
     fun installDispatcher(applicationByte: ByteArray): String {
         applicationLoaders.forEach {
