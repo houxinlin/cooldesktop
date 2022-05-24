@@ -52,7 +52,7 @@ class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
             }
         }
         //如果一个连接也没有，则加入离线队列
-        if (offlineMessageQueue.size >= MAX_OFFcINE_MESSAGE_QUEUE) return
+        if (offlineMessageQueue.size >= MAX_OFFINE_MESSAGE_QUEUE) return
         if (!flag) offlineMessageQueue.offer(msg)
     }
 

@@ -14,6 +14,8 @@ interface IFileService {
 
     fun getFileIconByType(type: String): ByteArrayResource;
 
+    fun getFileIconByPath(path: String): ByteArrayResource;
+
     fun deleteFile(path: String): FileHandlerResult;
 
     fun getImageThumbnail(path: String): ByteArrayResource;

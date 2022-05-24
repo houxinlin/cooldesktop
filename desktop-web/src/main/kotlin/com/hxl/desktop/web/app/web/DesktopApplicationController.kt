@@ -36,7 +36,7 @@ class DesktopApplicationController {
     }
 
     /**
-     * 从中央服务器下载应用
+     * 从中央服务器下载并且按转应用
      */
     @PostMapping("install")
     fun install(@RequestParam("id") id: String): Any {
@@ -51,6 +51,9 @@ class DesktopApplicationController {
         return applicationInstallDispatcher.uninstallApplicationDispatcher(id)
     }
 
+    /**
+     * 安装自定义应用
+     */
     @PostMapping("installCustomApplication")
     fun installCustomApplication(@RequestParam file: MultipartFile): String {
         return applicationInstallDispatcher.installCustomApplicationDispatcher(file)

@@ -67,13 +67,13 @@ class CoolDesktopSystem {
         val wallpaperName = "${UUID.randomUUID()}.png"
         file.transferTo(Paths.get(Directory.getWallpaperWorkDirectory(), wallpaperName).toFile())
         val key = CoolDesktopDatabaseConfigKeys.WALLPAPER.keyName
-        val oldWallpaperName = coolDesktopDatabase.getSysValue(key)
+        val oldWallpaperName = coolDesktopDatabase.getSysConfig(key)
         if (oldWallpaperName.isNotEmpty()) {
             Files.deleteIfExists(Paths.get(Directory.getWallpaperWorkDirectory(), oldWallpaperName))
         }
         val value = "${WALLPAPER_REQUEST_RESOURCE_PATH}${wallpaperName}"
         //存储
-        coolDesktopDatabase.saveConfig(key, value)
+        coolDesktopDatabase.setSysConfigValue(key, value)
         return FileHandlerResult.create(0, value, Constant.StringConstant.OK)
 
     }
@@ -81,7 +81,7 @@ class CoolDesktopSystem {
     /**
      * 获取系统所有配置
      */
-    fun getCoolDesktopProperty(): MutableMap<String, String> {
+    fun getCoolDesktopConfigs(): MutableMap<String, String> {
         var listConfigs = coolDesktopDatabase.listConfigs()
         //排除敏感信息
         SENSITIVE_KEY.forEach { listConfigs.remove(it) }
@@ -105,11 +105,11 @@ class CoolDesktopSystem {
         val privateRsa = Files.readAllBytes(privateRsaPath)
         val publicRsa = Files.readAllBytes(publicRsaPath)
 
-        coolDesktopDatabase.saveConfig(
+        coolDesktopDatabase.setSysConfigValue(
             CoolDesktopDatabaseConfigKeys.SSH_PUBLIC_VALUE.keyName,
             publicRsa.decodeToString()
         )
-        coolDesktopDatabase.saveConfig(
+        coolDesktopDatabase.setSysConfigValue(
             CoolDesktopDatabaseConfigKeys.SSH_PRIVATE_VALUE.keyName,
             privateRsa.decodeToString()
         )
@@ -139,11 +139,11 @@ class CoolDesktopSystem {
         if (userName.isBlank()) {
             return Constant.StringConstant.CONFIG_FAIL_USER
         }
-        coolDesktopDatabase.saveConfig(CoolDesktopDatabaseConfigKeys.SSH_USER_NAME.keyName, userName)
+        coolDesktopDatabase.setSysConfigValue(CoolDesktopDatabaseConfigKeys.SSH_USER_NAME.keyName, userName)
         return Constant.StringConstant.OK
     }
 
-    fun resetLogoPasswd(): String {
+    fun resetLoginPasswd(): String {
         if (TomcatGlobalAuthenticationPasswordUtils.reset()) {
             return Constant.StringConstant.RESET_OK
         }

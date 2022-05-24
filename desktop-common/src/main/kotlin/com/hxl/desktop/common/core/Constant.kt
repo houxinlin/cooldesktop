@@ -34,6 +34,7 @@ class Constant {
     }
 
     object WebSocketSubjectNameConstant {
+        const val REFRESH_DESKTOP_REFRESH: String = "/event/refresh/folder"
         const val APPLICATION_PROGRESS: String = "/event/install/progress"
         const val FILE_EVENT: String = "/event/file"
         const val TERMINAL_MESSAGE: String = "/event/message/terminal"
@@ -44,6 +45,9 @@ class Constant {
         const val NOTIFY_MESSAGE_SUCCESS: String = "/event/notify/message/success"
         const val NOTIFY_MESSAGE_ERROR: String = "/event/notify/message/error"
         const val NOTIFY_SHELL_EXEC_RESULT: String = "/event/shell/message"
+    }
+    object KeyNames{
+        const val DESKTOP_FILE_KEY: String = "desktop_file_key"
     }
 
     object ApplicationEvent {

@@ -145,16 +145,28 @@ class StaticResourceController {
      * 获取文件icon
      */
     @GetMapping("getFileIconByType")
-    fun getFileIconByType(@RequestParam("type") path: String): ResponseEntity<org.springframework.core.io.Resource> {
+    fun getFileIconByType(@RequestParam("type") type: String): ResponseEntity<org.springframework.core.io.Resource> {
         var header = HttpHeaders();
         header.add(HttpHeaders.CONTENT_TYPE, "image/png")
-        var fileIcon = fileSystemService.getFileIconByType(path)
+        var fileIcon = fileSystemService.getFileIconByType(type)
         return ResponseEntity.ok()
             .headers(header)
             .contentLength(fileIcon.contentLength())
             .body(fileIcon);
     }
-
+    /**
+     * 获取文件icon
+     */
+    @GetMapping("getFileIconByPath")
+    fun getFileIconByPath(@RequestParam("path") path: String): ResponseEntity<org.springframework.core.io.Resource> {
+        var header = HttpHeaders();
+        header.add(HttpHeaders.CONTENT_TYPE, "image/png")
+        var fileIcon = fileSystemService.getFileIconByPath(path)
+        return ResponseEntity.ok()
+            .headers(header)
+            .contentLength(fileIcon.contentLength())
+            .body(fileIcon);
+    }
     /**
      * 文件预览图
      */
@@ -233,5 +245,6 @@ class StaticResourceController {
     fun download(@RequestParam("path") path: String): ResponseEntity<FileSystemResource> {
         return fileSystemService.download(path)
     }
+
 
 }

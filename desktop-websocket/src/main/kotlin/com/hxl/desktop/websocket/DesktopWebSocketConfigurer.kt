@@ -76,7 +76,7 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
                     return StompPrincipal(UUID.randomUUID().toString())
                 }
             })
-            .setAllowedOrigins("http://192.168.0.110:3000")//开发的时候
+            .setAllowedOrigins("http://192.168.0.110:3000","http://localhost:3000")//开发的时候
             .withSockJS()
     }
 

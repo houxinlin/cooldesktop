@@ -1,7 +1,6 @@
 package com.hxl.desktop.file.bean
 
 
-
 /**
  * @author:   HouXinLin
  * @email:    2606710413@qq.com
@@ -21,5 +20,6 @@ data class FileAttribute(
     var owner: String,
     var isTextType: Boolean = false,
     var mimeType: String,
-    var isFile: Boolean = true
+    var isFile: Boolean = true,
+    var parent: String = ""
 )

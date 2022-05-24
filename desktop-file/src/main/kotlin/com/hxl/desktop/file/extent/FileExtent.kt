@@ -126,7 +126,8 @@ fun File.getAttribute(): FileAttribute {
         Files.getOwner(this.toPath()).name,
         isTextFile(),
         getMimeType(),
-        !readAttributes.isDirectory
+        !readAttributes.isDirectory,
+        this.parent
     )
 }
 

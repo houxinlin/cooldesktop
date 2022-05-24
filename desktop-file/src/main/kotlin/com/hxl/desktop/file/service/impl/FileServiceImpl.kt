@@ -159,6 +159,16 @@ class FileServiceImpl : IFileService {
     }
 
     override fun listDirector(root: String): List<FileAttribute> {
+        if (!root.toFile().exists()) {
+            log.info("试图浏览不存在的文件夹{}", root)
+            webSocketSender.send(
+                WebSocketMessageBuilder.Builder()
+                    .applySubject(Constant.WebSocketSubjectNameConstant.NOTIFY_MESSAGE_ERROR)
+                    .addItem("data", Constant.StringConstant.FILE_NOT_EXIST)
+                    .build()
+            )
+            return emptyList()
+        }
         if (!root.toFile().canRead()) {
             log.info("无权限操作{}", root)
             webSocketSender.send(
@@ -196,6 +206,16 @@ class FileServiceImpl : IFileService {
         }
         val defaultIcon = ClassPathResource(ClassPathUtils.getClassPathFullPath("file"))
         return ByteArrayResource(defaultIcon.inputStream.readBytes())
+    }
+
+    override fun getFileIconByPath(path: String): ByteArrayResource {
+        val file = path.toFile()
+        if (!file.exists()) {
+            val defaultIcon = ClassPathResource(ClassPathUtils.getClassPathFullPath("file"))
+            return ByteArrayResource(defaultIcon.inputStream.readBytes())
+        }
+        var attribute = file.getAttribute()
+        return getFileIconByType(attribute.rawType)
     }
 
     override fun getFileIconByType(type: String): ByteArrayResource {
@@ -333,4 +353,5 @@ class FileServiceImpl : IFileService {
     override fun runShell(path: String): Future<String> {
         return AsyncResult(Constant.StringConstant.SHELL_EXEC_RESULT + LinuxShell(path).run())
     }
+
 }
