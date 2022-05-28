@@ -91,6 +91,7 @@ class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
             }
             val applicationInfoHeaderSize = byteBuffer.readInt()
             val applicationInfoByte = byteBuffer.readByte(applicationInfoHeaderSize)
+            //提取应用程序信息
             val webMiniApplication =
                 JSON.parseObject(applicationInfoByte.decodeToString(), WebMiniApplication::class.java)
             webMiniApplication.staticResOffset = 12L + applicationInfoHeaderSize
