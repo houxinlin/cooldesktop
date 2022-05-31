@@ -6,6 +6,7 @@ class Constant {
     }
 
     object StringConstant {
+        const val RUN_JAR_ARG_PROPERTIES="jar_arg"
         const val TERMINAL_MESSAGE_CONNECT_NOT_FOUND = "无法打开终端，信息不完整，请到设置界面配置信息"
         const val OK = "OK"
         const val NOT_SUPPORT_PARAMETER = "不支持此参数"

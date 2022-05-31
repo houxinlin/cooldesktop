@@ -1,9 +1,14 @@
 package com.hxl.desktop.file.service.impl
 
-import com.hxl.desktop.file.bean.FileAttribute
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
 import com.hxl.desktop.common.core.ano.NotifyWebSocket
+import com.hxl.desktop.common.extent.toFile
+import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.common.result.FileHandlerResult
+import com.hxl.desktop.database.CoolDesktopDatabase
+import com.hxl.desktop.file.bean.FileAttribute
+import com.hxl.desktop.file.bean.UploadInfo
 import com.hxl.desktop.file.emun.FileType
 import com.hxl.desktop.file.extent.*
 import com.hxl.desktop.file.service.IFileService
@@ -14,13 +19,7 @@ import com.hxl.desktop.system.core.AsyncResultWithID
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
 import com.hxl.desktop.system.manager.ClipboardManager
-import com.hxl.desktop.file.bean.UploadInfo
-import com.hxl.desktop.common.extent.toFile
-import com.hxl.desktop.common.extent.toPath
-import com.hxl.desktop.common.result.FileHandlerResult
-import com.hxl.desktop.system.terminal.CommandConstant
 import com.hxl.desktop.system.terminal.LinuxShell
-import com.hxl.desktop.system.terminal.TerminalCommand
 import com.hxl.desktop.system.utils.JarUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -55,6 +54,9 @@ class FileServiceImpl : IFileService {
     @Autowired
     lateinit var webSocketSender: WebSocketSender
 
+    @Autowired
+    lateinit var coolDesktopDatabase: CoolDesktopDatabase
+
     override fun fileCut(path: String): Boolean {
         return ClipboardManager.fileCut(path)
     }
@@ -63,12 +65,17 @@ class FileServiceImpl : IFileService {
         return ClipboardManager.fileCopy(path)
     }
 
-    //粘贴动作可能时间较长，通过WebSocket通知客户端
+    /**
+     * 粘贴动作可能时间较长，异步处理后通过WebSocket通知客户端
+     */
     @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.FILE_EVENT, action = "paste")
     override fun filePaste(path: String, taskId: String): Future<FileHandlerResult> {
         return AsyncResultWithID(ClipboardManager.filePaste(path), taskId)
     }
 
+    /**
+     * 文件重命名
+     */
     override fun fileRename(source: String, newName: String): FileHandlerResult {
         var sourceFile = source.toFile()
         var target = File(sourceFile.parent, newName)
@@ -87,6 +94,9 @@ class FileServiceImpl : IFileService {
     }
 
 
+    /**
+     * 文件合并
+     */
     override fun fileMerge(chunkId: String, name: String, inPath: String): FileHandlerResult {
         val rootPath = Paths.get(Directory.getChunkDirectory(), chunkId).toString();
         if (!rootPath.toPath().exists()) {
@@ -158,6 +168,9 @@ class FileServiceImpl : IFileService {
         return FileHandlerResult.UPLOAD_FAIL
     }
 
+    /**
+     * list目录
+     */
     override fun listDirector(root: String): List<FileAttribute> {
         if (!root.toFile().exists()) {
             log.info("试图浏览不存在的文件夹{}", root)
@@ -189,6 +202,9 @@ class FileServiceImpl : IFileService {
         return folderList.plus(fileList)
     }
 
+    /**
+     * 图片缩略图
+     */
     override fun getImageThumbnail(path: String): ByteArrayResource {
         if (path.toFile().exists()) {
             if (path.toPath().isDirectory()) {
@@ -208,6 +224,9 @@ class FileServiceImpl : IFileService {
         return ByteArrayResource(defaultIcon.inputStream.readBytes())
     }
 
+    /**
+     * 根据文件路径获取对应icon
+     */
     override fun getFileIconByPath(path: String): ByteArrayResource {
         val file = path.toFile()
         if (!file.exists()) {
@@ -218,6 +237,9 @@ class FileServiceImpl : IFileService {
         return getFileIconByType(attribute.rawType)
     }
 
+    /**
+     * 根据类型获取对应icon
+     */
     override fun getFileIconByType(type: String): ByteArrayResource {
         val classPathResource = ClassPathResource(ClassPathUtils.getClassPathFullPath(type))
         if (classPathResource.exists()) {
@@ -328,6 +350,9 @@ class FileServiceImpl : IFileService {
         return downloadPath.toFile().toHttpResponse()
     }
 
+    /**
+     * 运行jar文件
+     */
     override fun runJarFile(path: String, arg: String): Boolean {
         if ((!path.toFile().exists()) || path.toFile().isDirectory) return false
         val maxWaitSecond = 5L //最大等待秒数
