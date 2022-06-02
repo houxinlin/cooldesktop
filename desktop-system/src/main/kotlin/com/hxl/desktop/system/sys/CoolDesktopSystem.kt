@@ -92,11 +92,24 @@ class CoolDesktopSystem {
     @Synchronized
     fun configSecureShell(): String {
         //如果已经配置了密钥，则删除
+
         val privateRsaPath = Paths.get(Directory.getSecureShellConfigDirectory(), RSA_NAME)
         val publicRsaPath = Paths.get(Directory.getSecureShellConfigDirectory(), "${RSA_NAME}.pub")
-
+        val authorizedKeysFile = File(AUTHORIZED_KEYS)
+        if (publicRsaPath.exists() && authorizedKeysFile.canRead()) {
+            val publicKeyText = publicRsaPath.toFile().readText()
+            //如果已经在authorized文件中存在了这一条记录，则删除
+            val oldAuthorizedText = authorizedKeysFile.bufferedReader().readText()
+            if (oldAuthorizedText.indexOf(publicKeyText) >= 0) {
+                val newAuthorizedText = oldAuthorizedText.replace(publicKeyText, "")
+                if (authorizedKeysFile.canWrite()) {
+                    authorizedKeysFile.writeText(newAuthorizedText)
+                }
+            }
+        }
         privateRsaPath.deleteIfExists()
         publicRsaPath.deleteIfExists()
+        //生成公私钥
         TerminalCommand.Builder()
             .add(CommandConstant.SSH_KEYGEN.format(privateRsaPath.toString())).execute()
         if (!privateRsaPath.exists() || !publicRsaPath.exists()) {
@@ -113,8 +126,9 @@ class CoolDesktopSystem {
             CoolDesktopDatabaseConfigKeys.SSH_PRIVATE_VALUE.keyName,
             privateRsa.decodeToString()
         )
-        val authorizedKeysFile = File(AUTHORIZED_KEYS)
-        if (!authorizedKeysFile.canRead()) {
+
+
+        if (!authorizedKeysFile.canWrite()) {
             log.info("没有权限写入{}", AUTHORIZED_KEYS)
             webSocketSender.sendForDelay(createDelayMessageToOpenDirectory(privateRsaPath.parent.toString()), "", 3)
             return Constant.StringConstant.SSH_WRITE_AUTHOR_FAIL
