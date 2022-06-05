@@ -1,11 +1,9 @@
 package com.hxl.desktop.web.app.web
 
 import com.desktop.application.definition.application.Application
-import com.hxl.desktop.common.extent.asHttpResponseBody
-import com.hxl.desktop.loader.application.ApplicationRegister
 import com.hxl.desktop.loader.application.ApplicationInstallDispatcher
+import com.hxl.desktop.loader.application.ApplicationRegister
 import com.hxl.desktop.loader.core.ApplicationDownloadManager
-import com.hxl.desktop.common.extent.asHttpResponseBodyOfMessage
 import com.hxl.desktop.web.config.advice.UnifiedApiResult
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -18,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 @RequestMapping("/desktop/api/application/")
 class DesktopApplicationController {
+
     @Autowired
     lateinit var applicationRegister: ApplicationRegister
 
@@ -40,7 +39,7 @@ class DesktopApplicationController {
      */
     @PostMapping("install")
     fun install(@RequestParam("id") id: String): Any {
-        return applicationDownloadManager.download(id)
+        return applicationDownloadManager.install(id)
     }
 
     /**

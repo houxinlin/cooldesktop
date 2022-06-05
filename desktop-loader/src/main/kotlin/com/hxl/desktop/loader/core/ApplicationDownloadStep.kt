@@ -1,6 +1,5 @@
 package com.hxl.desktop.loader.core
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayOutputStream
@@ -9,27 +8,22 @@ import java.net.URL
 import java.text.MessageFormat
 import java.util.concurrent.CompletableFuture
 
-class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloadManager) : InstallStep<String, List<ByteArray>> {
+class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloadManager) :
+    InstallStep<String, List<ByteArray>> {
     companion object {
-        val log: Logger = LoggerFactory.getLogger(ApplicationDownloadStep::class.java)
-        const val GET_DEPENDENT_ID: String = "/software/api/dependent/get?id={0}"
-        const val DOWNLOAD: String = "/software/api/getSoftware?id={0}"
+        private val log: Logger = LoggerFactory.getLogger(ApplicationDownloadStep::class.java)
+        private const val DOWNLOAD: String = "/software/api/getSoftware?id={0}"
     }
 
-    var id: String = ""
-    var totalDownloadSize: Long = 0
+    private var id: String = ""
+    private var totalDownloadSize: Long = 0
 
     override fun execute(value: String): List<ByteArray> {
         this.id = value
         totalDownloadSize = 0
         try {
-            val dependentIds = getDependentIds()
             val urls = arrayListOf(getDownloadUrl(value))
-            if (dependentIds.isNotEmpty()) {
-                //依赖应用
-                dependentIds.forEach { urls.add(getDownloadUrl(it.toString())) }
-            }
-            return installs(urls)
+            return installApplication(urls)
         } catch (e: Exception) {
             e.printStackTrace()
             applicationDownloadManager.refreshProgressState(InstallStep.INSTALL_FAIL_STATE)
@@ -37,22 +31,16 @@ class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloa
         return arrayListOf()
     }
 
-    private fun installs(url: List<String>): List<ByteArray> {
-        try {
-            val result = mutableListOf<ByteArray>()
-            val totalContentSize = getTotalContentSize(url)
-            url.forEach {
-                val softwareByteArray: ByteArray? = download(it, totalContentSize) ?: return arrayListOf()
-                result.add(softwareByteArray!!)
-            }
-            return result
-        } catch (e: Exception) {
-            applicationDownloadManager.refreshProgressState(InstallStep.INSTALL_FAIL_STATE)
+    private fun installApplication(url: List<String>): List<ByteArray> {
+        val result = mutableListOf<ByteArray>()
+        val totalContentSize = getTotalContentSize(url)
+        url.forEach {
+            result.add(download(it, totalContentSize) )
         }
-        return arrayListOf()
+        return result
     }
 
-    private fun download(url: String, totalContentSize: Long): ByteArray? {
+    private fun download(url: String, totalContentSize: Long): ByteArray {
         try {
             log.info("下载应用{},总共大小{}", url, totalContentSize)
             val httpURLConnection = URL(url).openConnection() as HttpURLConnection
@@ -63,7 +51,7 @@ class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloa
             while (inputStream.read(byteArray).also { readSize = it } >= 0) {
                 softwareByteArray.write(byteArray, 0, readSize)
                 totalDownloadSize += readSize
-                var progress = (totalDownloadSize.div(totalContentSize.toFloat()) * 100)
+                val progress = (totalDownloadSize.div(totalContentSize.toFloat()) * 100)
                 applicationDownloadManager.refreshProgressState(progress.toInt())
             }
             inputStream.close()
@@ -81,7 +69,9 @@ class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloa
             completableFuture.add(CompletableFuture.supplyAsync {
                 val httpURLConnection = URL(it).openConnection() as HttpURLConnection
                 val lengthLong = httpURLConnection.contentLengthLong
-                if (lengthLong == -1L) { 0 } else lengthLong
+                if (lengthLong == -1L) {
+                    0
+                } else lengthLong
             })
         }
         completableFuture.forEach { total += it.get() }
@@ -98,10 +88,4 @@ class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloa
         return applicationDownloadManager.coolProperties.softwareServer + format(DOWNLOAD, id)
     }
 
-    private fun getDependentIds(): List<*> {
-        val objectMapper = ObjectMapper()
-        val url = applicationDownloadManager.coolProperties.softwareServer!! + format(GET_DEPENDENT_ID, this.id)
-        val map = objectMapper.readValue(URL(url).readText(), Map::class.java)
-        return objectMapper.readValue(map["ids"] as String, List::class.java)
-    }
 }

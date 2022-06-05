@@ -9,9 +9,9 @@ import java.util.concurrent.ConcurrentHashMap
 @Service
 class SshManager {
 
-    var sessionMapping = ConcurrentHashMap<String, WebSocketSession>();
+    val sessionMapping = ConcurrentHashMap<String, WebSocketSession>();
 
-    var terminalMapping = ConcurrentHashMap<String, Terminal>();
+    val terminalMapping = ConcurrentHashMap<String, Terminal>();
 
     fun registerSession(id: String, session: WebSocketSession) {
         sessionMapping[id] = session

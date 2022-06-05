@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 
 class WebSocketMessageBuilder {
     class Builder {
-        var data = mutableMapOf<String, Any?>()
+        val data = mutableMapOf<String, Any?>()
         fun applySubject(subject: String): Builder {
             data["subject"] = subject
             return this
@@ -22,7 +22,7 @@ class WebSocketMessageBuilder {
         }
 
         fun build(): String {
-            var objectMapper = ObjectMapper()
+            val objectMapper = ObjectMapper()
             return objectMapper.writeValueAsString(data)
         }
     }

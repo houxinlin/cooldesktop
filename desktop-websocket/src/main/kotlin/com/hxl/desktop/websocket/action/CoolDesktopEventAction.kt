@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct
 
 @Service
 class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
-    private var coolDesktopEventSocket: MutableList<WebSocketSession> = mutableListOf()
+    private val coolDesktopEventSocket: MutableList<WebSocketSession> = mutableListOf()
 
     private val delayQueue = DelayQueue<DelayEvent>()
 
@@ -26,7 +26,7 @@ class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
     fun init() {
         Thread {
             while (true) {
-                var delayEvent = delayQueue.take()
+                val delayEvent = delayQueue.take()
                 send(delayEvent.msg)
             }
         }.start()

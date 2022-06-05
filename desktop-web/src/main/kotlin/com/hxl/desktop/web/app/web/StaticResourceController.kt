@@ -146,39 +146,39 @@ class StaticResourceController {
      */
     @GetMapping("getFileIconByType")
     fun getFileIconByType(@RequestParam("type") type: String): ResponseEntity<org.springframework.core.io.Resource> {
-        var header = HttpHeaders();
+        val header = HttpHeaders()
         header.add(HttpHeaders.CONTENT_TYPE, "image/png")
-        var fileIcon = fileSystemService.getFileIconByType(type)
+        val fileIcon = fileSystemService.getFileIconByType(type)
         return ResponseEntity.ok()
             .headers(header)
             .contentLength(fileIcon.contentLength())
-            .body(fileIcon);
+            .body(fileIcon)
     }
     /**
      * 获取文件icon
      */
     @GetMapping("getFileIconByPath")
     fun getFileIconByPath(@RequestParam("path") path: String): ResponseEntity<org.springframework.core.io.Resource> {
-        var header = HttpHeaders();
+        val header = HttpHeaders()
         header.add(HttpHeaders.CONTENT_TYPE, "image/png")
-        var fileIcon = fileSystemService.getFileIconByPath(path)
+        val fileIcon = fileSystemService.getFileIconByPath(path)
         return ResponseEntity.ok()
             .headers(header)
             .contentLength(fileIcon.contentLength())
-            .body(fileIcon);
+            .body(fileIcon)
     }
     /**
      * 文件预览图
      */
     @GetMapping("getImageThumbnail")
     fun getImageThumbnail(@RequestParam("path") path: String): ResponseEntity<org.springframework.core.io.Resource> {
-        var header = HttpHeaders();
+        val header = HttpHeaders()
         header.add(HttpHeaders.CONTENT_TYPE, "image/png")
-        var fileIcon = fileSystemService.getImageThumbnail(path)
+        val fileIcon = fileSystemService.getImageThumbnail(path)
         return ResponseEntity.ok()
             .headers(header)
             .contentLength(fileIcon.contentLength())
-            .body(fileIcon);
+            .body(fileIcon)
     }
 
     /**

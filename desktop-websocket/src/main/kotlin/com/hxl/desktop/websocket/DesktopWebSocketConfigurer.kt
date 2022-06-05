@@ -29,9 +29,9 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
 
     @Autowired
     lateinit var systemProperty: SystemProperty
-    var connectionAction = mutableMapOf<String, WebSocketConnectionAction>()
+   private val connectionAction = mutableMapOf<String, WebSocketConnectionAction>()
 
-    var webSocketSessionMap = ConcurrentHashMap<String, WebSocketSession>()
+    private val webSocketSessionMap = ConcurrentHashMap<String, WebSocketSession>()
 
 
     @Autowired
@@ -83,7 +83,7 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
     @EventListener
     fun websocketSubscribeEvent(sub: SessionSubscribeEvent) {
         if (sub.message is GenericMessage) {
-            var simpDestination = sub.message.headers["simpDestination"]
+            val simpDestination = sub.message.headers["simpDestination"]
             if (connectionAction.containsKey(simpDestination)) {
                 connectionAction[simpDestination]!!.action(webSocketSessionMap[sub.message.headers["simpSessionId"]]!!)
             }

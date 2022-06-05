@@ -62,7 +62,7 @@ class CoolDesktopApplicationStaticResourceRegister : ApplicationContextAware {
     private fun getHandlerMappings(): MutableList<HandlerMapping>? {
         val handlerMappingsField = dispatcherServlet::class.java.getDeclaredField("handlerMappings")
         handlerMappingsField.isAccessible = true
-        var list = handlerMappingsField.get(dispatcherServlet)
+        val list = handlerMappingsField.get(dispatcherServlet)
         if (list != null) {
             return list as MutableList<HandlerMapping>
         }

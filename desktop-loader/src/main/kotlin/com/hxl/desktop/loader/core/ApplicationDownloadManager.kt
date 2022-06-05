@@ -4,7 +4,6 @@ import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.loader.application.ApplicationInstallDispatcher
 import com.hxl.desktop.loader.application.ApplicationRegister
 import com.hxl.desktop.loader.application.easyapp.EasyApplicationLoader
-import com.hxl.desktop.loader.application.webmini.WebMiniApplicationLoader
 import com.hxl.desktop.system.config.CoolProperties
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
@@ -16,7 +15,9 @@ import org.springframework.stereotype.Service
 import java.util.concurrent.LinkedBlockingQueue
 import javax.annotation.PostConstruct
 
-//软件下载管理器
+/**
+ * 软件下载管理器
+ */
 @Service
 class ApplicationDownloadManager {
     companion object {
@@ -50,7 +51,7 @@ class ApplicationDownloadManager {
     lateinit var easyApplicationLoader: EasyApplicationLoader
 
     @Volatile
-    var currentApplicationCount = 0;
+    var currentApplicationCount = 0
 
     protected fun sendMessageToWebSocket(msg: String) {
         webSocketSender.send(msg)
@@ -64,18 +65,18 @@ class ApplicationDownloadManager {
     fun startConsumer() {
         //一次只能安装一个软件
         while (true) {
-            var applicationInstallId = applicationInstallQueue.take()
-            var step = InstallStep.of(ApplicationDownloadStep(this))
+            val applicationInstallId = applicationInstallQueue.take()
+            val step = InstallStep.of(ApplicationDownloadStep(this))
                 .addSoftwareInstallStep(ApplicationInstallStep(this))
                 .addSoftwareInstallStep(ClientApplicationRefreshStep(this))
             currentInstallSoftware = applicationInstallId
             currentApplicationCount = applicationRegister.getTotalApplication()
-            step.execute(applicationInstallId);
+            step.execute(applicationInstallId)
         }
     }
 
     @Async
-    fun download(id: String) {
+    fun install(id: String) {
         //如果已经安装
         if (applicationRegister.isLoaded(id)) {
             sendMessageToWebSocket(

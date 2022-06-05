@@ -1,6 +1,5 @@
 package com.hxl.desktop.web.app.web
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.ano.NotifyWebSocket
 import com.hxl.desktop.common.extent.toFile
@@ -15,7 +14,6 @@ import com.hxl.desktop.web.util.JsonArrayConvert
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import java.util.function.Function
 import java.util.stream.Collectors
 
 /**
@@ -90,7 +88,7 @@ class CoolDesktopSystemController {
     @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.REFRESH_DESKTOP_REFRESH)
     @PostMapping("desktop/file/add")
     fun addDesktopFile(@RequestParam("path") path: String): String {
-        var fileAttributes =listDesktopFile()
+        val fileAttributes =listDesktopFile()
         fileAttributes.forEach { if (it.path == path) return Constant.StringConstant.DUPLICATE }
         val listPath = fileAttributes.stream().map { it.path }.collect(Collectors.toList())
         listPath.add(path)
@@ -109,7 +107,7 @@ class CoolDesktopSystemController {
     @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.REFRESH_DESKTOP_REFRESH)
     @PostMapping("desktop/file/remove")
     fun removeDesktopFile(@RequestParam("path") path: String): String {
-        var fileAttributes =
+        val fileAttributes =
             JsonArrayConvert().apply(coolDesktopDatabase.getSysProperties(Constant.KeyNames.DESKTOP_FILE_KEY))
         val newList = fileAttributes.filter { it.path != path }.stream().map { it.path }.collect(Collectors.toList())
         coolDesktopDatabase.setSysProperties(Constant.KeyNames.DESKTOP_FILE_KEY, newList)

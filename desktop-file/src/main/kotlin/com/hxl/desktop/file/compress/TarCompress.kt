@@ -6,7 +6,7 @@ import java.nio.file.Paths
 
 class TarCompress : Compressed() {
     override fun compress(path: String, targetName: String) {
-        var parent = File(path).parent
+        val parent = File(path).parent
         super.compressByType(path, CTarArchiveOutputStream(Paths.get(parent, targetName).toString()))
     }
 

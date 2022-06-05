@@ -19,7 +19,7 @@ class ApplicationWrapper(var application: Application) : ResourceCache() {
         val webMiniApplication = application as WebMiniApplication
         val bufferedInputStream = BufferedInputStream(FileInputStream(webMiniApplication.applicationPath))
         bufferedInputStream.skip(webMiniApplication.staticResOffset)
-        var fileTable = FilePackage.decode(bufferedInputStream.readBytes())
+        val fileTable = FilePackage.decode(bufferedInputStream.readBytes())
         if (fileTable?.get(path) == null) {
             return null;
         }

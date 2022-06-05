@@ -19,7 +19,7 @@ import kotlin.io.path.isDirectory
 abstract class Compressed() : ICompress {
 
     fun compressByType(path: String, archiveOutputStream: BaseArchiveOutputStream<*, *>) {
-        var compressfile = File(path)
+        val compressfile = File(path)
         if (compressfile.isFile) {
             archiveOutputStream.putArchiveEntry(compressfile.name, path)
             archiveOutputStream.close()
@@ -27,10 +27,10 @@ abstract class Compressed() : ICompress {
         }
         for (fileItem in path.toPath().walkFileTree()) {
             if (!fileItem.isDirectory()) {
-                var archiveName = fileItem.toString().removePrefix(path)
+                val archiveName = fileItem.toString().removePrefix(path)
                 archiveOutputStream.putArchiveEntry(archiveName, fileItem.toString())
             } else {
-                var archiveEntry = fileItem.toString().removePrefix(path) + "/"
+                val archiveEntry = fileItem.toString().removePrefix(path) + "/"
                 archiveOutputStream.putArchiveEntry(archiveEntry, fileItem.toString())
             }
         }
@@ -45,7 +45,7 @@ abstract class Compressed() : ICompress {
     }
 
     fun getArchiveNameByIndex(parent: String, name: String): String {
-        var unCompressName = getDefaultName(name)
+        val unCompressName = getDefaultName(name)
         if (Paths.get(parent, unCompressName).exists()) {
             var count = 1;
             while (Paths.get(parent, "${unCompressName}($count)").exists()) {
@@ -58,7 +58,7 @@ abstract class Compressed() : ICompress {
 
     fun decompress(path: String) {
         var inputStream: InputStream? = null;
-        var parentPath = path.toFile().parent.toString();
+        val parentPath = path.toFile().parent.toString();
         try {
             inputStream = CompressorStreamFactory().createCompressorInputStream(path.toFile().inputStream().buffered())
             inputStream = inputStream.buffered()
@@ -67,13 +67,13 @@ abstract class Compressed() : ICompress {
         if (inputStream == null) {
             inputStream = path.toFile().inputStream().buffered()
         }
-        var archiveStream = ArchiveStreamFactory().createArchiveInputStream(inputStream)
+        val archiveStream = ArchiveStreamFactory().createArchiveInputStream(inputStream)
 
         var archiveEntry: ArchiveEntry?
-        var targetDirectorName = getArchiveNameByIndex(parentPath, path.toPath().last().toString())
+        val targetDirectorName = getArchiveNameByIndex(parentPath, path.toPath().last().toString())
         while (archiveStream.nextEntry.also { archiveEntry = it } != null) {
-            var itemName = archiveEntry!!.name
-            var curPaths = Paths.get(parentPath, targetDirectorName, itemName)
+            val itemName = archiveEntry!!.name
+            val curPaths = Paths.get(parentPath, targetDirectorName, itemName)
             if (archiveEntry!!.isDirectory) {
                 if (!curPaths.exists()) {
                     curPaths.createDirectories()

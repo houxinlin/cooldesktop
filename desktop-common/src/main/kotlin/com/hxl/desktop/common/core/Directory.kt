@@ -51,7 +51,7 @@ object Directory {
 
     @Synchronized
     private fun initializationWorkDirectoryAndGetRoot(): String {
-        var path = Paths.get(System.getProperty("user.dir"), "work")
+        var path = Paths.get(System.getProperty("user.home"), "cooldesktop-work")
         if (!path.exists()) {
             path.createDirectories()
         }

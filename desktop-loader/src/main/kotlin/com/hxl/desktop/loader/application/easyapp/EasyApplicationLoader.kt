@@ -23,14 +23,12 @@ import com.hxl.desktop.system.config.CoolProperties
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.support.ManagedMap
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.cglib.core.ReflectUtils
 import org.springframework.core.io.UrlResource
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory
 import org.springframework.core.type.filter.AnnotationTypeFilter
 import org.springframework.stereotype.Component
-import org.springframework.util.StringUtils
 import java.io.File
 import java.net.URL
 import java.nio.file.Files
@@ -83,7 +81,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             Files.write(tempAppStoragePath, byteArray)
 
             //尝试从这个jar中读取信息，可能会失败，主要原因是没有app.properties,或者配置信息不全
-            var easyApplication = getApplicationFromFile(JarFile(tempAppStoragePath.toFile()))
+            val easyApplication = getApplicationFromFile(JarFile(tempAppStoragePath.toFile()))
             easyApplication?.run {
                 //保存不会重复加载
                 if (applicationRegister.isLoaded(easyApplication.applicationId)) {
@@ -192,12 +190,12 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     }
 
     fun createClassLoader(rootJar: JarFile): ClassLoader {
-        var entries = rootJar.entries()
-        var urls = mutableListOf<URL>()
+        val entries = rootJar.entries()
+        val urls = mutableListOf<URL>()
         val springJarFile = org.springframework.boot.loader.jar.JarFile(File(rootJar.name))
         //同时支持jar中的jar
         while (entries.hasMoreElements()) {
-            var jarEntries = entries.nextElement()
+            val jarEntries = entries.nextElement()
             if (jarEntries.name.endsWith(JAR_SUFFIX)) {
                 val url: URL = springJarFile.getNestedJarFile(springJarFile.getJarEntry(jarEntries.name)).url
                 urls.add(url)
@@ -213,8 +211,8 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     private fun getComponentClassBeanDefinition(
         classLoader: ClassLoader,
         jarFile: JarFile
-    ): ManagedMap<String, Any> {
-        var componentClassNames = ManagedMap<String, Any>()
+    ): MutableMap<String, Any> {
+        val componentClassNames = mutableMapOf<String, Any>()
 
         JarFileClassExtract().extract(jarFile, object : EasyApplicationClassCallback {
             override fun call(urlResource: UrlResource, jarEntry: JarEntry) {
@@ -233,19 +231,18 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
         componentClassNames: MutableMap<String, Any>,
         classLoader: ClassLoader
     ) {
-        var metadataReader = metadataReaderFactory.getMetadataReader(classUrlResource)
-        var springBootApplicationAnnotationTypeFilter = AnnotationTypeFilter(SpringBootApplication::class.java)
+        val metadataReader = metadataReaderFactory.getMetadataReader(classUrlResource)
+        val springBootApplicationAnnotationTypeFilter = AnnotationTypeFilter(SpringBootApplication::class.java)
         if (springBootApplicationAnnotationTypeFilter.match(metadataReader, metadataReaderFactory)) {
             return
         }
-        var annotationTypeFilter = AnnotationTypeFilter(Component::class.java)
+        val annotationTypeFilter = AnnotationTypeFilter(Component::class.java)
         //如果是一个@Component类
         if (annotationTypeFilter.match(metadataReader, metadataReaderFactory)) {
             //装换class名称
-            var className = jarEntry.name.replace("/", ".").removeSuffix(CLASS_NAME_SUFFIX)
-            var beanClass = Class.forName(className, false, classLoader)
-            var beanName = className
-            componentClassNames[beanName] = beanClass
+            val className = jarEntry.name.replace("/", ".").removeSuffix(CLASS_NAME_SUFFIX)
+            val beanClass = Class.forName(className, false, classLoader)
+            componentClassNames[className] = beanClass
         }
     }
 
@@ -257,8 +254,8 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
      * 系统启动时候执行
      */
     private fun doHandlerLoadJarFile(file: File) {
-        var jarFile = JarFile(file.absoluteFile)
-        var application = getApplicationFromFile(jarFile)
+        val jarFile = JarFile(file.absoluteFile)
+        val application = getApplicationFromFile(jarFile)
         application?.run {
             if (applicationRegister.isLoaded(application.applicationId)) {
                 webSocketSender.send(

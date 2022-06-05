@@ -82,7 +82,7 @@ class CoolDesktopSystem {
      * 获取系统所有配置
      */
     fun getCoolDesktopConfigs(): MutableMap<String, String> {
-        var listConfigs = coolDesktopDatabase.listConfigs()
+        val listConfigs = coolDesktopDatabase.listConfigs()
         //排除敏感信息
         SENSITIVE_KEY.forEach { listConfigs.remove(it) }
         listConfigs["cooldesktop.version"] = coolProperties.coolVersion

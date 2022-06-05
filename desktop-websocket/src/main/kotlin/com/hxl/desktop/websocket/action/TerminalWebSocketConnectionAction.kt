@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Service
 class TerminalWebSocketConnectionAction : WebSocketConnectionAction() {
-    var terminalMapping = ConcurrentHashMap<WebSocketSession, Terminal>();
+    private val terminalMapping = ConcurrentHashMap<WebSocketSession, Terminal>();
 
     @Autowired
     lateinit var systemProperty: SystemProperty
@@ -33,7 +33,7 @@ class TerminalWebSocketConnectionAction : WebSocketConnectionAction() {
 
     override fun action(webSocketSession: WebSocketSession) {
         //获取属性
-        var connectionInfo = systemProperty.getServerConnectionInfo()
+        val connectionInfo = systemProperty.getServerConnectionInfo()
         //连接信息不完整
         if (!connectionInfo.verification()) {
             coolDesktopEventAction.sendForSubject(
@@ -44,7 +44,7 @@ class TerminalWebSocketConnectionAction : WebSocketConnectionAction() {
             return
         }
         //创建终端实例
-        var terminal =
+        val terminal =
             TerminalInstanceFactory.getTerminal(createServerConnectionInfoWrap(connectionInfo, webSocketSession))
         terminalMapping[webSocketSession] = terminal
 

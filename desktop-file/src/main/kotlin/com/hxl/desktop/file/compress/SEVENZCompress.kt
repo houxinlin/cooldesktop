@@ -16,18 +16,18 @@ import kotlin.io.path.exists
  */
 class SEVENZCompress() : Compressed() {
     override fun compress(path: String, targetName: String) {
-        var parent = File(path).parent
+        val parent = File(path).parent
         super.compressByType(path, CSevenArchiveOutputStream(Paths.get(parent, targetName).toString()))
     }
 
     override fun decompression(path: String) {
         SevenZFile(File(path)).use {
             var sevenZArchiveEntry: SevenZArchiveEntry?
-            var parentPath = path.toFile().parent.toString();
-            var targetDirectorName = getArchiveNameByIndex(parentPath, path.toPath().last().toString())
+            val parentPath = path.toFile().parent.toString();
+            val targetDirectorName = getArchiveNameByIndex(parentPath, path.toPath().last().toString())
             while (it.nextEntry.also { sevenZArchiveEntry = it } != null) {
-                var itemName = sevenZArchiveEntry!!.name
-                var curPaths = Paths.get(parentPath, targetDirectorName, itemName)
+                val itemName = sevenZArchiveEntry!!.name
+                val curPaths = Paths.get(parentPath, targetDirectorName, itemName)
                 if (sevenZArchiveEntry!!.isDirectory) {
                     if (!curPaths.exists()) {
                         curPaths.createDirectories()

@@ -4,10 +4,10 @@ import com.hxl.desktop.common.extent.fillZero
 
 object VersionUtils {
     fun isLz(v1: String, v2: String): Int {
-        var v1Split = v1.split(".").toMutableList()
-        var v2Split = v2.split(".").toMutableList()
+        val v1Split = v1.split(".").toMutableList()
+        val v2Split = v2.split(".").toMutableList()
 
-        var max = v1Split.size.coerceAtLeast(v2Split.size)
+        val max = v1Split.size.coerceAtLeast(v2Split.size)
         v1Split.fillZero(max)
         v2Split.fillZero(max)
         var index = 0;

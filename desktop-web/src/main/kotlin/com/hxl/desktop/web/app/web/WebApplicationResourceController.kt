@@ -34,12 +34,12 @@ class WebApplicationResourceController {
         request: HttpServletRequest,
         response: HttpServletResponse
     ): ResponseEntity<Resource> {
-        var application = applicationRegister.getApplicationById(applicationId)
+        val application = applicationRegister.getApplicationById(applicationId)
 
         val restOfTheUrl = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE) as String
         val pathOfApplication = restOfTheUrl.removePrefix("${WEB_MINE_REQUEST_PREFIX}${applicationId}")
         //加载资源
-        var requestResource = application?.loadResource(pathOfApplication)
+        val requestResource = application?.loadResource(pathOfApplication)
 
         requestResource?.run {
             return requestResource.toHttpResponse(MediaType.parseMediaType(Tika().detect(pathOfApplication)))
