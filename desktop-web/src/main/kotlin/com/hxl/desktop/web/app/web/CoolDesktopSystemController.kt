@@ -73,15 +73,15 @@ class CoolDesktopSystemController {
     }
 
 
-    @PostMapping("setSysProperty")
+    @PostMapping("setAppProperty")
     fun setSysProperty(@RequestParam("key") key: String, @RequestParam("value") value: String): String {
-        coolDesktopDatabase.setSysProperties(key, value)
+        coolDesktopDatabase.setAppProperties(key, value)
         return Constant.StringConstant.OK
     }
 
-    @PostMapping("getSysProperty")
+    @PostMapping("getAppProperty")
     fun getSysProperty(@RequestParam("key") key: String): Any {
-        return coolDesktopDatabase.getSysProperties(key)
+        return coolDesktopDatabase.getAppProperties(key)
 
     }
 
@@ -92,15 +92,15 @@ class CoolDesktopSystemController {
         fileAttributes.forEach { if (it.path == path) return Constant.StringConstant.DUPLICATE }
         val listPath = fileAttributes.stream().map { it.path }.collect(Collectors.toList())
         listPath.add(path)
-        coolDesktopDatabase.setSysProperties(Constant.KeyNames.DESKTOP_FILE_KEY, listPath)
+        coolDesktopDatabase.setAppProperties(Constant.KeyNames.DESKTOP_FILE_KEY, listPath)
         return Constant.StringConstant.OK
     }
 
     @GetMapping("desktop/file/list")
     fun listDesktopFile(): List<FileAttribute> {
-        val pathList = coolDesktopDatabase.getSysProperties(Constant.KeyNames.DESKTOP_FILE_KEY,"[]")
+        val pathList = coolDesktopDatabase.getAppProperties(Constant.KeyNames.DESKTOP_FILE_KEY,"[]")
         val newPathList = JSON.parseList(pathList, String::class.java)?.filter { it.toFile().exists() }
-        coolDesktopDatabase.setSysProperties(Constant.KeyNames.DESKTOP_FILE_KEY,newPathList!!)
+        coolDesktopDatabase.setAppProperties(Constant.KeyNames.DESKTOP_FILE_KEY,newPathList!!)
         return JsonArrayConvert().apply(pathList)
     }
 
@@ -108,9 +108,9 @@ class CoolDesktopSystemController {
     @PostMapping("desktop/file/remove")
     fun removeDesktopFile(@RequestParam("path") path: String): String {
         val fileAttributes =
-            JsonArrayConvert().apply(coolDesktopDatabase.getSysProperties(Constant.KeyNames.DESKTOP_FILE_KEY))
+            JsonArrayConvert().apply(coolDesktopDatabase.getAppProperties(Constant.KeyNames.DESKTOP_FILE_KEY))
         val newList = fileAttributes.filter { it.path != path }.stream().map { it.path }.collect(Collectors.toList())
-        coolDesktopDatabase.setSysProperties(Constant.KeyNames.DESKTOP_FILE_KEY, newList)
+        coolDesktopDatabase.setAppProperties(Constant.KeyNames.DESKTOP_FILE_KEY, newList)
         return Constant.StringConstant.OK
     }
 

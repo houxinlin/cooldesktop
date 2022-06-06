@@ -49,7 +49,7 @@ interface IFileService {
 
     fun download(path: String): ResponseEntity<FileSystemResource>
 
-    fun runJarFile(path: String,arg:String):Boolean
+    fun runJarFile(path: String,arg:String,type :Int):Boolean
 
     fun stopJar(path: String): String
 

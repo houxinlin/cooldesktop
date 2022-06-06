@@ -1,33 +1,27 @@
 package com.hxl.desktop.database
 
 import com.hxl.desktop.common.core.Directory
+import org.h2.jdbcx.JdbcDataSource
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.stereotype.Service
-import org.sqlite.SQLiteDataSource
 import java.nio.file.Paths
-import javax.annotation.Resource
 import javax.sql.DataSource
-import kotlin.io.path.exists
 
 @Configuration(proxyBeanMethods = false)
 class CoolDesktopDatabaseConfig {
     companion object {
-        const val DATABASE_NAME = "cooldesktop.db"
+        const val DATABASE_NAME = "cooldesktop"
     }
 
-    fun sqliteDataSource(): DataSource {
-        var databaseDirectory = Directory.getDatabaseDirectory()
-        var dbPath = Paths.get(databaseDirectory, DATABASE_NAME)
-        return SQLiteDataSource().apply {
-            this.url = "jdbc:sqlite:${dbPath}"
-            this.databaseName = dbPath.toString()
-        }
+    fun createDataSource(): DataSource {
+        val databaseDirectory = Directory.getDatabaseDirectory()
+        val dbPath = Paths.get(databaseDirectory, DATABASE_NAME)
+        return JdbcDataSource().apply { this.setURL( "jdbc:h2:${dbPath}") }
     }
 
     @Bean
-    fun sqliteJdbcTemplate(): JdbcTemplate {
-        return JdbcTemplate(sqliteDataSource())
+    fun jdbcTemplate(): JdbcTemplate {
+        return JdbcTemplate(createDataSource())
     }
 }

@@ -50,9 +50,10 @@ class StaticResourceController {
     @PostMapping("runJar")
     fun runJarFile(
         @RequestParam("path") path: String,
-        @RequestParam(value = "arg", required = false, defaultValue = "") arg: String
+        @RequestParam(value = "arg", required = false, defaultValue = "") arg: String,
+        @RequestParam("type") type : Int,
     ): Boolean {
-        return fileSystemService.runJarFile(path, arg)
+        return fileSystemService.runJarFile(path, arg,type)
     }
 
     /**

@@ -351,13 +351,21 @@ class FileServiceImpl : IFileService {
     }
 
     /**
-     * 运行jar文件
+     * 运行jar文件,
+     * type=0，普通启动
+     * type=1,重启
      */
-    override fun runJarFile(path: String, arg: String): Boolean {
+    override fun runJarFile(path: String, arg: String, type: Int): Boolean {
         if ((!path.toFile().exists()) || path.toFile().isDirectory) return false
         val maxWaitSecond = 5L //最大等待秒数
+        if (type == 1) {
+            val stopMessage = stopJar(path)
+            if (stopMessage != Constant.StringConstant.STOP_JAR_PROCESS_SUCCESS) {
+                return false
+            }
+        }
         JarUtils.getProcessIds(path).let {
-            //指定路径中是否已经有一个或者多个在运行,有多个检查的时候需要排除
+            //指定路径中是否已经有一个或者多个在运行,有多个检查的时候需要排除，用来检测是否启动成功
             JarUtils.run(path, arg)
             return JarUtils.isRun(path, it, maxWaitSecond)
         }
