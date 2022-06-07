@@ -31,7 +31,7 @@ class LinuxTerminal(var serverConnectionWrap: ServerConnectionInfoWrap) : Termin
     private var terminalOutputStream: OutputStream? = null
 
     @Volatile
-    private var connectioned = false;
+    private var connectioned = false
     private var channelShell: ChannelShell? = null
 
     private var commandQueue: LinkedBlockingQueue<String> = LinkedBlockingQueue<String>()
@@ -48,11 +48,11 @@ class LinuxTerminal(var serverConnectionWrap: ServerConnectionInfoWrap) : Termin
     }
 
     private fun handlerSystemCommand(command: String) {
-        var value = command.substring(7)
-        var col = value.substring(0, 4).toInt()
-        var row = value.substring(4, 8).toInt()
-        var w = value.substring(8, 12).toInt()
-        var h = value.substring(12, 16).toInt()
+        val value = command.substring(7)
+        val col = value.substring(0, 4).toInt()
+        val row = value.substring(4, 8).toInt()
+        val w = value.substring(8, 12).toInt()
+        val h = value.substring(12, 16).toInt()
         setSize(col, row, w, h)
     }
 
@@ -137,7 +137,7 @@ class LinuxTerminal(var serverConnectionWrap: ServerConnectionInfoWrap) : Termin
             log.info(e.message)
             serverConnectionWrap.terminalResponse.output((e.message + ":" + Constant.StringConstant.SSH_CONNECTION_FAIL).toByteArray())
         }
-        return false;
+        return false
     }
 
     override fun stopTerminal() {

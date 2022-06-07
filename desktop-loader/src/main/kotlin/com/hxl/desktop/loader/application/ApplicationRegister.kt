@@ -10,11 +10,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ApplicationContextAware
 import org.springframework.stereotype.Component
-import org.springframework.web.servlet.DispatcherServlet
-import org.springframework.web.servlet.HandlerMapping
 import java.util.stream.Collectors
 
 @Component
@@ -23,8 +19,7 @@ class ApplicationRegister : CommandLineRunner {
     private val webMiniApplicationMap = mutableMapOf<String, ApplicationWrapper>()
     private val easyApplicationMap = mutableMapOf<String, ApplicationWrapper>()
 
-    @javax.annotation.Resource(name = "dispatcherServlet")
-    lateinit var dispatcherServlet: DispatcherServlet
+
 
     @Autowired
     private lateinit var coolDesktopApplicationStaticResourceRegister: CoolDesktopApplicationStaticResourceRegister

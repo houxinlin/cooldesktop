@@ -213,12 +213,8 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
         jarFile: JarFile
     ): MutableMap<String, Any> {
         val componentClassNames = mutableMapOf<String, Any>()
-
-        JarFileClassExtract().extract(jarFile, object : EasyApplicationClassCallback {
-            override fun call(urlResource: UrlResource, jarEntry: JarEntry) {
-                registerIfComponentClass(urlResource, jarEntry, componentClassNames, classLoader)
-            }
-        })
+        JarFileClassExtract().extract(jarFile)
+        { urlResource, jarEntry -> registerIfComponentClass(urlResource, jarEntry, componentClassNames, classLoader) }
         return componentClassNames
     }
 

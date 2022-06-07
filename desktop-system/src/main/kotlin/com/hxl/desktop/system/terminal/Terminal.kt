@@ -5,11 +5,11 @@ package com.hxl.desktop.system.terminal
  */
 interface Terminal : Runnable {
 
-    fun writeCommand(command: String);
+    fun writeCommand(command: String)
 
-    fun startTerminal();
+    fun startTerminal()
 
-    fun stopTerminal();
+    fun stopTerminal()
 
     fun setSize(col: Int, row: Int, w: Int, h: Int)
 }

@@ -8,10 +8,8 @@ import com.hxl.fm.pk.FilePackage
 import org.slf4j.LoggerFactory
 import java.io.BufferedInputStream
 import java.io.FileInputStream
-import java.io.FileNotFoundException
 import java.io.IOException
 import java.net.URL
-import kotlin.math.log
 
 class ApplicationWrapper(var application: Application) : ResourceCache() {
     private val log = LoggerFactory.getLogger(ApplicationWrapper::class.java)
@@ -21,7 +19,7 @@ class ApplicationWrapper(var application: Application) : ResourceCache() {
         bufferedInputStream.skip(webMiniApplication.staticResOffset)
         val fileTable = FilePackage.decode(bufferedInputStream.readBytes())
         if (fileTable?.get(path) == null) {
-            return null;
+            return null
         }
         addCacheResource(path, fileTable.get(path)!!)
         return getCacheResource(path)

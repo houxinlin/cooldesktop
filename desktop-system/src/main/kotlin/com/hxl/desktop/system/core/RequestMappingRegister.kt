@@ -6,9 +6,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContextAware
 import org.springframework.core.PriorityOrdered
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.method.HandlerMethod
-import org.springframework.web.servlet.mvc.condition.RequestCondition
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
 import java.lang.reflect.Method
@@ -55,14 +52,14 @@ class RequestMappingRegister : RequestMappingHandlerMapping(), PriorityOrdered, 
 
     //将在请求的地址前面加入应用程序id路径
     override fun getMappingForMethod(method: Method, handlerType: Class<*>): RequestMappingInfo? {
-        var requestMappingInfo = super.getMappingForMethod(method, handlerType)
+        val requestMappingInfo = super.getMappingForMethod(method, handlerType)
         //如果是自定义的jar应用
         if (requestMappingInfo != null && classMap.containsKey(method.declaringClass)) {
-            var applicationId = classMap[method.declaringClass]
+            val applicationId = classMap[method.declaringClass]
             val mappings = requestMappingMap.getOrPut(applicationId!!) { mutableListOf() }
             mappings.add(requestMappingInfo)
             //增加前缀
-            var srcPatterns = requestMappingInfo.patternsCondition!!.patterns.first()
+            val srcPatterns = requestMappingInfo.patternsCondition!!.patterns.first()
             requestMappingInfo.patternsCondition!!.patterns.clear()
             requestMappingInfo.patternsCondition!!.patterns.add("/" + classMap[method.declaringClass] + srcPatterns)
             log.info("{}", "/" + classMap[method.declaringClass] + srcPatterns)
@@ -70,14 +67,5 @@ class RequestMappingRegister : RequestMappingHandlerMapping(), PriorityOrdered, 
         return requestMappingInfo
     }
 
-    override fun createRequestMappingInfo(
-        requestMapping: RequestMapping,
-        customCondition: RequestCondition<*>?
-    ): RequestMappingInfo {
-        return super.createRequestMappingInfo(requestMapping, customCondition)
-    }
 
-    override fun createHandlerMethod(handler: Any, method: Method): HandlerMethod {
-        return super.createHandlerMethod(handler, method)
-    }
 }

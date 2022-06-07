@@ -47,7 +47,7 @@ class CoolDesktopBeanRegister : ApplicationContextAware {
             log.warn("{}不在在容器中，无法获取", beanClass)
             return null
         }
-        var bean = applicationContext.defaultListableBeanFactory.getBean(beanClass.name)
+        val bean = applicationContext.defaultListableBeanFactory.getBean(beanClass.name)
 
         if (beanClass.classLoader == bean.javaClass.classLoader) {
             return bean as T
@@ -58,9 +58,9 @@ class CoolDesktopBeanRegister : ApplicationContextAware {
     }
 
     fun <T> destroyBean(beanClass: Class<T>) {
-        var beanName = applicationContext.defaultListableBeanFactory.getBeanNamesForType(beanClass)
+        val beanName = applicationContext.defaultListableBeanFactory.getBeanNamesForType(beanClass)
         beanName.forEach {
-            applicationContext.defaultListableBeanFactory.removeBeanDefinition(it);
+            applicationContext.defaultListableBeanFactory.removeBeanDefinition(it)
         }
     }
 }

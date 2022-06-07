@@ -8,34 +8,33 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 object ClipboardManager {
-    private const val COPY_COMMAND = "copy";
-    private const val PASTE_COMMAND = "paste";
-    private const val CUT_COMMAND = "cut";
-    private const val NONE_COMMAND = "none";
+    private const val COPY_COMMAND = "copy"
+    private const val CUT_COMMAND = "cut"
+    private const val NONE_COMMAND = "none"
     private var actionCommand = NONE_COMMAND
-    private var memoryFilePath: Any? = null;
+    private var memoryFilePath: Any? = null
 
     fun fileCut(path: String): Boolean {
         if (!path.toFile().exists()) {
             return false
         }
-        actionCommand = CUT_COMMAND;
-        memoryFilePath = path;
+        actionCommand = CUT_COMMAND
+        memoryFilePath = path
         return true
     }
 
     fun fileCopy(path: String): Boolean {
         if (!path.toFile().exists()) {
-            return false;
+            return false
         }
-        actionCommand = COPY_COMMAND;
-        memoryFilePath = path;
+        actionCommand = COPY_COMMAND
+        memoryFilePath = path
         return true
     }
 
     fun filePaste(path: String): FileHandlerResult {
         try {
-            var file = path.toFile()
+            val file = path.toFile()
 
             if (!file.exists()) {
                 return FileHandlerResult.NOT_EXIST
@@ -46,7 +45,7 @@ object ClipboardManager {
             if (actionCommand == NONE_COMMAND) {
                 return FileHandlerResult.NO_SELECT_FILE
             }
-            return copyToTarget(path, CUT_COMMAND == actionCommand);
+            return copyToTarget(path, CUT_COMMAND == actionCommand)
         } catch (e: Exception) {
             return FileHandlerResult.create(-1, "", e.message!!)
         }
@@ -59,10 +58,10 @@ object ClipboardManager {
                 && Files.exists(Paths.get(target))
                 && Files.exists(Paths.get(it))
             ) {
-                var memoryPath = Paths.get(it)
-                var targetPath = Paths.get(target, memoryPath.last().toString())
+                val memoryPath = Paths.get(it)
+                val targetPath = Paths.get(target, memoryPath.last().toString())
 
-                var targetFileName = memoryPath.last().toString();
+                val targetFileName = memoryPath.last().toString()
                 if (Files.exists(Paths.get(target, targetFileName))) {
                     return FileHandlerResult.TARGET_EXIST
                 }

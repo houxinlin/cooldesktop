@@ -48,7 +48,7 @@ import kotlin.io.path.*
  */
 @Service
 class FileServiceImpl : IFileService {
-    private val log: Logger = LoggerFactory.getLogger(FileServiceImpl::class.java);
+    private val log: Logger = LoggerFactory.getLogger(FileServiceImpl::class.java)
     private val fileMergeLockMap: ConcurrentHashMap<String, Any> = ConcurrentHashMap()
 
     @Autowired
@@ -77,8 +77,8 @@ class FileServiceImpl : IFileService {
      * 文件重命名
      */
     override fun fileRename(source: String, newName: String): FileHandlerResult {
-        var sourceFile = source.toFile()
-        var target = File(sourceFile.parent, newName)
+        val sourceFile = source.toFile()
+        val target = File(sourceFile.parent, newName)
 
         if (!sourceFile.exists()) {
             return FileHandlerResult.NOT_EXIST
@@ -89,7 +89,7 @@ class FileServiceImpl : IFileService {
         if (!hasPermission(source)) {
             return FileHandlerResult.NO_PERMISSION
         }
-        sourceFile.renameTo(target);
+        sourceFile.renameTo(target)
         return FileHandlerResult.OK
     }
 
@@ -98,14 +98,14 @@ class FileServiceImpl : IFileService {
      * 文件合并
      */
     override fun fileMerge(chunkId: String, name: String, inPath: String): FileHandlerResult {
-        val rootPath = Paths.get(Directory.getChunkDirectory(), chunkId).toString();
+        val rootPath = Paths.get(Directory.getChunkDirectory(), chunkId).toString()
         if (!rootPath.toPath().exists()) {
             return FileHandlerResult.TARGET_NOT_EXIST
         }
-        val target = Paths.get(inPath, name);
+        val target = Paths.get(inPath, name)
         //如果目标已经存在
         if (target.exists()) {
-            deleteFile(rootPath);
+            deleteFile(rootPath)
             return FileHandlerResult.TARGET_EXIST
         }
         val fileSize = Files.list(rootPath.toPath()).count()
@@ -115,7 +115,7 @@ class FileServiceImpl : IFileService {
         }
         targetOutputStream.flush()
         targetOutputStream.close()
-        deleteFile(rootPath);
+        deleteFile(rootPath)
         //通知客户端
         webSocketSender.send(
             WebSocketMessageBuilder.Builder()
@@ -124,13 +124,13 @@ class FileServiceImpl : IFileService {
                 .addItem("inPath", inPath)
                 .build()
         )
-        return FileHandlerResult.OK;
+        return FileHandlerResult.OK
     }
 
     override fun chunkUpload(uploadInfo: UploadInfo): FileHandlerResult {
         //上传的时候检测目标是否否存在，这要有一个chunk失败了，前端会提示，并且取消其他请求
         try {
-            val target = Paths.get(uploadInfo.target, uploadInfo.fileName);
+            val target = Paths.get(uploadInfo.target, uploadInfo.fileName)
             if (target.exists()) {
                 log.info("目标{}已存在", target)
                 return FileHandlerResult.TARGET_EXIST
@@ -141,18 +141,18 @@ class FileServiceImpl : IFileService {
             }
             val chunkLock = fileMergeLockMap.getOrPut(uploadInfo.chunkId) { Any() }
 
-            val chunkDirector = Paths.get(Directory.createChunkDirector(uploadInfo.chunkId));
+            val chunkDirector = Paths.get(Directory.createChunkDirector(uploadInfo.chunkId))
             Files.write(
                 Paths.get(chunkDirector.toString(), uploadInfo.blobId.toString()),
                 uploadInfo.fileBinary.inputStream.readBytes()
-            );
-            val currentSize = Files.list(chunkDirector).map { it.fileSize() }.collect(Collectors.toList()).sum();
+            )
+            val currentSize = Files.list(chunkDirector).map { it.fileSize() }.collect(Collectors.toList()).sum()
             //如果文件大小等于当前文件数量合，和并文件
             //上传完毕后只有一个线程可以进行和并
             synchronized(chunkLock) {
                 //如果没有找到key，则说明其他线程已经合并了
                 if (!fileMergeLockMap.containsKey(uploadInfo.chunkId)) {
-                    return FileHandlerResult.OK;
+                    return FileHandlerResult.OK
                 }
                 //判断全部上传成功没，如果成功，则进行合并
                 if (uploadInfo.total == currentSize) {
@@ -161,7 +161,7 @@ class FileServiceImpl : IFileService {
                     return mergeResult
                 }
             }
-            return FileHandlerResult.OK;
+            return FileHandlerResult.OK
         } catch (e: Exception) {
             log.info("上传失败{}", e.message)
         }
@@ -233,7 +233,7 @@ class FileServiceImpl : IFileService {
             val defaultIcon = ClassPathResource(ClassPathUtils.getClassPathFullPath("file"))
             return ByteArrayResource(defaultIcon.inputStream.readBytes())
         }
-        var attribute = file.getAttribute()
+        val attribute = file.getAttribute()
         return getFileIconByType(attribute.rawType)
     }
 

@@ -50,11 +50,13 @@ class ApplicationConvertFunction : Function<Properties, EasyApplication> {
             //所支持的媒体类型
             this.supportMediaTypes = getListProperties(properties.getProperty(Application.APP_SUPPORT_TYPE_KEY), ",")
             //url排除
-            this.urlExclude=getListProperties(getPropertiesOrDefault(properties,Application.APP_URL_EXCLUDE,""),",");
+            this.urlExclude=getListProperties(getPropertiesOrDefault(properties,Application.APP_URL_EXCLUDE,""),",")
             //背景颜色
             this.windowBackground = getPropertiesOrDefault(properties, Application.APP_WEB_WINDOW_BACKGROUND, this.windowBackground)
             //最低运行版本
             this.environmentVersion = getPropertiesOrDefault(properties, Application.APP_ENVIRONMENT_VERSION, this.environmentVersion)
+            //窗口大小
+            this.windowSize = getPropertiesOrDefault(properties, Application.APP_WINDOWS_SIZE, 0)
         }
     }
 }

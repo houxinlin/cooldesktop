@@ -16,7 +16,7 @@ object OpenUrlManager {
         val newUrl = if (url.startsWith("/")) url else "/${url}"
         if (getOpenUrl().contains(newUrl)) return Constant.StringConstant.DUPLICATE
         val oldOpenPath = Paths.get(Directory.getOpenUrlDirectory(), Constant.FileName.OPEN_URL)
-        var data = StringBuffer(newUrl).append("\r").toString()
+        val data = StringBuffer(newUrl).append("\r").toString()
         Files.write(oldOpenPath, data.toByteArray(), StandardOpenOption.CREATE, StandardOpenOption.APPEND)
         return Constant.StringConstant.OK
     }
@@ -26,7 +26,7 @@ object OpenUrlManager {
         if (oldOpenPath.notExists()) return
 
         val allOpenURLs = oldOpenPath.toFile().readLines()
-        var stringBuffer = StringBuffer()
+        val stringBuffer = StringBuffer()
         allOpenURLs.filterNot { it == url }.forEach { stringBuffer.append(it);stringBuffer.append("\r\n") }
 
         oldOpenPath.toFile().writeText(stringBuffer.toString())
@@ -36,7 +36,7 @@ object OpenUrlManager {
         val openUrlPath = Paths.get(Directory.getOpenUrlDirectory(), Constant.FileName.OPEN_URL)
         if (openUrlPath.notExists()) {
             Files.createFile(openUrlPath)
-            return mutableListOf<String>()
+            return mutableListOf()
         }
         return Files.readAllLines(openUrlPath)
     }

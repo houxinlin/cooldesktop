@@ -34,8 +34,8 @@ class CoolDesktopNotifyWebSocketAspect {
     @AfterThrowing(throwing = "exception", pointcut = "@annotation(com.hxl.desktop.common.core.ano.NotifyWebSocket)")
     fun notifyAfter(joinPoint: JoinPoint, exception: Throwable) {
         val signature = joinPoint.signature as MethodSignature
-        var notifyWebSocket = signature.method.getDeclaredAnnotation(NotifyWebSocket::class.java)
-        var args = joinPoint.args
+        val notifyWebSocket = signature.method.getDeclaredAnnotation(NotifyWebSocket::class.java)
+        val args = joinPoint.args
         coolDesktopEventAction.send(
             WebSocketMessageBuilder.Builder()
                 .applySubject(notifyWebSocket.subject)
@@ -50,11 +50,10 @@ class CoolDesktopNotifyWebSocketAspect {
     @AfterReturning(returning = "data", pointcut = "@annotation(com.hxl.desktop.common.core.ano.NotifyWebSocket)")
     fun notifyAfterReturning(joinPoint: JoinPoint, data: Any) {
         val signature = joinPoint.signature as MethodSignature
-        var notifyWebSocket = signature.method.getDeclaredAnnotation(NotifyWebSocket::class.java)
+        val notifyWebSocket = signature.method.getDeclaredAnnotation(NotifyWebSocket::class.java)
         for (messageConvert in webSocketNotifyMessageConvert) {
             if (messageConvert.support(data)) {
-                var createMessage = messageConvert.createMessage(data, notifyWebSocket)
-                coolDesktopEventAction.send(createMessage)
+                coolDesktopEventAction.send(messageConvert.createMessage(data, notifyWebSocket))
                 return
             }
         }

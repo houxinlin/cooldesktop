@@ -38,7 +38,7 @@ class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
     @Autowired
     lateinit var applicationRegister: ApplicationRegister
 
-    lateinit var executorCountDownLatch: CountDownLatch;
+    lateinit var executorCountDownLatch: CountDownLatch
     override fun loadApplicationFromByte(byteArray: ByteArray): ApplicationInstallState {
         val webMiniApplication = getApplicationFromByte(ByteBuffer.wrap(byteArray))
         //用于保证不会写入两个相同的应用到本地
@@ -47,7 +47,7 @@ class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
             return ApplicationInstallState.DUPLICATE
         }
         //注册并且保存到本地
-        var appStoragePath = Paths.get(Directory.getWebAppDirectory(), "${UUID.randomUUID()}.webapp")
+        val appStoragePath = Paths.get(Directory.getWebAppDirectory(), "${UUID.randomUUID()}.webapp")
         Files.write(appStoragePath, byteArray)
         webMiniApplication.applicationPath = appStoragePath.toString()
         registerWebApplication(webMiniApplication)
@@ -120,15 +120,15 @@ class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
     inner class ApplicationLoadThread(var path: Path) : Runnable {
         override fun run() {
             try {
-                var applicationByteBuffer = ByteBuffer.wrap(Files.readAllBytes(path))
+                val applicationByteBuffer = ByteBuffer.wrap(Files.readAllBytes(path))
                 //检测类型
-                var applicationType = ApplicationTypeDetection.detection(applicationByteBuffer)
+                val applicationType = ApplicationTypeDetection.detection(applicationByteBuffer)
 
                 if (applicationType != Application.WEB_MINI_APP) {
                     log.info("{}不是Web应用，无法加载", path)
                     return
                 }
-                var webMiniApplication = getApplicationFromByte(applicationByteBuffer)
+                val webMiniApplication = getApplicationFromByte(applicationByteBuffer)
                 webMiniApplication.applicationPath = path.toString()
                 registerWebApplication(webMiniApplication)
             } catch (e: Exception) {

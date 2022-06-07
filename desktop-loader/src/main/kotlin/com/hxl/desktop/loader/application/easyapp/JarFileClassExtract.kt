@@ -9,9 +9,9 @@ class JarFileClassExtract {
         jarFile.stream().forEach {
             //如果是class文件
             if (it.name.endsWith(EasyApplicationLoader.CLASS_NAME_SUFFIX)) {
-                var path = EasyApplicationLoader.JAR_FILE_PREFIX + jarFile.name + "!/" + it.name;
-                var classUrlResource = UrlResource(path)
-                var byteArray = ByteArray(4)
+                val path = EasyApplicationLoader.JAR_FILE_PREFIX + jarFile.name + "!/" + it.name;
+                val classUrlResource = UrlResource(path)
+                val byteArray = ByteArray(4)
                 //读取前4个字节,用来二次确认
                 classUrlResource.inputStream.read(byteArray)
                 //如果是class类型
