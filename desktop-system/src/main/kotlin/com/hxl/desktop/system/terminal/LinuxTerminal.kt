@@ -100,7 +100,7 @@ class LinuxTerminal(var serverConnectionWrap: ServerConnectionInfoWrap) : Termin
             startCommandConsumeThread()
 
             val buffer = ByteArray(1024)
-            var i =0
+            var i = 0
             while (terminalInputStream!!.read(buffer).also { i = it } != -1) {
                 serverConnectionWrap.terminalResponse.output(buffer.copyOfRange(0, i))
             }

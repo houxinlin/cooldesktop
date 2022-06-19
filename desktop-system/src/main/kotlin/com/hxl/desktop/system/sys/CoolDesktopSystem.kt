@@ -92,7 +92,6 @@ class CoolDesktopSystem {
     @Synchronized
     fun configSecureShell(): String {
         //如果已经配置了密钥，则删除
-
         val privateRsaPath = Paths.get(Directory.getSecureShellConfigDirectory(), RSA_NAME)
         val publicRsaPath = Paths.get(Directory.getSecureShellConfigDirectory(), "${RSA_NAME}.pub")
         val authorizedKeysFile = File(AUTHORIZED_KEYS)
@@ -126,7 +125,6 @@ class CoolDesktopSystem {
             CoolDesktopDatabaseConfigKeys.SSH_PRIVATE_VALUE.keyName,
             privateRsa.decodeToString()
         )
-
 
         if (!authorizedKeysFile.canWrite()) {
             log.info("没有权限写入{}", AUTHORIZED_KEYS)

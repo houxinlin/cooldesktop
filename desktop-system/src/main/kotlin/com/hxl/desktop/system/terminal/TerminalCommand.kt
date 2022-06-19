@@ -5,7 +5,6 @@ import java.io.IOException
 
 class TerminalCommand {
     private constructor()
-
     private fun execute(commandBuilder: Builder): String {
         try {
             val processBuilder = ProcessBuilder()
