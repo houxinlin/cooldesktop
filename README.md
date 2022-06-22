@@ -48,4 +48,5 @@ java -jar desktop-web.jar --server.port=8080
 
 
 ![23fb4ef734561956026f0f0f8e9d88a.jpg](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/26fad3fa2cbb42d8b73f7192608abe55~tplv-k3u1fbpfcp-watermark.image?)
-# cooldesktop-application-jar-manager
+
+
