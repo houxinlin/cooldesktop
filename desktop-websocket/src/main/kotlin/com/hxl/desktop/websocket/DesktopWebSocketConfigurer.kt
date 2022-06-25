@@ -29,36 +29,44 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
 
     @Autowired
     lateinit var systemProperty: SystemProperty
-   private val connectionAction = mutableMapOf<String, WebSocketConnectionAction>()
+    private val connectionActions = mutableListOf<WebSocketConnectionAction>()
 
     private val webSocketSessionMap = ConcurrentHashMap<String, WebSocketSession>()
 
 
+    /**
+     * 记录所有可处理WebSocket订阅的事件支持者
+     */
     @Autowired
     fun setWebSocketConnectionAction(action: List<WebSocketConnectionAction>) {
-        action.forEach { connectionAction[it.support()] = it }
+        connectionActions.addAll(action)
     }
 
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
-        config.enableSimpleBroker("/desktop-topic");
-        config.setApplicationDestinationPrefixes("/desktop");
-
+        config.enableSimpleBroker("/desktop-topic")
+        config.setApplicationDestinationPrefixes("/desktop")
     }
 
     override fun configureWebSocketTransport(registry: WebSocketTransportRegistration) {
         super.configureWebSocketTransport(registry)
         registry.addDecoratorFactory { handler ->
             object : WebSocketHandlerDecorator(handler) {
+                /**
+                 * 记录连接
+                 */
                 override fun afterConnectionEstablished(session: WebSocketSession) {
                     super.afterConnectionEstablished(session)
                     webSocketSessionMap[session.id] = session
 
                 }
 
+                /**
+                 * 关闭链接
+                 */
                 override fun afterConnectionClosed(session: WebSocketSession, closeStatus: CloseStatus) {
                     super.afterConnectionClosed(session, closeStatus)
                     webSocketSessionMap.remove(session.id)
-                    connectionAction.values.forEach { it.closeSession(session) }
+                    connectionActions.forEach { it.closeSession(session) }
                 }
             }
         }
@@ -72,20 +80,26 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
                     request: ServerHttpRequest,
                     wsHandler: WebSocketHandler,
                     attributes: Map<String, Any>
-                ): Principal? {
+                ): Principal {
                     return StompPrincipal(UUID.randomUUID().toString())
                 }
             })
-            .setAllowedOrigins("http://192.168.0.110:3000","http://localhost:3000")//开发的时候
+            .setAllowedOrigins("http://192.168.0.110:3000", "http://localhost:3000")//开发的时候
             .withSockJS()
     }
 
+    /**
+     * 事件订阅
+     */
     @EventListener
     fun websocketSubscribeEvent(sub: SessionSubscribeEvent) {
         if (sub.message is GenericMessage) {
-            val simpDestination = sub.message.headers["simpDestination"]
-            if (connectionAction.containsKey(simpDestination)) {
-                connectionAction[simpDestination]!!.action(webSocketSessionMap[sub.message.headers["simpSessionId"]]!!)
+            val simpDestination = sub.message.headers["simpDestination"] as String
+            for (connectionAction in connectionActions) {
+                if (connectionAction.support(simpDestination)) connectionAction.action(
+                    simpDestination,
+                    webSocketSessionMap[sub.message.headers["simpSessionId"]]!!
+                )
             }
         }
     }

@@ -1,15 +1,27 @@
 package com.hxl.desktop.websocket.action
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import org.springframework.web.socket.WebSocketSession
 
- abstract class WebSocketConnectionAction {
+abstract class WebSocketConnectionAction {
+    /**
+     * 处理消息
+     */
     abstract fun onMessage(message: String, sessionId: String)
 
-    abstract fun action(webSocketSession: WebSocketSession)
+    /**
+     * 处理新的连接
+     */
+    abstract fun action(subject: String,webSocketSession: WebSocketSession)
 
+    /**
+     * 关闭连接
+     */
     abstract fun closeSession(webSocketSession: WebSocketSession)
 
-    abstract fun support(): String
-
+    /**
+     * 是否支持此订阅
+     */
+    abstract fun support(subject: String): Boolean
 
 }

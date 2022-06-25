@@ -10,21 +10,21 @@ import org.springframework.scheduling.annotation.Async
 import java.util.concurrent.Future
 
 interface IFileService {
-    fun listDirector(root: String): List<FileAttribute>;
+    fun listDirector(root: String): List<FileAttribute>
 
-    fun getFileIconByType(type: String): ByteArrayResource;
+    fun getFileIconByType(type: String): ByteArrayResource
 
-    fun getFileIconByPath(path: String): ByteArrayResource;
+    fun getFileIconByPath(path: String): ByteArrayResource
 
-    fun deleteFile(path: String): FileHandlerResult;
+    fun deleteFile(path: String): FileHandlerResult
 
-    fun getImageThumbnail(path: String): ByteArrayResource;
+    fun getImageThumbnail(path: String): ByteArrayResource
 
     fun chunkUpload(uploadInfo: UploadInfo): FileHandlerResult
 
-    fun fileMerge(chunkId: String, name: String, inPath: String): FileHandlerResult;
+    fun fileMerge(chunkId: String, name: String, inPath: String): FileHandlerResult
 
-    fun hasPermission(path: String): Boolean;
+    fun hasPermission(path: String): Boolean
 
     fun fileCopy(path: String): Boolean
 
@@ -42,18 +42,21 @@ interface IFileService {
     fun filePaste(path: String, taskId: String): Future<FileHandlerResult>
 
     @Async
-    fun fileCompress(path: String, targetName: String, compressType: String,taskId: String): Future<FileHandlerResult>
+    fun fileCompress(path: String, targetName: String, compressType: String, taskId: String): Future<FileHandlerResult>
 
     @Async
-    fun fileDecompression(path: String,taskId: String): Future<FileHandlerResult>
+    fun fileDecompression(path: String, taskId: String): Future<FileHandlerResult>
 
     fun download(path: String): ResponseEntity<FileSystemResource>
 
-    fun runJarFile(path: String,arg:String,type :Int):Boolean
+    fun runJarFile(path: String, arg: String, type: Int): Boolean
 
     fun stopJar(path: String): String
 
     @Async
     fun runShell(path: String): Future<String>
 
+    fun tailStart(path: String): FileHandlerResult
+
+    fun tailStop(uuid: String): FileHandlerResult
 }

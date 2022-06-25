@@ -19,6 +19,8 @@ import com.hxl.desktop.system.core.AsyncResultWithID
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
 import com.hxl.desktop.system.manager.ClipboardManager
+import com.hxl.desktop.system.tail.Tail
+import com.hxl.desktop.system.tail.TailManager
 import com.hxl.desktop.system.terminal.LinuxShell
 import com.hxl.desktop.system.utils.JarUtils
 import org.slf4j.Logger
@@ -387,4 +389,20 @@ class FileServiceImpl : IFileService {
         return AsyncResult(Constant.StringConstant.SHELL_EXEC_RESULT + LinuxShell(path).run())
     }
 
+    override fun tailStart(path: String): FileHandlerResult {
+        if (!path.toFile().exists()) return FileHandlerResult.NOT_EXIST
+        return FileHandlerResult.createOK(TailManager.create(path) {
+            webSocketSender.send(
+                WebSocketMessageBuilder.Builder()
+                    .applySubject("/event/tail/$path")
+                    .addItem("data", it)
+                    .build()
+            )
+        })
+    }
+
+    override fun tailStop(uuid: String): FileHandlerResult {
+        TailManager.stop(uuid)
+        return FileHandlerResult.OK
+    }
 }

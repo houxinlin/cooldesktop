@@ -29,6 +29,22 @@ class StaticResourceController {
     lateinit var fileSystemService: IFileService;
 
     /**
+     *tail 日志追踪
+     */
+    @PostMapping("tail/stop")
+    fun tailStop(@RequestParam("id") path: String): FileHandlerResult {
+        return fileSystemService.tailStop(path)
+    }
+
+    /**
+     *tail 日志追踪
+     */
+    @PostMapping("tail/start")
+    fun tailStart(@RequestParam("path") path: String): FileHandlerResult {
+        return fileSystemService.tailStart(path)
+    }
+
+    /**
      *运行一个shell
      */
     @PostMapping("runShell")
@@ -51,9 +67,9 @@ class StaticResourceController {
     fun runJarFile(
         @RequestParam("path") path: String,
         @RequestParam(value = "arg", required = false, defaultValue = "") arg: String,
-        @RequestParam("type") type : Int,
+        @RequestParam("type") type: Int,
     ): Boolean {
-        return fileSystemService.runJarFile(path, arg,type)
+        return fileSystemService.runJarFile(path, arg, type)
     }
 
     /**
@@ -155,6 +171,7 @@ class StaticResourceController {
             .contentLength(fileIcon.contentLength())
             .body(fileIcon)
     }
+
     /**
      * 获取文件icon
      */
@@ -168,6 +185,7 @@ class StaticResourceController {
             .contentLength(fileIcon.contentLength())
             .body(fileIcon)
     }
+
     /**
      * 文件预览图
      */

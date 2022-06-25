@@ -21,7 +21,7 @@ class XterminalWebSocketConfigurer : WebSocketConfigurer {
         registry.addHandler(object : TextWebSocketHandler() {
             override fun afterConnectionEstablished(session: WebSocketSession) {
                 super.afterConnectionEstablished(session)
-                terminalWebSocketConnectionAction.action(session)
+                terminalWebSocketConnectionAction.action("", session)
             }
 
             override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {

@@ -2,6 +2,7 @@ package com.hxl.desktop.websocket.action
 
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
+import com.hxl.desktop.websocket.utils.DelayEvent
 import com.hxl.desktop.websocket.utils.WebSocketUtils
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -46,7 +47,6 @@ class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
         var flag = false
         coolDesktopEventSocket.forEach {
             if (it.isOpen) {
-                log.info("WebSocket发送数据{}", msg)
                 it.sendMessage(TextMessage(WebSocketUtils.createMessage(msg.toByteArray())))
                 flag = true
             }
@@ -63,7 +63,8 @@ class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
     /**
      * 当新的socket连接后走这里
      */
-    override fun action(webSocketSession: WebSocketSession) {
+
+    override fun action(subject: String, webSocketSession: WebSocketSession) {
         coolDesktopEventSocket.add(webSocketSession)
         //推送离线消息
         while (offlineMessageQueue.poll()?.also { send(it) } != null) {
@@ -74,7 +75,8 @@ class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
         coolDesktopEventSocket.remove(webSocketSession)
     }
 
-    override fun support(): String {
-        return "/topic/events"
+
+    override fun support(subject: String): Boolean {
+        return subject == "/topic/events"
     }
 }

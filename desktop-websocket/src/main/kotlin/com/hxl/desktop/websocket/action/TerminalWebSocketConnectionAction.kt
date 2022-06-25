@@ -31,7 +31,7 @@ class TerminalWebSocketConnectionAction : WebSocketConnectionAction() {
         return ServerConnectionInfoWrap(connectionInfo, SshMessageListener(session))
     }
 
-    override fun action(webSocketSession: WebSocketSession) {
+    override fun action(subject: String, webSocketSession: WebSocketSession) {
         //获取属性
         val connectionInfo = systemProperty.getServerConnectionInfo()
         //连接信息不完整
@@ -47,7 +47,6 @@ class TerminalWebSocketConnectionAction : WebSocketConnectionAction() {
         val terminal =
             TerminalInstanceFactory.getTerminal(createServerConnectionInfoWrap(connectionInfo, webSocketSession))
         terminalMapping[webSocketSession] = terminal
-
     }
 
     override fun onMessage(message: String, sessionId: String) {
@@ -71,7 +70,7 @@ class TerminalWebSocketConnectionAction : WebSocketConnectionAction() {
         return null
     }
 
-    override fun support(): String {
-        return "/topic/ssh"
+    override fun support(subject: String): Boolean {
+        return subject == "/topic/ssh"
     }
 }

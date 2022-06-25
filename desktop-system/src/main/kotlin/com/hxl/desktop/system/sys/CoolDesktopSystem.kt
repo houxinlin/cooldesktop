@@ -27,7 +27,7 @@ import kotlin.io.path.deleteIfExists
 import kotlin.io.path.exists
 
 /**
- * CoolDesktop系统
+ * CoolDesktop系统管理接口
  */
 @Service
 class CoolDesktopSystem {
