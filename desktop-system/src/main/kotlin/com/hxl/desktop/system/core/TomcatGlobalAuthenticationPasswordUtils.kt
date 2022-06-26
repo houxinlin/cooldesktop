@@ -11,8 +11,8 @@ object TomcatGlobalAuthenticationPasswordUtils {
     private val log = LoggerFactory.getLogger(
         TomcatGlobalAuthenticationPasswordUtils::class.java
     )
-    private val PASSWORD_PATH = System.getProperty("user.home") + "/desktop-tomcat"
-    private const val PASSWORD_FILE_NAME = "password"
+    private val PASSWORD_PATH = System.getProperty("user.home") + "/cooldesktop-work"
+    private const val PASSWORD_FILE_NAME = "password.conf"
     fun createIfNotExist(): Boolean {
         try {
             if (!Files.exists(Paths.get(PASSWORD_PATH, PASSWORD_FILE_NAME))) {
@@ -26,12 +26,9 @@ object TomcatGlobalAuthenticationPasswordUtils {
         return false
     }
 
-    fun reset(): Boolean {
+    fun reset(pass: String): Boolean {
         if (createIfNotExist()) {
-            Files.write(
-                Paths.get(PASSWORD_PATH, PASSWORD_FILE_NAME),
-                randomPassword.toByteArray(StandardCharsets.UTF_8)
-            )
+            Files.write(Paths.get(PASSWORD_PATH, PASSWORD_FILE_NAME), pass.toByteArray())
             return true
         }
         return false
@@ -48,9 +45,6 @@ object TomcatGlobalAuthenticationPasswordUtils {
             }
             return ""
         }
-    private val randomPassword: String
-         get() {
-            val candidate = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm123456789"
-            return candidate.randomString(6)
-        }
+
+
 }

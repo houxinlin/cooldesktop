@@ -52,8 +52,8 @@ class CoolDesktopSystemController {
     }
 
     @PostMapping("resetLoginPasswd")
-    fun resetLogoPasswd(): String {
-        return coolDesktopSystem.resetLoginPasswd()
+    fun resetLogoPasswd(@RequestParam("pass") pass: String): String {
+        return coolDesktopSystem.resetLoginPasswd(pass)
     }
 
     @PostMapping("addOpenUrl")
@@ -88,7 +88,7 @@ class CoolDesktopSystemController {
     @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.REFRESH_DESKTOP_REFRESH)
     @PostMapping("desktop/file/add")
     fun addDesktopFile(@RequestParam("path") path: String): String {
-        val fileAttributes =listDesktopFile()
+        val fileAttributes = listDesktopFile()
         fileAttributes.forEach { if (it.path == path) return Constant.StringConstant.DUPLICATE }
         val listPath = fileAttributes.stream().map { it.path }.collect(Collectors.toList())
         listPath.add(path)
@@ -98,9 +98,9 @@ class CoolDesktopSystemController {
 
     @GetMapping("desktop/file/list")
     fun listDesktopFile(): List<FileAttribute> {
-        val pathList = coolDesktopDatabase.getAppProperties(Constant.KeyNames.DESKTOP_FILE_KEY,"[]")
+        val pathList = coolDesktopDatabase.getAppProperties(Constant.KeyNames.DESKTOP_FILE_KEY, "[]")
         val newPathList = JSON.parseList(pathList, String::class.java)?.filter { it.toFile().exists() }
-        coolDesktopDatabase.setAppProperties(Constant.KeyNames.DESKTOP_FILE_KEY,newPathList!!)
+        coolDesktopDatabase.setAppProperties(Constant.KeyNames.DESKTOP_FILE_KEY, newPathList!!)
         return JsonArrayConvert().apply(pathList)
     }
 

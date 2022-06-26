@@ -155,8 +155,8 @@ class CoolDesktopSystem {
         return Constant.StringConstant.OK
     }
 
-    fun resetLoginPasswd(): String {
-        if (TomcatGlobalAuthenticationPasswordUtils.reset()) {
+    fun resetLoginPasswd(pass: String): String {
+        if (TomcatGlobalAuthenticationPasswordUtils.reset(pass.uppercase())) {
             return Constant.StringConstant.RESET_OK
         }
         return Constant.StringConstant.RESET_FAIL
