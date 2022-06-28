@@ -2,6 +2,7 @@ package com.hxl.desktop.websocket.action
 
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
+import com.hxl.desktop.system.tail.TailManager
 import com.hxl.desktop.websocket.utils.DelayEvent
 import com.hxl.desktop.websocket.utils.WebSocketUtils
 import org.slf4j.LoggerFactory
@@ -14,13 +15,11 @@ import javax.annotation.PostConstruct
 
 @Service
 class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
-    private val coolDesktopEventSocket: MutableList<WebSocketSession> = mutableListOf()
-
-    private val delayQueue = DelayQueue<DelayEvent>()
-
-    private val offlineMessageQueue = LinkedBlockingQueue<String>()
-
     private val log = LoggerFactory.getLogger(CoolDesktopEventAction::class.java)
+
+    private val coolDesktopEventSocket: MutableList<WebSocketSession> = mutableListOf()
+    private val delayQueue = DelayQueue<DelayEvent>()
+    private val offlineMessageQueue = LinkedBlockingQueue<String>()
     private val MAX_OFFINE_MESSAGE_QUEUE: Int = 5;
 
     @PostConstruct
@@ -72,6 +71,7 @@ class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
     }
 
     override fun closeSession(webSocketSession: WebSocketSession) {
+        if(coolDesktopEventSocket.size==1) TailManager.stopAll()
         coolDesktopEventSocket.remove(webSocketSession)
     }
 

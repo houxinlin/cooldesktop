@@ -13,4 +13,8 @@ object TailManager {
     fun stop(uuid: String) {
         tailMap[uuid]?.stop()
     }
+
+    fun stopAll() {
+        tailMap.keys.forEach(this::stop)
+    }
 }
