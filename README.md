@@ -4,8 +4,12 @@ CoolDesktop是一个Linux服务器管理软件，
 CoolDesktop采用全新的操作方式，让您像操作本地系统一样，操作远程Linux，除了基本的文件复制、粘贴、上传、删除、重复名等基本操作，
 还可以进行终端操作，如果对当前应用不满意，可以自行开发软件，挂载到CoolDesktop上，这和我们平常在系统上安装软件是一个道理。
 
+# 技术栈
 
-
+1. Spring Boot
+2. Vue
+3. xterm + jsch
+4. h2database
 # 🛫 安装
 
   [点击这里下载](https://github.com/houxinlin/cooldesktop/releases/download/v2.1.1/desktop-web.jar)

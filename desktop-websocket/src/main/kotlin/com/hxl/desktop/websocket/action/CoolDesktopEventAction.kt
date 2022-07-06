@@ -15,12 +15,16 @@ import javax.annotation.PostConstruct
 
 @Service
 class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
-    private val log = LoggerFactory.getLogger(CoolDesktopEventAction::class.java)
 
     private val coolDesktopEventSocket: MutableList<WebSocketSession> = mutableListOf()
     private val delayQueue = DelayQueue<DelayEvent>()
     private val offlineMessageQueue = LinkedBlockingQueue<String>()
-    private val MAX_OFFINE_MESSAGE_QUEUE: Int = 5;
+
+    companion object {
+        private val log = LoggerFactory.getLogger(CoolDesktopEventAction::class.java)
+        private const val MAX_OFFINE_MESSAGE_QUEUE: Int = 5;
+
+    }
 
     @PostConstruct
     fun init() {
@@ -71,7 +75,8 @@ class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
     }
 
     override fun closeSession(webSocketSession: WebSocketSession) {
-        if(coolDesktopEventSocket.size==1) TailManager.stopAll()
+        //最后一个主通信Socket关闭后，同时关闭所有tail追踪
+        if (coolDesktopEventSocket.size == 1) TailManager.stopAll()
         coolDesktopEventSocket.remove(webSocketSession)
     }
 
