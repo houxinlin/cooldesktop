@@ -29,10 +29,19 @@ java -jar desktop-web.jar --server.port=8080
 cooldesktop
 ```
 # 🛴 构建
+## 后端
 ```shell
 ./gradlew desktop-web:bootJar
 ```
+## 前端
+地址: https://github.com/houxinlin/cooldesktop-web
+```shell
+git clone https://github.com/houxinlin/cooldesktop-web.git
 
+npm run build
+
+cp -r ./dist/* ${CoolDesktop_Home}/desktop-web/src/main/resources/static/
+```
 # 软件商店
 
 我们提供软件商店可免费下载您所需要的应用，但它还处于开发阶段，后续，我们会依次上线以下管理软件。
