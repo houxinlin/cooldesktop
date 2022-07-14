@@ -11,6 +11,7 @@ CoolDesktop采用全新的操作方式，让您像操作本地系统一样，操
 4. thymeleaf
 5. xterm + jsch
 6. h2database
+7. websocket
 # 🛫 安装
 
   [点击这里下载](https://github.com/houxinlin/cooldesktop/releases/download/v2.1.1/desktop-web.jar)
