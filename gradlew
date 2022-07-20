@@ -81,7 +81,6 @@ do
 done
 
 APP_HOME=$( cd "${APP_HOME:-./}" && pwd -P ) || exit
-
 APP_NAME="Gradle"
 APP_BASE_NAME=${0##*/}
 
@@ -223,12 +222,11 @@ set -- \
 # This will of course break if any of these variables contains a newline or
 # an unmatched quote.
 #
-
 eval "set -- $(
         printf '%s\n' "$DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS" |
         xargs -n1 |
         sed ' s~[^-[:alnum:]+,./:=@_]~\\&~g; ' |
         tr '\n' ' '
     )" '"$@"'
-
+echo $@
 exec "$JAVACMD" "$@"
