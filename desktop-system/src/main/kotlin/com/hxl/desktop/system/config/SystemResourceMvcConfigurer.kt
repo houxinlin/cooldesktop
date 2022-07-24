@@ -17,7 +17,6 @@ class SystemResourceMvcConfigurer : WebMvcConfigurer {
         registry.addResourceHandler("$WALLPAPER_REQUEST_RESOURCE_PATH**").addResourceLocations(getWallpaperPath())
     }
 
-
     fun getWallpaperPath(): String {
         return "file:" + Directory.getWallpaperWorkDirectory() + File.separator
     }

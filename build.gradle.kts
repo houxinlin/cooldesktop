@@ -43,6 +43,7 @@ tasks.register<Copy>("copyLib") {
     )
     into(layout.projectDirectory.dir("desktop-lib"))
 }
+
 subprojects {
     apply {
         apply {
@@ -53,6 +54,7 @@ subprojects {
         }
 
     }
+
     configurations.implementation {
         exclude(group = "org.springframework.boot", module = "spring-boot")
         exclude(group = "org.springframework", module = "spring-webmvc")
@@ -61,10 +63,12 @@ subprojects {
     if (name != "desktop-web") {
         tasks.bootJar {
             enabled = false
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         }
 
         tasks.jar {
             enabled = true
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         }
 
     }

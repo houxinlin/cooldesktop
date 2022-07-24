@@ -4,7 +4,8 @@ import com.desktop.application.definition.application.Application
 import com.hxl.desktop.loader.application.ApplicationInstallDispatcher
 import com.hxl.desktop.loader.application.ApplicationRegister
 import com.hxl.desktop.loader.core.ApplicationDownloadManager
-import com.hxl.desktop.web.config.advice.UnifiedApiResult
+import com.hxl.desktop.system.ano.LogRecord
+import com.hxl.desktop.system.ano.UnifiedApiResult
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -37,6 +38,7 @@ class DesktopApplicationController {
     /**
      * 从中央服务器下载并且按转应用
      */
+    @LogRecord(logName = "安装软件")
     @PostMapping("install")
     fun install(@RequestParam("id") id: String): Any {
         return applicationDownloadManager.install(id)
@@ -45,6 +47,7 @@ class DesktopApplicationController {
     /**
      * 卸载应用
      */
+    @LogRecord(logName = "卸载软件")
     @PostMapping("uninstall")
     fun uninstall(@RequestParam("id") id: String): String {
         return applicationInstallDispatcher.uninstallApplicationDispatcher(id)
@@ -53,6 +56,7 @@ class DesktopApplicationController {
     /**
      * 安装自定义应用
      */
+    @LogRecord(logName = "安装自定义软件")
     @PostMapping("installCustomApplication")
     fun installCustomApplication(@RequestParam file: MultipartFile): String {
         return applicationInstallDispatcher.installCustomApplicationDispatcher(file)

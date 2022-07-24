@@ -2,7 +2,7 @@ package com.hxl.desktop.file.service.impl
 
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
-import com.hxl.desktop.common.core.ano.NotifyWebSocket
+import com.hxl.desktop.system.ano.NotifyWebSocket
 import com.hxl.desktop.common.extent.toFile
 import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.common.result.FileHandlerResult
@@ -19,7 +19,6 @@ import com.hxl.desktop.system.core.AsyncResultWithID
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
 import com.hxl.desktop.system.manager.ClipboardManager
-import com.hxl.desktop.system.tail.Tail
 import com.hxl.desktop.system.tail.TailManager
 import com.hxl.desktop.system.terminal.LinuxShell
 import com.hxl.desktop.system.utils.JarUtils

@@ -1,13 +1,16 @@
-package com.hxl.desktop.system.core
+package com.hxl.desktop.system.config
 
+import com.hxl.desktop.system.core.register.RequestMappingRegister
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.task.AsyncListenableTaskExecutor
 import org.springframework.core.task.SimpleAsyncTaskExecutor
+import org.springframework.scheduling.annotation.EnableScheduling
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
 
 @Configuration
+@EnableScheduling
 class SystemConfiguration {
 
     @Bean("syncThreadThreadPoolTaskExecutor")
@@ -21,7 +24,7 @@ class SystemConfiguration {
     }
 
     @Bean(name = ["requestMappingRegister", "requestMappingHandlerMapping"])
-    fun requestMappingHandlerMapping():RequestMappingRegister{
+    fun requestMappingHandlerMapping(): RequestMappingRegister {
         return RequestMappingRegister()
     }
 

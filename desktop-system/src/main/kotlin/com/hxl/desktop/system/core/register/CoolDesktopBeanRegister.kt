@@ -1,6 +1,8 @@
-package com.hxl.desktop.system.core
+package com.hxl.desktop.system.core.register
 
 import com.hxl.desktop.common.core.Constant
+import com.hxl.desktop.system.core.WebSocketMessageBuilder
+import com.hxl.desktop.system.core.WebSocketSender
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

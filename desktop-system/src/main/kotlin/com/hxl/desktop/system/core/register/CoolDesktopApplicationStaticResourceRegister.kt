@@ -1,4 +1,4 @@
-package com.hxl.desktop.system.core
+package com.hxl.desktop.system.core.register
 
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
@@ -72,7 +72,7 @@ class CoolDesktopApplicationStaticResourceRegister : ApplicationContextAware {
     private fun getRequestHandler(jarPath: Path): ResourceHttpRequestHandler {
         val handler = ResourceHttpRequestHandler()
         val resources: MutableList<Resource> = arrayListOf()
-        resources.add(UrlResource("${JAR_FILE}${jarPath}!/"))
+        resources.add(UrlResource("$JAR_FILE${jarPath}!/"))
         handler.setLocationValues(arrayListOf())
         handler.locations = resources
         handler.afterPropertiesSet()

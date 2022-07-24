@@ -1,4 +1,4 @@
-package com.hxl.desktop.system.core
+package com.hxl.desktop.system.core.register
 
 import com.desktop.application.definition.application.easyapp.EasyApplication
 import org.slf4j.Logger

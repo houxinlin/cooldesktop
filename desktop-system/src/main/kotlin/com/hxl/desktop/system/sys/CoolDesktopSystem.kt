@@ -2,13 +2,13 @@ package com.hxl.desktop.system.sys
 
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
-import com.hxl.desktop.common.core.ano.NotifyWebSocket
+import com.hxl.desktop.system.ano.NotifyWebSocket
 import com.hxl.desktop.common.result.FileHandlerResult
 import com.hxl.desktop.database.CoolDesktopDatabase
 import com.hxl.desktop.database.CoolDesktopDatabaseConfigKeys
 import com.hxl.desktop.system.config.CoolProperties
 import com.hxl.desktop.system.config.SystemResourceMvcConfigurer.Companion.WALLPAPER_REQUEST_RESOURCE_PATH
-import com.hxl.desktop.system.core.TomcatGlobalAuthenticationPasswordUtils
+import com.hxl.desktop.system.utils.TomcatGlobalAuthenticationPasswordUtils
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
 import com.hxl.desktop.system.terminal.CommandConstant

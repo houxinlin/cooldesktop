@@ -1,9 +1,7 @@
-package com.hxl.desktop.system.core
+package com.hxl.desktop.system.utils
 
-import com.hxl.desktop.common.extent.randomString
 import java.io.IOException
 import org.slf4j.LoggerFactory
-import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
 

@@ -2,6 +2,7 @@ package com.hxl.desktop.web.config.advice
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.hxl.desktop.common.extent.asHttpResponseBody
+import com.hxl.desktop.system.ano.UnifiedApiResult
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.MethodParameter
 import org.springframework.core.annotation.AnnotationUtils
@@ -14,12 +15,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
 import java.util.concurrent.Future
 
+/**
+ * 统一进行结果封装
+ */
 @RestControllerAdvice
 class ApiResultResponseAdvice : ResponseBodyAdvice<Any> {
     @Autowired
     lateinit var objectMapper: ObjectMapper
     override fun supports(returnType: MethodParameter, converterType: Class<out HttpMessageConverter<*>>): Boolean {
-        var resultResponse: UnifiedApiResult? = returnType.getMethodAnnotation(UnifiedApiResult::class.java)
+        val resultResponse: UnifiedApiResult? = returnType.getMethodAnnotation(UnifiedApiResult::class.java)
             ?: AnnotationUtils.findAnnotation(returnType.containingClass, UnifiedApiResult::class.java)
         return resultResponse != null
     }

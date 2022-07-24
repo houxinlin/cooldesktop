@@ -4,7 +4,7 @@ import com.desktop.application.definition.application.Application
 import com.desktop.application.definition.application.easyapp.EasyApplication
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.extent.toPath
-import com.hxl.desktop.system.core.CoolDesktopApplicationStaticResourceRegister
+import com.hxl.desktop.system.core.register.CoolDesktopApplicationStaticResourceRegister
 import com.hxl.desktop.system.manager.OpenUrlManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

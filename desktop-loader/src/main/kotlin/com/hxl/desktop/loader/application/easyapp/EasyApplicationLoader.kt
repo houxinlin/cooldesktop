@@ -12,8 +12,8 @@ import com.hxl.desktop.loader.application.ApplicationRegister
 import com.hxl.desktop.loader.application.ApplicationTypeDetection
 import com.hxl.desktop.loader.application.ApplicationWrapper
 import com.hxl.desktop.loader.core.ApplicationClassLoader
-import com.hxl.desktop.system.core.CoolDesktopBeanRegister
-import com.hxl.desktop.system.core.RequestMappingRegister
+import com.hxl.desktop.system.core.register.CoolDesktopBeanRegister
+import com.hxl.desktop.system.core.register.RequestMappingRegister
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
 import com.hxl.desktop.common.extent.toPath

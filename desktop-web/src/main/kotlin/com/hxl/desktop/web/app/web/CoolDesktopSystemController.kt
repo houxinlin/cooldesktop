@@ -1,15 +1,16 @@
 package com.hxl.desktop.web.app.web
 
 import com.hxl.desktop.common.core.Constant
-import com.hxl.desktop.common.core.ano.NotifyWebSocket
+import com.hxl.desktop.system.ano.NotifyWebSocket
 import com.hxl.desktop.common.extent.toFile
 import com.hxl.desktop.common.result.FileHandlerResult
 import com.hxl.desktop.common.utils.JSON
 import com.hxl.desktop.database.CoolDesktopDatabase
 import com.hxl.desktop.file.bean.FileAttribute
+import com.hxl.desktop.system.ano.LogRecord
 import com.hxl.desktop.system.manager.OpenUrlManager
 import com.hxl.desktop.system.sys.CoolDesktopSystem
-import com.hxl.desktop.web.config.advice.UnifiedApiResult
+import com.hxl.desktop.system.ano.UnifiedApiResult
 import com.hxl.desktop.web.util.JsonArrayConvert
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -23,14 +24,13 @@ import java.util.stream.Collectors
 @UnifiedApiResult
 @RequestMapping("/desktop/api/system/")
 class CoolDesktopSystemController {
-
-
     @Autowired
     lateinit var coolDesktopSystem: CoolDesktopSystem
 
     @Autowired
     lateinit var coolDesktopDatabase: CoolDesktopDatabase
 
+    @LogRecord(logName = "修改壁纸")
     @PostMapping("changeWallpaper")
     fun changeWallpaper(@RequestParam file: MultipartFile): FileHandlerResult {
         return coolDesktopSystem.changeWallpaper(file)
@@ -41,21 +41,25 @@ class CoolDesktopSystemController {
         return coolDesktopSystem.getCoolDesktopConfigs()
     }
 
+    @LogRecord(logName = "重置SSH")
     @PostMapping("configSecureShell")
     fun configSecureShell(): String {
         return coolDesktopSystem.configSecureShell()
     }
 
+    @LogRecord(logName = "设置SSH用户名")
     @PostMapping("configSecureShellUser")
     fun configSecureShellUser(@RequestParam("userName") userName: String): String {
         return coolDesktopSystem.configSecureShellUser(userName)
     }
 
+    @LogRecord(logName = "重置登录密码")
     @PostMapping("resetLoginPasswd")
     fun resetLogoPasswd(@RequestParam("pass") pass: String): String {
         return coolDesktopSystem.resetLoginPasswd(pass)
     }
 
+    @LogRecord(logName = "添加开放URL")
     @PostMapping("addOpenUrl")
     fun addOpenUrl(@RequestParam("url") url: String): String {
         return OpenUrlManager.register(url)
@@ -66,13 +70,14 @@ class CoolDesktopSystemController {
         return OpenUrlManager.getOpenUrl()
     }
 
+    @LogRecord(logName = "删除开放URL")
     @PostMapping("removeOpenUrl")
     fun removeOpenUrl(@RequestParam("url") url: String): String {
         OpenUrlManager.unregister(url)
         return Constant.StringConstant.DELETE_SUCCESS
     }
 
-
+    @LogRecord(logName = "设置APP属性")
     @PostMapping("setAppProperty")
     fun setSysProperty(@RequestParam("key") key: String, @RequestParam("value") value: String): String {
         coolDesktopDatabase.setAppProperties(key, value)
@@ -85,6 +90,7 @@ class CoolDesktopSystemController {
 
     }
 
+    @LogRecord(logName = "添加桌面文件")
     @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.REFRESH_DESKTOP_REFRESH)
     @PostMapping("desktop/file/add")
     fun addDesktopFile(@RequestParam("path") path: String): String {
@@ -104,6 +110,7 @@ class CoolDesktopSystemController {
         return JsonArrayConvert().apply(pathList)
     }
 
+    @LogRecord(logName = "删除桌面文件")
     @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.REFRESH_DESKTOP_REFRESH)
     @PostMapping("desktop/file/remove")
     fun removeDesktopFile(@RequestParam("path") path: String): String {
@@ -114,4 +121,12 @@ class CoolDesktopSystemController {
         return Constant.StringConstant.OK
     }
 
+    @GetMapping("baseInfo")
+    fun getBaseInfo(): MutableMap<String, Any> {
+
+        return mutableMapOf(
+            "timer" to System.currentTimeMillis(),
+            "user" to System.getProperty("user.name")
+        )
+    }
 }

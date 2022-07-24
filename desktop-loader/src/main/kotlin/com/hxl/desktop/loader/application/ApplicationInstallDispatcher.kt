@@ -2,7 +2,7 @@ package com.hxl.desktop.loader.application
 
 import com.desktop.application.definition.application.ApplicationLoader
 import com.hxl.desktop.common.core.Constant
-import com.hxl.desktop.common.core.ano.NotifyWebSocket
+import com.hxl.desktop.system.ano.NotifyWebSocket
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
