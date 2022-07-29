@@ -16,9 +16,7 @@ object JarUtils {
 
     fun isRun(path: String, exclude: List<Int>, waitSecond: Long): Boolean {
         for (i in 1 until waitSecond) {
-            if (getJavaProcess().stream()
-                    .filter { it.displayName().startsWith(path) && !exclude.contains(it.id().toInt()) }.count() >= 1
-            ) return true
+            if (getJavaProcess().stream().filter { it.displayName().startsWith(path) && !exclude.contains(it.id().toInt()) }.count() >= 1) return true
             TimeUnit.SECONDS.sleep(i)
         }
         return false
