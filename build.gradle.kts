@@ -18,7 +18,6 @@ configurations {
     }
 
 }
-
 dependencies {
 
 }

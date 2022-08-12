@@ -1,8 +1,12 @@
 package com.hxl.desktop.database
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.hxl.desktop.common.bean.Page
+import com.hxl.desktop.common.extent.toPage
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
+import org.springframework.web.context.request.RequestContextHolder
+import org.springframework.web.context.request.ServletRequestAttributes
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.annotation.PostConstruct
@@ -13,6 +17,9 @@ import javax.annotation.Resource
 class CoolDesktopDatabase {
     @Resource
     lateinit var jdbcTemplate: JdbcTemplate
+
+    @Resource
+    lateinit var objectMapper: ObjectMapper
 
     companion object {
         const val APP_PROPERTIES_TABLE_NAME = "app_properties"
@@ -30,7 +37,7 @@ class CoolDesktopDatabase {
         //创建属性表
         jdbcTemplate.execute("create table if not exists  $APP_PROPERTIES_TABLE_NAME (key_name VARCHAR ,key_value VARCHAR)")
         //创建系统日志表
-        jdbcTemplate.execute("create table if not exists  $SYS_LOG_TABLE_NAME (log_name VARCHAR, log_value varchar ,log_time TIMESTAMP,user_name varchar )")
+        jdbcTemplate.execute("create table if not exists  $SYS_LOG_TABLE_NAME (log_type varchar ,log_level varchar  ,log_name VARCHAR, log_value varchar ,log_time TIMESTAMP,user_name varchar ,ip varchar )")
 
     }
 
@@ -66,7 +73,7 @@ class CoolDesktopDatabase {
      * 设置程序属性，指定对象将被序列化
      */
     fun setAppProperties(key: String, value: Any) {
-        save(APP_PROPERTIES_TABLE_NAME, key, ObjectMapper().writeValueAsString(value))
+        save(APP_PROPERTIES_TABLE_NAME, key, objectMapper.writeValueAsString(value))
     }
 
     @Synchronized
@@ -86,23 +93,25 @@ class CoolDesktopDatabase {
     /**
      * 添加系统日志
      */
-    fun addSysLog(logName: String, logValue: String, userName: String = "admin") {
-        val  time = DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss").format(LocalDateTime.now())
-        val insert="insert into  $SYS_LOG_TABLE_NAME (log_name, log_value,log_time,user_name) values(?, ?,?,?)"
-        jdbcTemplate.update(insert, logName, logValue, time, userName)
+    fun addSysLog(logType: String, logLevel: String, logName: String, logValue: String, userName: String = "admin") {
+        val time = DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss").format(LocalDateTime.now())
+        val ra = RequestContextHolder.getRequestAttributes()
+        val ip = if (ra is ServletRequestAttributes) ra.request.remoteAddr else "未知ip"
+        val insert = "insert into  $SYS_LOG_TABLE_NAME (log_type,log_level,log_name, log_value,log_time,user_name,ip) values(?,?,?,?,?,?,?)"
+        jdbcTemplate.update(insert, logType, logLevel, logName, logValue, time, userName,  ip)
     }
 
     /**
-     * 删除过期日志
+     * 删除过期日志(>30天的)
      */
     fun deleteSysExpireLog() {
-      jdbcTemplate.update("DELETE  FROM SYS_LOG  WHERE DATEDIFF(DAY,log_time,CURRENT_TIMESTAMP()) >=30")
+        jdbcTemplate.update("DELETE  FROM SYS_LOG  WHERE DATEDIFF(DAY,log_time,CURRENT_TIMESTAMP()) >=30")
     }
 
     /**
      * 列举日志
      */
-    fun listSysLog(page:Int,type:String="*"){
-
+    fun listSysLog(logType: String, logLevel: String, logFilterTimer: String, page: Int): Page<Map<String, Any>> {
+        return jdbcTemplate.queryForList("select * from $SYS_LOG_TABLE_NAME where log_type=\'$logType\' and log_level=\'$logLevel\'").toPage(page=page)
     }
 }

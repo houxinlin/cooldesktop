@@ -69,9 +69,7 @@ class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloa
             completableFuture.add(CompletableFuture.supplyAsync {
                 val httpURLConnection = URL(it).openConnection() as HttpURLConnection
                 val lengthLong = httpURLConnection.contentLengthLong
-                if (lengthLong == -1L) {
-                    0
-                } else lengthLong
+                if (lengthLong == -1L) { 0 } else lengthLong
             })
         }
         completableFuture.forEach { total += it.get() }

@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import java.nio.file.Paths
 import javax.sql.DataSource
 
-@Configuration(proxyBeanMethods = false)
+@Configuration
 class CoolDesktopDatabaseConfig {
     companion object {
         const val DATABASE_NAME = "cooldesktop"

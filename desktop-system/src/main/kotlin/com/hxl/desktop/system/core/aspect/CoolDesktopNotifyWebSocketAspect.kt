@@ -33,6 +33,9 @@ class CoolDesktopNotifyWebSocketAspect {
     @Autowired
     lateinit var coolDesktopEventAction: WebSocketSender
 
+    /**
+     * 处理错误
+     */
     @AfterThrowing(throwing = "exception", pointcut = "@annotation(com.hxl.desktop.system.ano.NotifyWebSocket)")
     fun notifyAfter(joinPoint: JoinPoint, exception: Throwable) {
         val signature = joinPoint.signature as MethodSignature
@@ -49,6 +52,9 @@ class CoolDesktopNotifyWebSocketAspect {
     }
 
 
+    /**
+     * 处理结果通知
+     */
     @AfterReturning(returning = "data", pointcut = "@annotation(com.hxl.desktop.system.ano.NotifyWebSocket)")
     fun notifyAfterReturning(joinPoint: JoinPoint, data: Any) {
         val signature = joinPoint.signature as MethodSignature

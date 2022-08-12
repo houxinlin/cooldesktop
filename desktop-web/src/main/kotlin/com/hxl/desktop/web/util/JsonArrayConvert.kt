@@ -15,7 +15,7 @@ import java.util.stream.Collectors
 class JsonArrayConvert : Function<String, MutableList<FileAttribute>> {
     override fun apply(it: String): MutableList<FileAttribute> {
         if (!StringUtils.hasLength(it)) return mutableListOf()
-        var objectMapper = ObjectMapper()
+        val objectMapper = ObjectMapper()
         val javaType: JavaType =
             objectMapper.typeFactory.constructParametricType(ArrayList::class.java, String::class.java)
         return objectMapper

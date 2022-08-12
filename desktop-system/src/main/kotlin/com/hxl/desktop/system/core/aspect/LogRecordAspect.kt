@@ -38,16 +38,15 @@ class LogRecordAspect {
         for (i in joinPoint.args.indices) {
             val paramName = method.parameters[i].name
             for (recordConverter in RECORD_CONVERTERS) {
-                if (recordConverter.support(joinPoint.args[i])){
+                if (recordConverter.support(joinPoint.args[i])) {
                     logValueMap[paramName] = recordConverter.converter(joinPoint.args[i])
                     break
                 }
 
             }
         }
-
         val logRecord = signature.method.getDeclaredAnnotation(LogRecord::class.java)
-        coolDesktopDatabase.addSysLog(logRecord.logName, logValueMap.toString(), "admin")
+        coolDesktopDatabase.addSysLog(logRecord.logName, "信息", logValueMap.toString(), "admin")
     }
 
     interface IRecord {
@@ -83,9 +82,10 @@ class LogRecordAspect {
         }
 
         override fun converter(param: Any): String {
-            try{
+            try {
                 return ObjectMapper().writeValueAsString(param)
-            }catch (ex:Exception){}
+            } catch (ex: Exception) {
+            }
             return ""
         }
     }
