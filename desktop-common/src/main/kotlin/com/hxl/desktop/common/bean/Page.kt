@@ -5,4 +5,7 @@ class Page<T> {
 
     var datas: List<T> = arrayListOf()
 
+    var size: Int = 0
+
+    var current: Int = 0
 }

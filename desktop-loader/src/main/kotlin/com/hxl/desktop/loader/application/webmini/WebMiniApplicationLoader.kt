@@ -6,6 +6,10 @@ import com.desktop.application.definition.application.ApplicationLoader
 import com.desktop.application.definition.application.webmini.WebMiniApplication
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
+import com.hxl.desktop.common.core.log.LogInfosTemplate
+import com.hxl.desktop.common.core.log.SystemLogRecord
+import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.common.utils.JSON
 import com.hxl.desktop.file.extent.walkFileTree
 import com.hxl.desktop.loader.application.ApplicationRegister
 import com.hxl.desktop.loader.application.ApplicationTypeDetection
@@ -13,8 +17,6 @@ import com.hxl.desktop.loader.application.ApplicationWrapper
 import com.hxl.desktop.loader.core.ApplicationEvent
 import com.hxl.fm.pk.FilePackage.readByte
 import com.hxl.fm.pk.FilePackage.readInt
-import com.hxl.desktop.common.extent.toPath
-import com.hxl.desktop.common.utils.JSON
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,12 +40,16 @@ class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
     @Autowired
     lateinit var applicationRegister: ApplicationRegister
 
+    @Autowired
+    private lateinit var systemLogRecord: SystemLogRecord
+
     lateinit var executorCountDownLatch: CountDownLatch
     override fun loadApplicationFromByte(byteArray: ByteArray): ApplicationInstallState {
         val webMiniApplication = getApplicationFromByte(ByteBuffer.wrap(byteArray))
         //用于保证不会写入两个相同的应用到本地
         if (applicationRegister.isLoaded(webMiniApplication.applicationId)) {
             log.info("应用无法重复加载{}", webMiniApplication.applicationName)
+            systemLogRecord.addLog(LogInfosTemplate.ApplicationErrorLog("加载失败","应用无法重复加载 [$webMiniApplication.applicationName]"))
             return ApplicationInstallState.DUPLICATE
         }
         //注册并且保存到本地
@@ -132,6 +138,7 @@ class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
                 webMiniApplication.applicationPath = path.toString()
                 registerWebApplication(webMiniApplication)
             } catch (e: Exception) {
+                systemLogRecord.addLog(LogInfosTemplate.ApplicationErrorLog("加载失败",e.message!!))
                 log.info("加载应用失败,{}", e.message)
             } finally {
                 executorCountDownLatch.countDown()

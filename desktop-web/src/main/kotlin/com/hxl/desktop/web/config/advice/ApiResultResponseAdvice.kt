@@ -22,6 +22,7 @@ import java.util.concurrent.Future
 class ApiResultResponseAdvice : ResponseBodyAdvice<Any> {
     @Autowired
     lateinit var objectMapper: ObjectMapper
+
     override fun supports(returnType: MethodParameter, converterType: Class<out HttpMessageConverter<*>>): Boolean {
         val resultResponse: UnifiedApiResult? = returnType.getMethodAnnotation(UnifiedApiResult::class.java)
             ?: AnnotationUtils.findAnnotation(returnType.containingClass, UnifiedApiResult::class.java)

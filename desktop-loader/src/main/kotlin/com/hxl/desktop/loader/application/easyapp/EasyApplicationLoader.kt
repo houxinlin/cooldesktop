@@ -7,19 +7,21 @@ import com.desktop.application.definition.application.UTF8Property
 import com.desktop.application.definition.application.easyapp.EasyApplication
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
+import com.hxl.desktop.common.core.log.LogInfosTemplate
+import com.hxl.desktop.common.core.log.SystemLogRecord
+import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.common.utils.VersionUtils
 import com.hxl.desktop.file.extent.listRootDirector
 import com.hxl.desktop.loader.application.ApplicationRegister
 import com.hxl.desktop.loader.application.ApplicationTypeDetection
 import com.hxl.desktop.loader.application.ApplicationWrapper
 import com.hxl.desktop.loader.core.ApplicationClassLoader
-import com.hxl.desktop.system.core.register.CoolDesktopBeanRegister
-import com.hxl.desktop.system.core.register.RequestMappingRegister
-import com.hxl.desktop.system.core.WebSocketMessageBuilder
-import com.hxl.desktop.system.core.WebSocketSender
-import com.hxl.desktop.common.extent.toPath
-import com.hxl.desktop.common.utils.VersionUtils
 import com.hxl.desktop.loader.utils.ApplicationConvertFunction
 import com.hxl.desktop.system.config.CoolProperties
+import com.hxl.desktop.system.core.WebSocketMessageBuilder
+import com.hxl.desktop.system.core.WebSocketSender
+import com.hxl.desktop.system.core.register.CoolDesktopBeanRegister
+import com.hxl.desktop.system.core.register.RequestMappingRegister
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -54,6 +56,9 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     @Autowired
     private lateinit var coolProperties: CoolProperties
 
+    @Autowired
+    private lateinit var systemLogRecord: SystemLogRecord
+
     companion object {
         private val log: Logger = LoggerFactory.getLogger(EasyApplicationLoader::class.java)
         private val metadataReaderFactory: CachingMetadataReaderFactory = CachingMetadataReaderFactory()
@@ -75,8 +80,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
 
     override fun loadApplicationFromByte(byteArray: ByteArray): ApplicationInstallState {
         try {
-            val tempAppStoragePath =
-                Paths.get(Directory.getEasyAppStorageDirectory(), "${UUID.randomUUID()}${JAR_SUFFIX}")
+            val tempAppStoragePath = Paths.get(Directory.getEasyAppStorageDirectory(), "${UUID.randomUUID()}${JAR_SUFFIX}")
             log.info("存储{}", tempAppStoragePath)
             Files.write(tempAppStoragePath, byteArray)
 
@@ -86,6 +90,8 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
                 //保存不会重复加载
                 if (applicationRegister.isLoaded(easyApplication.applicationId)) {
                     tempAppStoragePath.deleteExisting()
+                    systemLogRecord.addLog(LogInfosTemplate.ApplicationErrorLog("加载失败","无法加载，应用程序已经存在 [$easyApplication.applicationName]"))
+
                     log.info("无法加载，应用程序已经存在name:{},id:{}", easyApplication.applicationName, easyApplication.applicationId)
                     return ApplicationInstallState.DUPLICATE
                 }
@@ -183,7 +189,9 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
 
     private fun versionCheck(easyApplication: EasyApplication): Boolean {
         if (VersionUtils.isLz(easyApplication.environmentVersion, coolProperties.coolVersion) == 1) {
-            log.warn("${easyApplication.applicationName}无法在本系统上加载，系统版本过低")
+            val msg="${easyApplication.applicationName}无法在本系统上加载，系统版本过低"
+            log.warn(msg)
+            systemLogRecord.addLog(LogInfosTemplate.ApplicationErrorLog("加载失败",msg))
             return false
         }
         return true
@@ -229,9 +237,8 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     ) {
         val metadataReader = metadataReaderFactory.getMetadataReader(classUrlResource)
         val springBootApplicationAnnotationTypeFilter = AnnotationTypeFilter(SpringBootApplication::class.java)
-        if (springBootApplicationAnnotationTypeFilter.match(metadataReader, metadataReaderFactory)) {
-            return
-        }
+        if (springBootApplicationAnnotationTypeFilter.match(metadataReader, metadataReaderFactory)) return
+
         val annotationTypeFilter = AnnotationTypeFilter(Component::class.java)
         //如果是一个@Component类
         if (annotationTypeFilter.match(metadataReader, metadataReaderFactory)) {

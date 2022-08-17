@@ -2,6 +2,7 @@ package com.hxl.desktop.loader.application
 
 import com.desktop.application.definition.application.ApplicationLoader
 import com.hxl.desktop.common.core.Constant
+import com.hxl.desktop.common.core.log.SystemLogRecord
 import com.hxl.desktop.system.ano.NotifyWebSocket
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -17,7 +18,8 @@ class ApplicationInstallDispatcher {
     @Autowired
     private lateinit var applicationRegister: ApplicationRegister
     private lateinit var applicationLoaders: List<ApplicationLoader<*>>
-
+    @Autowired
+    lateinit var logRecored: SystemLogRecord
     @Autowired
     fun setApplicationLoader(loader: MutableList<ApplicationLoader<*>>) {
         applicationLoaders = loader
@@ -29,6 +31,7 @@ class ApplicationInstallDispatcher {
     @Synchronized
     fun uninstallApplicationDispatcher(id: String): String {
         log.info("卸载应用,{}", id)
+
         val applicationWrapper = applicationRegister.getApplicationById(id)
         applicationWrapper?.run {
             applicationLoaders.forEach {

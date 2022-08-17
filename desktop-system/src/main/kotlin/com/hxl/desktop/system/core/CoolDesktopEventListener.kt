@@ -17,9 +17,7 @@ class CoolDesktopEventListener {
 
     @Autowired
     lateinit var webSocketSender: WebSocketSender
-    val handlerMap = mutableMapOf(
-        1 to Consumer<Event> { openDirector(it) }
-    )
+    val handlerMap = mutableMapOf(1 to Consumer<Event> { openDirector(it) })
 
     fun createDelayMessageToOpenDirectory(data: String): String {
         return WebSocketMessageBuilder.Builder()

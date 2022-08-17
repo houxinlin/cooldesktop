@@ -116,7 +116,7 @@ class CoolDesktopSystemController {
     @PostMapping("desktop/file/remove")
     fun removeDesktopFile(@RequestParam("path") path: String): String {
         val fileAttributes =
-                JsonArrayConvert().apply(coolDesktopDatabase.getAppProperties(Constant.KeyNames.DESKTOP_FILE_KEY))
+            JsonArrayConvert().apply(coolDesktopDatabase.getAppProperties(Constant.KeyNames.DESKTOP_FILE_KEY))
         val newList = fileAttributes.filter { it.path != path }.stream().map { it.path }.collect(Collectors.toList())
         coolDesktopDatabase.setAppProperties(Constant.KeyNames.DESKTOP_FILE_KEY, newList)
         return Constant.StringConstant.OK
@@ -124,15 +124,15 @@ class CoolDesktopSystemController {
 
     @GetMapping("baseInfo")
     fun getBaseInfo(): MutableMap<String, Any> {
-
         return mutableMapOf("timer" to System.currentTimeMillis(), "user" to System.getProperty("user.name"))
     }
 
     @GetMapping("log/list")
-    fun getSystemLog(@RequestParam("page") page: Int,
+    fun getSystemLog(@RequestParam(required = false, value = "page", defaultValue = "1") page: Int,
                      @RequestParam("logType") logType: String,
                      @RequestParam("logLevel") logLevel: String,
-                     @RequestParam("filterTimer") filterTimer: String): Page<Map<String, Any>> {
+                     @RequestParam("filterTimer") filterTimer: String
+    ): Page<Map<String, Any>> {
         return coolDesktopDatabase.listSysLog(logType, logLevel, filterTimer, page)
     }
 

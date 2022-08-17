@@ -1,6 +1,11 @@
 package com.hxl.desktop.system.core.aspect
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.hxl.desktop.common.core.log.LogInfos
+import com.hxl.desktop.common.core.log.LogInfosTemplate
+import com.hxl.desktop.common.core.log.SystemLogRecord
+import com.hxl.desktop.common.core.log.enums.CoolDesktopLogInfoType
+import com.hxl.desktop.common.core.log.enums.CoolDesktopLogType
 import com.hxl.desktop.database.CoolDesktopDatabase
 import com.hxl.desktop.system.ano.LogRecord
 import org.aspectj.lang.JoinPoint
@@ -11,6 +16,7 @@ import org.aspectj.lang.reflect.MethodSignature
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
+import kotlin.math.log
 
 /**
  * 日志记录
@@ -21,12 +27,15 @@ class LogRecordAspect {
     @Autowired
     lateinit var coolDesktopDatabase: CoolDesktopDatabase
 
+    @Autowired
+    lateinit var logRecored: SystemLogRecord
+
     companion object {
         private val RECORD_CONVERTERS = arrayOf(BaseDataRecord(), MultipartFileRecord(), ObjectRecord())
     }
 
     @Pointcut(value = "@annotation(com.hxl.desktop.system.ano.LogRecord)")
-    public fun logPointcut() {
+    fun logPointcut() {
     }
 
     @Before("logPointcut()")
@@ -46,7 +55,7 @@ class LogRecordAspect {
             }
         }
         val logRecord = signature.method.getDeclaredAnnotation(LogRecord::class.java)
-        coolDesktopDatabase.addSysLog(logRecord.logName, "信息", logValueMap.toString(), "admin")
+        logRecored.addLog(LogInfosTemplate.ApiInfoLog(logRecord.logName, logValueMap.toString()))
     }
 
     interface IRecord {

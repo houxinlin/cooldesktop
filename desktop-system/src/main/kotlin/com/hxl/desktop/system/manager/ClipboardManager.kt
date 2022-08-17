@@ -15,18 +15,14 @@ object ClipboardManager {
     private var memoryFilePath: Any? = null
 
     fun fileCut(path: String): Boolean {
-        if (!path.toFile().exists()) {
-            return false
-        }
+        if (!path.toFile().exists()) return false
         actionCommand = CUT_COMMAND
         memoryFilePath = path
         return true
     }
 
     fun fileCopy(path: String): Boolean {
-        if (!path.toFile().exists()) {
-            return false
-        }
+        if (!path.toFile().exists()) return false
         actionCommand = COPY_COMMAND
         memoryFilePath = path
         return true

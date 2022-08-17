@@ -1,6 +1,8 @@
 package com.hxl.desktop.loader.core
 
 import com.hxl.desktop.common.core.Constant
+import com.hxl.desktop.common.core.log.LogInfosTemplate
+import com.hxl.desktop.common.core.log.SystemLogRecord
 import com.hxl.desktop.loader.application.ApplicationInstallDispatcher
 import com.hxl.desktop.loader.application.ApplicationRegister
 import com.hxl.desktop.loader.application.easyapp.EasyApplicationLoader
@@ -35,10 +37,8 @@ class ApplicationDownloadManager {
     @Autowired
     lateinit var coolProperties: CoolProperties
 
-
     @Autowired
     lateinit var webSocketSender: WebSocketSender
-
 
     @Autowired
     lateinit var applicationRegister: ApplicationRegister
@@ -46,9 +46,11 @@ class ApplicationDownloadManager {
     @Autowired
     lateinit var applicationInstallDispatcher: ApplicationInstallDispatcher
 
-
     @Autowired
     lateinit var easyApplicationLoader: EasyApplicationLoader
+
+    @Autowired
+    lateinit var logRecord: SystemLogRecord
 
     @Volatile
     var currentApplicationCount = 0
@@ -88,6 +90,7 @@ class ApplicationDownloadManager {
             return
         }
         if (!applicationInstallQueue.contains(id)) {
+            logRecord.addLog(LogInfosTemplate.SystemInfoLog("安装软件", "软件id${id}"))
             applicationInstallQueue.offer(id)
         }
     }

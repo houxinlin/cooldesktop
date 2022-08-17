@@ -1,10 +1,8 @@
 package com.hxl.desktop.web
 
 
-import com.hxl.desktop.common.core.log.LogInfos
-import com.hxl.desktop.common.core.log.SystemLogRecored
-import com.hxl.desktop.common.core.log.enums.CoolDesktopLogInfoType
-import com.hxl.desktop.common.core.log.enums.CoolDesktopLogType
+import com.hxl.desktop.common.core.log.LogInfosTemplate
+import com.hxl.desktop.common.core.log.SystemLogRecord
 import com.hxl.desktop.web.Application.Companion.NOT_SUPPORT
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -31,12 +29,8 @@ fun main(args: Array<String>) {
     System.getProperty("os.name").run {
         if (this.lowercase().startsWith("linux")) {
             val applicationContext = SpringApplication.run(Application::class.java, *args)
-            applicationContext.getBean(SystemLogRecored::class.java).addlog(LogInfos().apply {
-                coolDesktopLogType = CoolDesktopLogType.SYSTEM_LOG
-                coolDesktopLogInfoType = CoolDesktopLogInfoType.INFO_LOG
-                logName = "系统启动"
-                logValue = LocalDateTime.now().toString()
-            })
+            applicationContext.getBean(SystemLogRecord::class.java)
+                .addLog(LogInfosTemplate.SystemInfoLog("系统启动", "系统将在${LocalDateTime.now()}时启动"))
             return
         }
         error((MessageFormat.format(NOT_SUPPORT, this)))

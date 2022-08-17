@@ -19,6 +19,8 @@ fun <T> List<T>.toPage(size: Int = 50, page: Int = 1): Page<T> {
     val datas = this.subList(fromIndex, toIndex)
     return Page<T>().apply {
         this.total = dataSize.toLong()
+        this.size=size
         this.datas = datas
+        this.current=page
     }
 }
