@@ -48,4 +48,7 @@ class LogInfosTemplate {
 
     class ApplicationErrorLog(private val name: String, private val value: String) :
         BaseErrorLog(CoolDesktopLogType.APPLICATION_LOG, name, value)
+
+    class SystemLoginInfoLog(private val name: String, private val value: String) :
+        BaseInfoLog(CoolDesktopLogType.LOGIN_LOG, name, value)
 }

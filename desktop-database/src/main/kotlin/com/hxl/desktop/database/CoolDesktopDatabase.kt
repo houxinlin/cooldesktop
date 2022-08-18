@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component
 import org.springframework.util.StringUtils
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
+import java.net.InetAddress
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.annotation.PostConstruct
@@ -40,7 +41,7 @@ class CoolDesktopDatabase {
         //创建属性表
         jdbcTemplate.execute("create table if not exists  $APP_PROPERTIES_TABLE_NAME (key_name VARCHAR ,key_value VARCHAR)")
         //创建系统日志表
-        jdbcTemplate.execute("create table if not exists  $SYS_LOG_TABLE_NAME (id integer   auto_increment ,log_type varchar ,log_level varchar  ,log_name VARCHAR, log_value varchar ,log_time TIMESTAMP,user_name varchar ,ip varchar )")
+        jdbcTemplate.execute("create table if not exists  $SYS_LOG_TABLE_NAME (id integer   auto_increment ,log_type varchar ,log_level varchar  ,log_name varchar, log_value varchar ,log_time TIMESTAMP,user_name varchar ,ip varchar )")
 
     }
 
@@ -99,9 +100,8 @@ class CoolDesktopDatabase {
     fun addSysLog(logType: String, logLevel: String, logName: String, logValue: String, userName: String = "admin") {
         val time = DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss").format(LocalDateTime.now())
         val ra = RequestContextHolder.getRequestAttributes()
-        val ip = if (ra is ServletRequestAttributes) ra.request.remoteAddr else "未知ip"
-        val insert =
-            "insert into  $SYS_LOG_TABLE_NAME (log_type,log_level,log_name, log_value,log_time,user_name,ip) values(?,?,?,?,?,?,?)"
+        val ip = if (ra is ServletRequestAttributes) ra.request.remoteAddr else ""
+        val insert = "insert into  $SYS_LOG_TABLE_NAME (log_type,log_level,log_name, log_value,log_time,user_name,ip) values(?,?,?,?,?,?,?)"
         jdbcTemplate.update(insert, logType, logLevel, logName, logValue, time, userName, ip)
     }
 
