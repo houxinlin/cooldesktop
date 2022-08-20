@@ -2,6 +2,8 @@ package com.hxl.desktop.system.sys
 
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
+import com.hxl.desktop.common.core.log.LogInfosTemplate
+import com.hxl.desktop.common.core.log.SystemLogRecord
 import com.hxl.desktop.system.ano.NotifyWebSocket
 import com.hxl.desktop.common.result.FileHandlerResult
 import com.hxl.desktop.database.CoolDesktopDatabase
@@ -31,11 +33,9 @@ import kotlin.io.path.exists
  */
 @Service
 class CoolDesktopSystem {
-    /**
-     * 系统所有可列举的属性
-     */
+
     @Autowired
-    lateinit var systemProperty: SystemProperty
+    lateinit var systemLogRecord: SystemLogRecord
 
     @Autowired
     lateinit var coolDesktopDatabase: CoolDesktopDatabase
@@ -109,31 +109,27 @@ class CoolDesktopSystem {
         privateRsaPath.deleteIfExists()
         publicRsaPath.deleteIfExists()
         //生成公私钥
-        TerminalCommand.Builder()
-            .add(CommandConstant.SSH_KEYGEN.format(privateRsaPath.toString())).execute()
-        if (!privateRsaPath.exists() || !publicRsaPath.exists()) {
-            return Constant.StringConstant.CONFIG_FAIL
-        }
+        TerminalCommand.Builder().add(CommandConstant.SSH_KEYGEN.format(privateRsaPath.toString())).execute()
+
+        if (!privateRsaPath.exists() || !publicRsaPath.exists()) return Constant.StringConstant.CONFIG_FAIL
         val privateRsa = Files.readAllBytes(privateRsaPath)
         val publicRsa = Files.readAllBytes(publicRsaPath)
 
-        coolDesktopDatabase.setSysConfigValue(
-            CoolDesktopDatabaseConfigKeys.SSH_PUBLIC_VALUE.keyName,
-            publicRsa.decodeToString()
-        )
+        coolDesktopDatabase.setSysConfigValue(CoolDesktopDatabaseConfigKeys.SSH_PUBLIC_VALUE.keyName,
+            publicRsa.decodeToString())
+
         coolDesktopDatabase.setSysConfigValue(
             CoolDesktopDatabaseConfigKeys.SSH_PRIVATE_VALUE.keyName,
             privateRsa.decodeToString()
         )
 
         if (!authorizedKeysFile.canWrite()) {
+            systemLogRecord.addLog(LogInfosTemplate.SystemErrorLog("无权限写入文件", AUTHORIZED_KEYS))
             log.info("没有权限写入{}", AUTHORIZED_KEYS)
             webSocketSender.sendForDelay(createDelayMessageToOpenDirectory(privateRsaPath.parent.toString()), "", 3)
             return Constant.StringConstant.SSH_WRITE_AUTHOR_FAIL
         }
-        if (!authorizedKeysFile.exists()) {
-            authorizedKeysFile.createNewFile()
-        }
+        if (!authorizedKeysFile.exists()) authorizedKeysFile.createNewFile()
 
         Files.write(Paths.get(AUTHORIZED_KEYS), publicRsa, StandardOpenOption.APPEND)
         Files.write(Paths.get(AUTHORIZED_KEYS), "\r".toByteArray(), StandardOpenOption.APPEND)
@@ -148,17 +144,13 @@ class CoolDesktopSystem {
     }
 
     fun configSecureShellUser(userName: String): String {
-        if (userName.isBlank()) {
-            return Constant.StringConstant.CONFIG_FAIL_USER
-        }
+        if (userName.isBlank()) return Constant.StringConstant.CONFIG_FAIL_USER
         coolDesktopDatabase.setSysConfigValue(CoolDesktopDatabaseConfigKeys.SSH_USER_NAME.keyName, userName)
         return Constant.StringConstant.OK
     }
 
     fun resetLoginPasswd(pass: String): String {
-        if (TomcatGlobalAuthenticationPasswordUtils.reset(pass.uppercase())) {
-            return Constant.StringConstant.RESET_OK
-        }
+        if (TomcatGlobalAuthenticationPasswordUtils.reset(pass.uppercase())) return Constant.StringConstant.RESET_OK
         return Constant.StringConstant.RESET_FAIL
     }
 }

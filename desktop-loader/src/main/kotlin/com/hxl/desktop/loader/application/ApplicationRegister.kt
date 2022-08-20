@@ -20,7 +20,6 @@ class ApplicationRegister : CommandLineRunner {
     private val easyApplicationMap = mutableMapOf<String, ApplicationWrapper>()
 
 
-
     @Autowired
     private lateinit var coolDesktopApplicationStaticResourceRegister: CoolDesktopApplicationStaticResourceRegister
 
@@ -75,7 +74,10 @@ class ApplicationRegister : CommandLineRunner {
     }
 
     fun unregister(id: String) {
-        getApplicationById(id)?.run { if (this.application is EasyApplication) this.application.urlExclude.forEach(OpenUrlManager::unregister) }
+        getApplicationById(id)?.run {
+            if (this.application is EasyApplication) this.application.urlExclude.forEach(OpenUrlManager::unregister)
+            this.destory()
+        }
         webMiniApplicationMap.remove(id)
         easyApplicationMap.remove(id)
         coolDesktopApplicationStaticResourceRegister.unregister(id)

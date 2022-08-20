@@ -18,18 +18,14 @@ class ApplicationWrapper(var application: Application) : ResourceCache() {
         val bufferedInputStream = BufferedInputStream(FileInputStream(webMiniApplication.applicationPath))
         bufferedInputStream.skip(webMiniApplication.staticResOffset)
         val fileTable = FilePackage.decode(bufferedInputStream.readBytes())
-        if (fileTable?.get(path) == null) {
-            return null
-        }
+        if (fileTable?.get(path) == null) return null
         addCacheResource(path, fileTable.get(path)!!)
         return getCacheResource(path)
     }
 
     private fun loadByteFromEasyApplication(path: String): ByteArray? {
         var applicationPath = application.applicationPath
-        if (!applicationPath.startsWith("jar:file:")) {
-            applicationPath = "jar:file:$applicationPath!$path"
-        }
+        if (!applicationPath.startsWith("jar:file:")) applicationPath = "jar:file:$applicationPath!$path"
         try {
             val bytes = URL(applicationPath).openStream().readBytes()
             addCacheResource(path, bytes)
@@ -39,14 +35,15 @@ class ApplicationWrapper(var application: Application) : ResourceCache() {
         return null
     }
 
+    /**
+     * @description: 加载资源
+     * @date: 2022/8/21 上午2:40
+     */
     fun loadResource(path: String): ByteArray? {
+        //如果不在缓存中，则先加入到缓存
         if (!inCache(path)) {
-            if (application is WebMiniApplication) {
-                loadByteFromWebApplication(path)
-            }
-            if (application is EasyApplication) {
-                loadByteFromEasyApplication(path)
-            }
+            if (application is WebMiniApplication) loadByteFromWebApplication(path)
+            if (application is EasyApplication) loadByteFromEasyApplication(path)
         }
         return getCacheResource(path)
     }

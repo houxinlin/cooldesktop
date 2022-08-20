@@ -17,7 +17,6 @@ fun ByteArray.toHttpResponse(mediaType: MediaType): ResponseEntity<Resource> {
         .cacheControl(CacheControl.maxAge(3, TimeUnit.DAYS))
         .contentType(mediaType)
         .contentLength(resource.contentLength())
-
         .body(resource);
 }
 

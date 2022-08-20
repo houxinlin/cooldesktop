@@ -28,19 +28,20 @@ class WebApplicationResourceController {
     @Autowired
     lateinit var applicationRegister: ApplicationRegister
 
+    /**
+     * @description: 根据应用程序id获取对应的资源
+     * @date: 2022/8/21 上午1:06
+     */
     @GetMapping("{applicationId}/**")
-    fun getResource(
-        @PathVariable("applicationId") applicationId: String,
-        request: HttpServletRequest,
-        response: HttpServletResponse
+    fun getResource(@PathVariable("applicationId") applicationId: String,
+                    request: HttpServletRequest,
+                    response: HttpServletResponse
     ): ResponseEntity<Resource> {
-        val application = applicationRegister.getApplicationById(applicationId)
-
+        val application = applicationRegister.getApplicationById(applicationId) ?: return ResponseEntity.notFound().build()
         val restOfTheUrl = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE) as String
         val pathOfApplication = restOfTheUrl.removePrefix("${WEB_MINE_REQUEST_PREFIX}${applicationId}")
         //加载资源
-        val requestResource = application?.loadResource(pathOfApplication)
-
+        val requestResource = application.loadResource(pathOfApplication)
         requestResource?.run {
             return requestResource.toHttpResponse(MediaType.parseMediaType(Tika().detect(pathOfApplication)))
         }
