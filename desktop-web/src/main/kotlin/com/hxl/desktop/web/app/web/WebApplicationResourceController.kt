@@ -1,7 +1,7 @@
 package com.hxl.desktop.web.app.web
 
 import com.hxl.desktop.common.extent.toHttpResponse
-import com.hxl.desktop.loader.application.ApplicationRegister
+import com.hxl.desktop.loader.application.ApplicationManager
 import org.apache.tika.Tika
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.Resource
@@ -26,7 +26,7 @@ class WebApplicationResourceController {
     }
 
     @Autowired
-    lateinit var applicationRegister: ApplicationRegister
+    lateinit var applicationManager: ApplicationManager
 
     /**
      * @description: 根据应用程序id获取对应的资源
@@ -37,7 +37,7 @@ class WebApplicationResourceController {
                     request: HttpServletRequest,
                     response: HttpServletResponse
     ): ResponseEntity<Resource> {
-        val application = applicationRegister.getApplicationById(applicationId) ?: return ResponseEntity.notFound().build()
+        val application = applicationManager.getApplicationById(applicationId) ?: return ResponseEntity.notFound().build()
         val restOfTheUrl = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE) as String
         val pathOfApplication = restOfTheUrl.removePrefix("${WEB_MINE_REQUEST_PREFIX}${applicationId}")
         //加载资源

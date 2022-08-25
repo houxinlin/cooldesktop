@@ -11,9 +11,8 @@ import com.hxl.desktop.common.core.log.SystemLogRecord
 import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.common.utils.JSON
 import com.hxl.desktop.file.extent.walkFileTree
-import com.hxl.desktop.loader.application.ApplicationRegister
+import com.hxl.desktop.loader.application.ApplicationManager
 import com.hxl.desktop.loader.application.ApplicationTypeDetection
-import com.hxl.desktop.loader.application.ApplicationWrapper
 import com.hxl.desktop.loader.core.ApplicationEvent
 import com.hxl.fm.pk.FilePackage.readByte
 import com.hxl.fm.pk.FilePackage.readInt
@@ -38,7 +37,7 @@ import java.util.stream.Collectors
 class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
     private val log: Logger = LoggerFactory.getLogger(WebMiniApplicationLoader::class.java)
     @Autowired
-    lateinit var applicationRegister: ApplicationRegister
+    lateinit var applicationManager: ApplicationManager
 
     @Autowired
     private lateinit var systemLogRecord: SystemLogRecord
@@ -47,7 +46,7 @@ class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
     override fun loadApplicationFromByte(byteArray: ByteArray): ApplicationInstallState {
         val webMiniApplication = getApplicationFromByte(ByteBuffer.wrap(byteArray))
         //用于保证不会写入两个相同的应用到本地
-        if (applicationRegister.isLoaded(webMiniApplication.applicationId)) {
+        if (applicationManager.isLoaded(webMiniApplication.applicationId)) {
             log.info("应用无法重复加载{}", webMiniApplication.applicationName)
             systemLogRecord.addLog(LogInfosTemplate.ApplicationErrorLog("加载失败","应用无法重复加载 [$webMiniApplication.applicationName]"))
             return ApplicationInstallState.DUPLICATE
@@ -74,7 +73,7 @@ class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
 
     override fun unregisterApplication(application: Application): ApplicationInstallState {
         FileSystemUtils.deleteRecursively(application.applicationPath.toPath())
-        applicationRegister.unregister(application.applicationId)
+        applicationManager.unregister(application.applicationId)
         return ApplicationInstallState.UNINSTALL_OK
     }
 
@@ -120,7 +119,7 @@ class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
     }
 
     fun registerWebApplication(webMiniApplication: WebMiniApplication): String {
-        return applicationRegister.registerWebApplication(ApplicationWrapper(webMiniApplication))
+        return applicationManager.registerWebApplication(WebMiniApplicationWrapper(webMiniApplication))
     }
 
     inner class ApplicationLoadThread(var path: Path) : Runnable {

@@ -11,7 +11,7 @@ class ApplicationLoaders {
     lateinit var applicationInstallDispatcher: ApplicationInstallDispatcher
 
     @Autowired
-    lateinit var applicationRegister: ApplicationRegister
+    lateinit var applicationManager: ApplicationManager
 
 
     @Autowired

@@ -4,7 +4,7 @@ import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.log.LogInfosTemplate
 import com.hxl.desktop.common.core.log.SystemLogRecord
 import com.hxl.desktop.loader.application.ApplicationInstallDispatcher
-import com.hxl.desktop.loader.application.ApplicationRegister
+import com.hxl.desktop.loader.application.ApplicationManager
 import com.hxl.desktop.loader.application.easyapp.EasyApplicationLoader
 import com.hxl.desktop.system.config.CoolProperties
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
@@ -41,7 +41,7 @@ class ApplicationDownloadManager {
     lateinit var webSocketSender: WebSocketSender
 
     @Autowired
-    lateinit var applicationRegister: ApplicationRegister
+    lateinit var applicationManager: ApplicationManager
 
     @Autowired
     lateinit var applicationInstallDispatcher: ApplicationInstallDispatcher
@@ -72,7 +72,7 @@ class ApplicationDownloadManager {
                 .addSoftwareInstallStep(ApplicationInstallStep(this))
                 .addSoftwareInstallStep(ClientApplicationRefreshStep(this))
             currentInstallSoftware = applicationInstallId
-            currentApplicationCount = applicationRegister.getTotalApplication()
+            currentApplicationCount = applicationManager.getTotalApplication()
             step.execute(applicationInstallId)
         }
     }
@@ -80,7 +80,7 @@ class ApplicationDownloadManager {
     @Async
     fun install(id: String) {
         //如果已经安装
-        if (applicationRegister.isLoaded(id)) {
+        if (applicationManager.isLoaded(id)) {
             sendMessageToWebSocket(
                 WebSocketMessageBuilder.Builder()
                     .applySubject(INSTALL_STATUS_SUBJECT)
@@ -101,7 +101,7 @@ class ApplicationDownloadManager {
 
     //通知客户端刷新列表
     fun refreshClient() {
-        if (applicationRegister.getTotalApplication() > currentApplicationCount) {
+        if (applicationManager.getTotalApplication() > currentApplicationCount) {
             log.info("安装成功，通知客户的刷新安装状态{},{}", currentInstallSoftware, InstallStep.INSTALL_OK_STATE)
             webSocketSender.send(createNotifyMessage(currentInstallSoftware!!, InstallStep.INSTALL_OK_STATE))
             sendMessageToWebSocket(

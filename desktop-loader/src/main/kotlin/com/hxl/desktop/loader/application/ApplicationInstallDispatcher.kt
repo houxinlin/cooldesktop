@@ -16,7 +16,7 @@ class ApplicationInstallDispatcher {
 
 
     @Autowired
-    private lateinit var applicationRegister: ApplicationRegister
+    private lateinit var applicationManager: ApplicationManager
     private lateinit var applicationLoaders: List<ApplicationLoader<*>>
     @Autowired
     lateinit var logRecored: SystemLogRecord
@@ -32,7 +32,7 @@ class ApplicationInstallDispatcher {
     fun uninstallApplicationDispatcher(id: String): String {
         log.info("卸载应用,{}", id)
 
-        val applicationWrapper = applicationRegister.getApplicationById(id)
+        val applicationWrapper = applicationManager.getApplicationById(id)
         applicationWrapper?.run {
             applicationLoaders.forEach {
                 if (it.support(applicationWrapper.application)) {

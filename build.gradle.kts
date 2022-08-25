@@ -34,11 +34,12 @@ tasks.register<Copy>("copyLib") {
     val toolsPath = "$parent/lib/tools.jar"
     from(
         toolsPath,
-        "/home/HouXinLin/project/java/desktop-spring-boot/spring-boot-2.6.1/spring-boot-project/spring-boot/build/libs/spring-boot-2.6.1.jar",
+          "/home/HouXinLin/projects/java/cool/spring-source-5.1.13/spring-framework/spring-webmvc/build/libs/spring-webmvc-5.3.20-SNAPSHOT.jar",
+        "/home/HouXinLin/projects/java/cool/desktop-spring-boot/spring-boot-2.6.1/spring-boot-project/spring-boot/build/libs/spring-boot-2.6.1.jar",
         "/home/HouXinLin/project/java/cool/desktop-tomcat/apache-tomcat-9.0.58-src/output/embed/tomcat-embed-core.jar",
-        "/home/HouXinLin/project/java/spring-source/spring-source-5.1.13/spring-framework/spring-webmvc/build/libs/spring-webmvc-5.3.20-SNAPSHOT.jar",
-        "/home/HouXinLin/project/java/desktop-application-definition/build/libs/desktop-application-definition-1.0-SNAPSHOT.jar",
-        "/home/HouXinLin/project/java/FileMerge/FileMerge/build/libs/FileMerge-1.0-SNAPSHOT.jar"
+        "/home/HouXinLin/projects/java/cool/desktop-application-definition/build/libs/desktop-application-definition-1.0-SNAPSHOT.jar",
+        "/home/HouXinLin/projects/java/cool/FileMerge/FileMerge/build/libs/FileMerge-1.0-SNAPSHOT.jar",
+        "/home/HouXinLin/projects/java/cool/cooldesktop-application-event-definition/cooldesktop-application-event-definition/build/libs/cooldesktop-application-event-definition-1.0-SNAPSHOT.jar"
     )
     into(layout.projectDirectory.dir("desktop-lib"))
 }
@@ -86,7 +87,7 @@ subprojects {
         implementation(files("${CooldesktopRoot}/desktop-lib/desktop-application-definition-1.0-SNAPSHOT.jar"))
         implementation(files("${CooldesktopRoot}/desktop-lib/FileMerge-1.0-SNAPSHOT.jar"))
         implementation(files("${CooldesktopRoot}/desktop-lib/spring-webmvc-5.3.20-SNAPSHOT.jar"))
-
+        implementation(files("${CooldesktopRoot}/desktop-lib/cooldesktop-application-event-definition-1.0-SNAPSHOT.jar"))
         implementation("org.springframework.boot:spring-boot-starter-websocket:2.6.2") {
             exclude(group = "org.apache.tomcat.embed", module = "tomcat-embed-core")
         }

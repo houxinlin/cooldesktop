@@ -23,7 +23,6 @@ class TerminalWebSocketConnectionAction : WebSocketConnectionAction() {
     @Autowired
     lateinit var coolDesktopEventAction: CoolDesktopEventAction
 
-
     fun createServerConnectionInfoWrap(
         connectionInfo: ServerConnectionInfo, session: WebSocketSession): ServerConnectionInfoWrap {
         return ServerConnectionInfoWrap(connectionInfo, SshMessageListener(session))

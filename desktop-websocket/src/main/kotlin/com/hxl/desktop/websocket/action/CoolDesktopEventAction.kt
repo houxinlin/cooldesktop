@@ -6,6 +6,9 @@ import com.hxl.desktop.system.tail.TailManager
 import com.hxl.desktop.websocket.utils.DelayEvent
 import com.hxl.desktop.websocket.utils.WebSocketUtils
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.messaging.simp.SimpMessageType
+import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
@@ -19,6 +22,7 @@ class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
     private val coolDesktopEventSocket: MutableList<WebSocketSession> = mutableListOf()
     private val delayQueue = DelayQueue<DelayEvent>()
     private val offlineMessageQueue = LinkedBlockingQueue<String>()
+
 
     companion object {
         private val log = LoggerFactory.getLogger(CoolDesktopEventAction::class.java)
@@ -37,6 +41,7 @@ class CoolDesktopEventAction : WebSocketConnectionAction(), WebSocketSender {
     }
 
     override fun onMessage(message: String, sessionId: String) {
+        println(message)
     }
 
     override fun sendForDelay(msg: String, id: String, second: Long) {

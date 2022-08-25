@@ -5,6 +5,10 @@ import com.desktop.application.definition.application.ApplicationInstallState
 import com.desktop.application.definition.application.ApplicationLoader
 import com.desktop.application.definition.application.UTF8Property
 import com.desktop.application.definition.application.easyapp.EasyApplication
+import com.hxl.cooldesktop.application.event.definition.ApplicationEventListener
+import com.hxl.cooldesktop.application.event.definition.ApplicationInteractive
+import com.hxl.cooldesktop.application.event.definition.ApplicationMessagePublish
+import com.hxl.cooldesktop.application.event.definition.ApplicationMessagePublishAware
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
 import com.hxl.desktop.common.core.log.LogInfosTemplate
@@ -12,7 +16,8 @@ import com.hxl.desktop.common.core.log.SystemLogRecord
 import com.hxl.desktop.common.extent.toPath
 import com.hxl.desktop.common.utils.VersionUtils
 import com.hxl.desktop.file.extent.listRootDirector
-import com.hxl.desktop.loader.application.ApplicationRegister
+import com.hxl.desktop.loader.application.ApplicationMessageForward
+import com.hxl.desktop.loader.application.ApplicationManager
 import com.hxl.desktop.loader.application.ApplicationTypeDetection
 import com.hxl.desktop.loader.application.ApplicationWrapper
 import com.hxl.desktop.loader.core.ApplicationClassLoader
@@ -45,8 +50,10 @@ import kotlin.io.path.deleteIfExists
 @Component
 class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     @Autowired
-    private lateinit var applicationRegister: ApplicationRegister
+    private lateinit var applicationManager: ApplicationManager
 
+    @Autowired
+    lateinit var coolDesktopBeanRegister: CoolDesktopBeanRegister
     @Autowired
     private lateinit var requestMappingRegister: RequestMappingRegister
 
@@ -80,7 +87,8 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
 
     override fun loadApplicationFromByte(byteArray: ByteArray): ApplicationInstallState {
         try {
-            val tempAppStoragePath = Paths.get(Directory.getEasyAppStorageDirectory(), "${UUID.randomUUID()}${JAR_SUFFIX}")
+            val tempAppStoragePath =
+                Paths.get(Directory.getEasyAppStorageDirectory(), "${UUID.randomUUID()}${JAR_SUFFIX}")
             log.info("存储{}", tempAppStoragePath)
             Files.write(tempAppStoragePath, byteArray)
 
@@ -88,11 +96,14 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             val easyApplication = getApplicationFromFile(JarFile(tempAppStoragePath.toFile()))
             easyApplication?.run {
                 //保存不会重复加载
-                if (applicationRegister.isLoaded(easyApplication.applicationId)) {
+                if (applicationManager.isLoaded(easyApplication.applicationId)) {
                     tempAppStoragePath.deleteExisting()
-                    systemLogRecord.addLog(LogInfosTemplate.ApplicationErrorLog("加载失败","无法加载，应用程序已经存在 [$easyApplication.applicationName]"))
+                    systemLogRecord.addLog(LogInfosTemplate.ApplicationErrorLog("加载失败",
+                        "无法加载，应用程序已经存在 [$easyApplication.applicationName]"))
 
-                    log.info("无法加载，应用程序已经存在name:{},id:{}", easyApplication.applicationName, easyApplication.applicationId)
+                    log.info("无法加载，应用程序已经存在name:{},id:{}",
+                        easyApplication.applicationName,
+                        easyApplication.applicationId)
                     return ApplicationInstallState.DUPLICATE
                 }
                 easyApplication.applicationPath = tempAppStoragePath.toString()
@@ -133,7 +144,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             //反注册所有Controller
             requestMappingRegister.unregisterApplication(application.applicationId)
             //map中移除这个application
-            applicationRegister.unregister(application.applicationId)
+            applicationManager.unregister(application.applicationId)
             //删除文件
             application.applicationPath.toPath().deleteIfExists()
             return ApplicationInstallState.UNINSTALL_OK
@@ -152,7 +163,8 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             val properties = UTF8Property()
             properties.load(jarFile.getInputStream(appPropertiesEntry))
             //如果没有通过属性验证
-            if (!Application.checkProperty(properties)) return returnNullAndNotify(jarFile.name, "无法找到属性${Application.findMissProperty(properties)}")
+            if (!Application.checkProperty(properties)) return returnNullAndNotify(jarFile.name,
+                "无法找到属性${Application.findMissProperty(properties)}")
             //根据properties填充一个基本的EasyApplication
             val easyApplication = ApplicationConvertFunction().apply(properties)
             //如果没有通过版本检测
@@ -189,9 +201,9 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
 
     private fun versionCheck(easyApplication: EasyApplication): Boolean {
         if (VersionUtils.isLz(easyApplication.environmentVersion, coolProperties.coolVersion) == 1) {
-            val msg="${easyApplication.applicationName}无法在本系统上加载，系统版本过低"
+            val msg = "${easyApplication.applicationName}无法在本系统上加载，系统版本过低"
             log.warn(msg)
-            systemLogRecord.addLog(LogInfosTemplate.ApplicationErrorLog("加载失败",msg))
+            systemLogRecord.addLog(LogInfosTemplate.ApplicationErrorLog("加载失败", msg))
             return false
         }
         return true
@@ -249,8 +261,10 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
         }
     }
 
-    private fun createApplicationWrapper(application: EasyApplication): ApplicationWrapper {
-        return ApplicationWrapper(application)
+    private fun createApplicationWrapper(application: EasyApplication,
+                                         applicationEventListener: ApplicationEventListener?
+    ): ApplicationWrapper {
+        return EaseApplicationWrapper(application, applicationEventListener)
     }
 
     /**
@@ -260,7 +274,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
         val jarFile = JarFile(file.absoluteFile)
         val application = getApplicationFromFile(jarFile)
         application?.run {
-            if (applicationRegister.isLoaded(application.applicationId)) {
+            if (applicationManager.isLoaded(application.applicationId)) {
                 webSocketSender.send(
                     WebSocketMessageBuilder.Builder()
                         .applySubject(Constant.WebSocketSubjectNameConstant.NOTIFY_MESSAGE_ERROR)
@@ -282,13 +296,34 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     fun registerEasyApplication(easyApplication: EasyApplication): String {
         // 向Spring中注册Controller，再次之前，需要保证新jar中的class已经在spring容器中
         requestMappingRegister.registerCustomRequestMapping(easyApplication)
-        return applicationRegister.registerEasyApplication(createApplicationWrapper(easyApplication))
+        //获取application交互实例
+        val applicationInteractive = getApplicationInteractiveInstance(easyApplication)
+        //设置消息推送
+        applicationInteractive?.run { setApplicationMessagePush(this, easyApplication) }
+
+        return applicationManager.registerEasyApplication(createApplicationWrapper(easyApplication,
+            applicationInteractive))
     }
 
-    @Autowired
-    lateinit var coolDesktopBeanRegister: CoolDesktopBeanRegister
+    private fun getApplicationInteractiveInstance(easyApplication: EasyApplication): ApplicationInteractive? {
+        for (item in easyApplication.beans.values) {
+            val bean = coolDesktopBeanRegister.getBean(item as Class<*>)
+            if (bean is ApplicationInteractive) return bean
+        }
+        return null
+    }
 
-    //列觉所有jar
+    private fun setApplicationMessagePush(publishAware: ApplicationMessagePublishAware,
+                                          easyApplication: EasyApplication) {
+        publishAware.setApplicationMessagePublish(createApplicationEventPublisher(easyApplication))
+    }
+
+    private fun createApplicationEventPublisher(application: EasyApplication): ApplicationMessagePublish {
+        return ApplicationMessageForward(application).apply {
+            webSocketSender = this@EasyApplicationLoader.webSocketSender
+        }
+    }
+        //列觉所有jar
     private fun listJarFile(): List<File> {
         return Directory.getEasyAppStorageDirectory()
             .toPath()
@@ -296,8 +331,6 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             .stream()
             .filter { it.name.endsWith(".jar") || it.name.endsWith(".JAR") }
             .collect(Collectors.toList())
-
-
     }
 
 }

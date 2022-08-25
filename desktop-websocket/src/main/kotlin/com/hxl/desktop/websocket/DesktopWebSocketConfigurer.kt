@@ -29,6 +29,7 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
 
     @Autowired
     lateinit var systemProperty: SystemProperty
+
     private val connectionActions = mutableListOf<WebSocketConnectionAction>()
 
     private val webSocketSessionMap = ConcurrentHashMap<String, WebSocketSession>()
@@ -44,6 +45,7 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
 
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
         config.enableSimpleBroker("/desktop-topic")
+        //客户端消息发送前缀
         config.setApplicationDestinationPrefixes("/desktop")
     }
 
@@ -96,10 +98,9 @@ class DesktopWebSocketConfigurer : WebSocketMessageBrokerConfigurer {
         if (sub.message is GenericMessage) {
             val simpDestination = sub.message.headers["simpDestination"] as String
             for (connectionAction in connectionActions) {
-                if (connectionAction.support(simpDestination)) connectionAction.action(
-                    simpDestination,
-                    webSocketSessionMap[sub.message.headers["simpSessionId"]]!!
-                )
+                if (connectionAction.support(simpDestination)) {
+                    connectionAction.action(simpDestination, webSocketSessionMap[sub.message.headers["simpSessionId"]]!!)
+                }
             }
         }
     }

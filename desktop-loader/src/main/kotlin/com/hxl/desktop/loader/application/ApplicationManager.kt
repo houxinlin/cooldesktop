@@ -4,6 +4,7 @@ import com.desktop.application.definition.application.Application
 import com.desktop.application.definition.application.easyapp.EasyApplication
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.loader.application.easyapp.EaseApplicationWrapper
 import com.hxl.desktop.system.core.register.CoolDesktopApplicationStaticResourceRegister
 import com.hxl.desktop.system.manager.OpenUrlManager
 import org.slf4j.Logger
@@ -14,11 +15,17 @@ import org.springframework.stereotype.Component
 import java.util.stream.Collectors
 
 @Component
-class ApplicationRegister : CommandLineRunner {
-    private val log: Logger = LoggerFactory.getLogger(ApplicationRegister::class.java)
-    private val webMiniApplicationMap = mutableMapOf<String, ApplicationWrapper>()
-    private val easyApplicationMap = mutableMapOf<String, ApplicationWrapper>()
+class ApplicationManager : CommandLineRunner {
+    companion object {
+        private val log: Logger = LoggerFactory.getLogger(ApplicationManager::class.java)
+    }
 
+
+    //web应用集合
+    private val webMiniApplicationMap = mutableMapOf<String, ApplicationWrapper>()
+
+    //jar应用集合
+    private val easyApplicationMap = mutableMapOf<String, ApplicationWrapper>()
 
     @Autowired
     private lateinit var coolDesktopApplicationStaticResourceRegister: CoolDesktopApplicationStaticResourceRegister
@@ -30,7 +37,16 @@ class ApplicationRegister : CommandLineRunner {
         webMiniApplication.application.type = Application.WEB_MINI_APP
         return register(webMiniApplication, webMiniApplicationMap)
     }
-
+    fun pushOpenApplicationEvent(applicationId:String){
+        this.easyApplicationMap.getOrDefault(applicationId,null)?.run {
+            (this as EaseApplicationWrapper).applicationEventListener?.onOpen(applicationId)
+        }
+    }
+    fun pushCloseApplicationEvent(applicationId: String) {
+        this.easyApplicationMap.getOrDefault(applicationId,null)?.run {
+            (this as EaseApplicationWrapper).applicationEventListener?.onClose(applicationId)
+        }
+    }
     /**
      * 注册easy应用
      */
@@ -40,9 +56,7 @@ class ApplicationRegister : CommandLineRunner {
         //注册静态资源
         coolDesktopApplicationStaticResourceRegister.register(
             easyApplication.application.applicationId,
-            easyApplication.application.applicationPath.toPath()
-        )
-
+            easyApplication.application.applicationPath.toPath())
         //注册开放路径
         easyApplication.application.urlExclude.forEach(OpenUrlManager::register)
         return register(easyApplication, easyApplicationMap)
@@ -74,7 +88,9 @@ class ApplicationRegister : CommandLineRunner {
     }
 
     fun unregister(id: String) {
+
         getApplicationById(id)?.run {
+            //开放路径卸载
             if (this.application is EasyApplication) this.application.urlExclude.forEach(OpenUrlManager::unregister)
             this.destory()
         }
@@ -113,5 +129,7 @@ class ApplicationRegister : CommandLineRunner {
     fun getTotalApplication(): Int {
         return easyApplicationMap.size + webMiniApplicationMap.size
     }
+
+
 
 }
