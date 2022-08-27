@@ -3,9 +3,9 @@ package com.hxl.desktop.file.service.impl
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
 import com.hxl.desktop.system.ano.NotifyWebSocket
-import com.hxl.desktop.common.extent.toFile
-import com.hxl.desktop.common.extent.toPath
-import com.hxl.desktop.common.result.FileHandlerResult
+import com.hxl.desktop.common.kotlin.extent.toFile
+import com.hxl.desktop.common.kotlin.extent.toPath
+import com.hxl.desktop.common.model.FileHandlerResult
 import com.hxl.desktop.database.CoolDesktopDatabase
 import com.hxl.desktop.file.bean.FileAttribute
 import com.hxl.desktop.file.bean.UploadInfo

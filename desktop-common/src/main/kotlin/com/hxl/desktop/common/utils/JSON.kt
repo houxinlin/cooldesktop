@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 object JSON {
     private val objectMapper = ObjectMapper()
     fun <T> parseObject(json: String, cls: Class<T>): T {
-
         return objectMapper.readValue(json, cls)
     }
 

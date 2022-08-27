@@ -8,7 +8,7 @@ import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
 import com.hxl.desktop.common.core.log.LogInfosTemplate
 import com.hxl.desktop.common.core.log.SystemLogRecord
-import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.common.kotlin.extent.toPath
 import com.hxl.desktop.common.utils.JSON
 import com.hxl.desktop.file.extent.walkFileTree
 import com.hxl.desktop.loader.application.ApplicationManager

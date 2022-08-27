@@ -14,7 +14,7 @@ import org.springframework.web.socket.WebSocketSession
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
-class TerminalWebSocketConnectionAction : WebSocketConnectionAction() {
+class TerminalSocketAction : AbstractBasicSocketAction() {
     private val terminalMapping = ConcurrentHashMap<WebSocketSession, Terminal>()
 
     @Autowired
@@ -28,7 +28,7 @@ class TerminalWebSocketConnectionAction : WebSocketConnectionAction() {
         return ServerConnectionInfoWrap(connectionInfo, SshMessageListener(session))
     }
 
-    override fun action(subject: String, webSocketSession: WebSocketSession) {
+    override fun action(subject: String, webSocketSession: WebSocketSession?) {
         //获取属性
         val connectionInfo = systemProperty.getServerConnectionInfo()
         //连接信息不完整
@@ -42,7 +42,7 @@ class TerminalWebSocketConnectionAction : WebSocketConnectionAction() {
         }
         //创建终端实例
         val terminal =
-            TerminalInstanceFactory.getTerminal(createServerConnectionInfoWrap(connectionInfo, webSocketSession))
+            TerminalInstanceFactory.getTerminal(createServerConnectionInfoWrap(connectionInfo, webSocketSession!!))
         terminalMapping[webSocketSession] = terminal
     }
 
@@ -67,7 +67,4 @@ class TerminalWebSocketConnectionAction : WebSocketConnectionAction() {
         return null
     }
 
-    override fun support(subject: String): Boolean {
-        return subject == "/topic/ssh"
-    }
 }

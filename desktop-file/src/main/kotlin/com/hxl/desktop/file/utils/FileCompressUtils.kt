@@ -1,6 +1,6 @@
 package com.hxl.desktop.file.utils
 
-import com.hxl.desktop.common.extent.toFile
+import com.hxl.desktop.common.kotlin.extent.toFile
 import com.hxl.desktop.file.compress.*
 import org.apache.commons.compress.archivers.ArchiveStreamFactory
 import org.apache.commons.compress.compressors.CompressorStreamFactory

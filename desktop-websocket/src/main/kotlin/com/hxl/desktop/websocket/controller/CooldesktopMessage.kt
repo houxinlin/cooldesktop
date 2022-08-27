@@ -12,9 +12,10 @@ class CooldesktopMessage {
 
     @Autowired
     lateinit var applicationManager: ApplicationManager
+
     @MessageMapping("/event")
     fun event(message: ClientEvent) {
-       if (message.data=="startApplication")  applicationManager.pushOpenApplicationEvent(message.data)
-        if (message.data=="closeApplication")  applicationManager.pushCloseApplicationEvent(message.data)
+        if (message.data == "startApplication") applicationManager.pushOpenApplicationEvent(message.data)
+        if (message.data == "closeApplication") applicationManager.pushCloseApplicationEvent(message.data)
     }
 }

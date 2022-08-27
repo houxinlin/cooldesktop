@@ -1,7 +1,7 @@
 package com.hxl.desktop.web.config.advice
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.hxl.desktop.common.extent.asHttpResponseBody
+import com.hxl.desktop.common.kotlin.extent.asHttpResponseBody
 import com.hxl.desktop.system.ano.UnifiedApiResult
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.MethodParameter

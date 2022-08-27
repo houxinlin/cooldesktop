@@ -1,6 +1,6 @@
 package com.hxl.desktop.common.utils
 
-import com.hxl.desktop.common.extent.fillZero
+import com.hxl.desktop.common.kotlin.extent.fillZero
 
 object VersionUtils {
     fun isLz(v1: String, v2: String): Int {

@@ -1,7 +1,7 @@
 package com.hxl.desktop.system.core.aspect
 
 import com.hxl.desktop.system.ano.NotifyWebSocket
-import com.hxl.desktop.common.result.FileHandlerResult
+import com.hxl.desktop.common.model.FileHandlerResult
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
 import com.hxl.desktop.system.core.handler.AnyMessageConvert

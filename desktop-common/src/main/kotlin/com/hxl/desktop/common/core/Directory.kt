@@ -1,6 +1,6 @@
 package com.hxl.desktop.common.core
 
-import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.common.kotlin.extent.toPath
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path

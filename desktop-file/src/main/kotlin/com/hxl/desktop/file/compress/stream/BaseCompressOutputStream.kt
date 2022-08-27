@@ -1,6 +1,6 @@
 package com.hxl.desktop.file.compress.stream
 
-import com.hxl.desktop.common.extent.toFile
+import com.hxl.desktop.common.kotlin.extent.toFile
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveOutputStream
 import java.nio.file.Files

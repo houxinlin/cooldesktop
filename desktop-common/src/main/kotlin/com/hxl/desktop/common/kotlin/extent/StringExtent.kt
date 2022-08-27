@@ -1,4 +1,4 @@
-package com.hxl.desktop.common.extent
+package com.hxl.desktop.common.kotlin.extent
 
 import java.io.File
 import java.nio.file.Path
@@ -16,7 +16,7 @@ fun String.toFile(): File {
 }
 
 fun String.randomString(size: Int): String {
-    var result = StringBuffer()
+    val result = StringBuffer()
     for (i in 0 until size) {
         result.append(this.random())
     }

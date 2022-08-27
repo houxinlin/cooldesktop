@@ -1,4 +1,4 @@
-package com.hxl.desktop.common.extent
+package com.hxl.desktop.common.kotlin.extent
 
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.Resource

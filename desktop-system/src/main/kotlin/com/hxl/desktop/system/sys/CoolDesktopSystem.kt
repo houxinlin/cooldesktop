@@ -5,7 +5,7 @@ import com.hxl.desktop.common.core.Directory
 import com.hxl.desktop.common.core.log.LogInfosTemplate
 import com.hxl.desktop.common.core.log.SystemLogRecord
 import com.hxl.desktop.system.ano.NotifyWebSocket
-import com.hxl.desktop.common.result.FileHandlerResult
+import com.hxl.desktop.common.model.FileHandlerResult
 import com.hxl.desktop.database.CoolDesktopDatabase
 import com.hxl.desktop.database.CoolDesktopDatabaseConfigKeys
 import com.hxl.desktop.system.config.CoolProperties

@@ -45,6 +45,7 @@ class Constant {
         const val COMPRESS_RESULT: String = "/event/compress/result"
         const val NOTIFY_MESSAGE_SUCCESS: String = "/event/notify/message/success"
         const val NOTIFY_MESSAGE_ERROR: String = "/event/notify/message/error"
+        const val APPLICATION_MESSAGE_PUSH: String = "/event/application/message/push"
         const val NOTIFY_SHELL_EXEC_RESULT: String = "/event/shell/message"
     }
     object KeyNames{

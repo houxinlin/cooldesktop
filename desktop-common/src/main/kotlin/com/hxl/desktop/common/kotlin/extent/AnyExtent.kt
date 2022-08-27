@@ -1,9 +1,9 @@
-package com.hxl.desktop.common.extent
+package com.hxl.desktop.common.kotlin.extent
 
-import com.hxl.desktop.common.bean.HttpResponseBody
-import com.hxl.desktop.common.bean.HttpResponseStatus
+import com.hxl.desktop.common.model.HttpResponseBody
+import com.hxl.desktop.common.model.HttpResponseStatus
 import com.hxl.desktop.common.core.Constant
-import com.hxl.desktop.common.result.BaseHandlerResult
+import com.hxl.desktop.common.model.BaseHandlerResult
 
 
 /**

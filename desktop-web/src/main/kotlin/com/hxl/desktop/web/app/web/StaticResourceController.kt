@@ -1,8 +1,8 @@
 package com.hxl.desktop.web.app.web
 
-import com.hxl.desktop.common.extent.toFile
-import com.hxl.desktop.common.extent.toPath
-import com.hxl.desktop.common.result.FileHandlerResult
+import com.hxl.desktop.common.kotlin.extent.toFile
+import com.hxl.desktop.common.kotlin.extent.toPath
+import com.hxl.desktop.common.model.FileHandlerResult
 import com.hxl.desktop.file.bean.FileAttribute
 import com.hxl.desktop.file.bean.UploadInfo
 import com.hxl.desktop.file.extent.getAttribute

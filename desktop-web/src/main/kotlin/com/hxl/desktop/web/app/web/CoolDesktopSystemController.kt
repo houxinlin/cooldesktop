@@ -1,10 +1,10 @@
 package com.hxl.desktop.web.app.web
 
-import com.hxl.desktop.common.bean.Page
+import com.hxl.desktop.common.model.Page
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.system.ano.NotifyWebSocket
-import com.hxl.desktop.common.extent.toFile
-import com.hxl.desktop.common.result.FileHandlerResult
+import com.hxl.desktop.common.kotlin.extent.toFile
+import com.hxl.desktop.common.model.FileHandlerResult
 import com.hxl.desktop.common.utils.JSON
 import com.hxl.desktop.database.CoolDesktopDatabase
 import com.hxl.desktop.file.bean.FileAttribute

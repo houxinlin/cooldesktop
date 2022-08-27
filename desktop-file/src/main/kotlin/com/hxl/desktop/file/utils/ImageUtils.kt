@@ -1,6 +1,6 @@
 package com.hxl.desktop.file.utils
 
-import com.hxl.desktop.common.extent.toFile
+import com.hxl.desktop.common.kotlin.extent.toFile
 import net.coobird.thumbnailator.Thumbnails
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

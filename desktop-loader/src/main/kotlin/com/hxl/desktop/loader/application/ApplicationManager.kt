@@ -3,7 +3,7 @@ package com.hxl.desktop.loader.application
 import com.desktop.application.definition.application.Application
 import com.desktop.application.definition.application.easyapp.EasyApplication
 import com.hxl.desktop.common.core.Constant
-import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.common.kotlin.extent.toPath
 import com.hxl.desktop.loader.application.easyapp.EaseApplicationWrapper
 import com.hxl.desktop.system.core.register.CoolDesktopApplicationStaticResourceRegister
 import com.hxl.desktop.system.manager.OpenUrlManager
@@ -37,11 +37,23 @@ class ApplicationManager : CommandLineRunner {
         webMiniApplication.application.type = Application.WEB_MINI_APP
         return register(webMiniApplication, webMiniApplicationMap)
     }
+
+    /**
+    * @description: 客户端开打应用
+    * @date: 2022/8/26 上午10:02
+    */
+
     fun pushOpenApplicationEvent(applicationId:String){
         this.easyApplicationMap.getOrDefault(applicationId,null)?.run {
             (this as EaseApplicationWrapper).applicationEventListener?.onOpen(applicationId)
         }
     }
+
+    /**
+    * @description: 客户端关闭应用
+    * @date: 2022/8/26 上午10:02
+    */
+
     fun pushCloseApplicationEvent(applicationId: String) {
         this.easyApplicationMap.getOrDefault(applicationId,null)?.run {
             (this as EaseApplicationWrapper).applicationEventListener?.onClose(applicationId)

@@ -1,5 +1,8 @@
-package com.hxl.desktop.common.bean
+package com.hxl.desktop.common.model
 
+/**
+ * 分页
+ */
 class Page<T> {
     var total: Long = 0
 

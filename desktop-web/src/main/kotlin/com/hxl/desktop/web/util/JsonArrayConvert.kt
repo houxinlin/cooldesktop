@@ -2,7 +2,7 @@ package com.hxl.desktop.web.util
 
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.hxl.desktop.common.extent.toFile
+import com.hxl.desktop.common.kotlin.extent.toFile
 import com.hxl.desktop.file.bean.FileAttribute
 import com.hxl.desktop.file.extent.getAttribute
 import org.springframework.util.StringUtils

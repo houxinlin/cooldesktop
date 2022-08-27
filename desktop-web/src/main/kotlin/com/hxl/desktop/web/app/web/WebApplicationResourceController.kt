@@ -1,6 +1,6 @@
 package com.hxl.desktop.web.app.web
 
-import com.hxl.desktop.common.extent.toHttpResponse
+import com.hxl.desktop.common.kotlin.extent.toHttpResponse
 import com.hxl.desktop.loader.application.ApplicationManager
 import org.apache.tika.Tika
 import org.springframework.beans.factory.annotation.Autowired

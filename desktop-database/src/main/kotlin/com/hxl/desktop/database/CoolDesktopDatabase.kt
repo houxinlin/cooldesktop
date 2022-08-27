@@ -1,14 +1,13 @@
 package com.hxl.desktop.database
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.hxl.desktop.common.bean.Page
-import com.hxl.desktop.common.extent.toPage
+import com.hxl.desktop.common.model.Page
+import com.hxl.desktop.common.kotlin.extent.toPage
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import org.springframework.util.StringUtils
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
-import java.net.InetAddress
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.annotation.PostConstruct

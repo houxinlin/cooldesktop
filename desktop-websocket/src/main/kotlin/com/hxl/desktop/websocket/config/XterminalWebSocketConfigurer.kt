@@ -1,10 +1,9 @@
-package com.hxl.desktop.websocket
+package com.hxl.desktop.websocket.config
 
-import com.hxl.desktop.websocket.action.TerminalWebSocketConnectionAction
+import com.hxl.desktop.websocket.action.TerminalSocketAction
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.socket.CloseStatus
-import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.WebSocketMessage
 import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.config.annotation.EnableWebSocket
@@ -16,7 +15,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler
 @EnableWebSocket
 class XterminalWebSocketConfigurer : WebSocketConfigurer {
     @Autowired
-    lateinit var terminalWebSocketConnectionAction: TerminalWebSocketConnectionAction
+    lateinit var terminalWebSocketConnectionAction: TerminalSocketAction
     override fun registerWebSocketHandlers(registry: WebSocketHandlerRegistry) {
         registry.addHandler(object : TextWebSocketHandler() {
             override fun afterConnectionEstablished(session: WebSocketSession) {

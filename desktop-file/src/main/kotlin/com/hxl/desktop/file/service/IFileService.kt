@@ -1,6 +1,6 @@
 package com.hxl.desktop.file.service
 
-import com.hxl.desktop.common.result.FileHandlerResult
+import com.hxl.desktop.common.model.FileHandlerResult
 import com.hxl.desktop.file.bean.FileAttribute
 import com.hxl.desktop.file.bean.UploadInfo
 import org.springframework.core.io.ByteArrayResource

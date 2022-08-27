@@ -1,6 +1,6 @@
-package com.hxl.desktop.common.extent
+package com.hxl.desktop.common.kotlin.extent
 
-import com.hxl.desktop.common.bean.Page
+import com.hxl.desktop.common.model.Page
 
 
 fun MutableList<String>.fillZero(max: Int) {

@@ -1,7 +1,7 @@
 package com.hxl.desktop.system.core
 
 import com.hxl.desktop.common.core.Constant
-import com.hxl.desktop.common.extent.toFile
+import com.hxl.desktop.common.kotlin.extent.toFile
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

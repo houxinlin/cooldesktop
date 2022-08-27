@@ -1,6 +1,6 @@
 package com.hxl.desktop.system.terminal
 
-import com.hxl.desktop.common.extent.toFile
+import com.hxl.desktop.common.kotlin.extent.toFile
 
 class LinuxShell(private val path: String) {
     fun run(): String {

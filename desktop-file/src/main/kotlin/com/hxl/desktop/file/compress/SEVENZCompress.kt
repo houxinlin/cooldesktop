@@ -1,7 +1,7 @@
 package com.hxl.desktop.file.compress
 
-import com.hxl.desktop.common.extent.toFile
-import com.hxl.desktop.common.extent.toPath
+import com.hxl.desktop.common.kotlin.extent.toFile
+import com.hxl.desktop.common.kotlin.extent.toPath
 import com.hxl.desktop.file.compress.stream.CSevenArchiveOutputStream
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry
 import org.apache.commons.compress.archivers.sevenz.SevenZFile

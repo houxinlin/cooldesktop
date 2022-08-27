@@ -1,6 +1,6 @@
 package com.hxl.desktop.system.utils
 
-import com.hxl.desktop.common.extent.toFile
+import com.hxl.desktop.common.kotlin.extent.toFile
 import com.hxl.desktop.system.terminal.CommandConstant
 import com.hxl.desktop.system.terminal.TerminalCommand
 import com.sun.tools.attach.VirtualMachine
