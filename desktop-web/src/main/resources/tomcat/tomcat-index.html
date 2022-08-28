@@ -17,10 +17,28 @@
             margin-top: 4px;
         }
 
-        .login-page {
-            width: 360px;
-            padding: 8% 0 0;
+        .back {
             margin: auto;
+            background-image: url(/tomcat/resource/tomcat/img/desktop.jpg);
+            background-size: 100% 100%;
+            position: fixed;
+            left: -21px;
+            right: -21px;
+            bottom: -21px;
+            top: -21px;
+            filter: blur(14px);
+        }
+
+        .login-page {
+            position: fixed;
+            left: 0px;
+            right: 0px;
+            bottom: 0px;
+            top: 0px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
         }
 
         .login-page .form .login {
@@ -39,25 +57,29 @@
 
         .form input {
             outline: 0;
-            background: #f2f2f2;
-            width: 100%;
-            border: 0;
-            margin: 0 0 15px;
+            background: #f2f2f217;
+            width: 228px;
+            border: 2px #000000 solid;
             padding: 10px;
             box-sizing: border-box;
             font-size: 14px;
+            border-radius: 5px;
         }
 
         .form button {
             text-transform: uppercase;
             outline: 0;
-            background-color: #000000cc;
-            width: 100%;
-            border: 0;
-            padding: 10px;
+            background-color: #0c0808ad;
+            border: 2px #000000 solid;
             color: #FFFFFF;
             font-size: 14px;
             cursor: pointer;
+            height: 37px;
+            margin-left: 11px;
+            border-radius: 4px;
+        }
+        ::placeholder{
+            color: #413f3f;
         }
 
         .form .message {
@@ -93,55 +115,64 @@
     </style>
 </head>
 <body>
+<div class="back"></div>
 <div class="login-page">
     <div class="form">
         <div class="login">
             <div class="login-header">
+                <svg t="1661697676689" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                     xmlns="http://www.w3.org/2000/svg" p-id="2281" width="128" height="128">
+                    <path d="M512 1002.666667c-66.133333 0-130.133333-12.8-192-38.4-57.6-25.6-110.933333-59.733333-155.733333-104.533333S85.333333 761.6 59.733333 704C34.133333 642.133333 21.333333 578.133333 21.333333 512c0-66.133333 12.8-130.133333 38.4-192C85.333333 262.4 119.466667 209.066667 164.266667 164.266667 209.066667 119.466667 262.4 85.333333 320 59.733333 381.866667 34.133333 445.866667 21.333333 512 21.333333c66.133333 0 130.133333 12.8 192 38.4 57.6 25.6 110.933333 59.733333 155.733333 104.533333 44.8 44.8 81.066667 98.133333 104.533333 155.733333 25.6 59.733333 38.4 123.733333 38.4 192 0 66.133333-12.8 130.133333-38.4 192-25.6 57.6-59.733333 110.933333-104.533333 155.733333-44.8 44.8-98.133333 81.066667-155.733333 104.533333C642.133333 989.866667 578.133333 1002.666667 512 1002.666667L512 1002.666667zM512 64C264.533333 64 64 264.533333 64 512c0 247.466667 200.533333 448 448 448 247.466667 0 448-200.533333 448-448C957.866667 264.533333 757.333333 64 512 64L512 64zM512 64"
+                          p-id="2282" fill="#dbdbdb"></path>
+                    <path d="M509.866667 565.333333c-108.8 0-198.4-89.6-198.4-198.4 0-108.8 89.6-198.4 198.4-198.4 108.8 0 198.4 89.6 198.4 198.4C708.266667 475.733333 620.8 565.333333 509.866667 565.333333L509.866667 565.333333zM509.866667 211.2c-85.333333 0-155.733333 70.4-155.733333 155.733333 0 85.333333 70.4 155.733333 155.733333 155.733333 85.333333 0 155.733333-70.4 155.733333-155.733333C665.6 281.6 595.2 211.2 509.866667 211.2L509.866667 211.2zM509.866667 211.2"
+                          p-id="2283" fill="#dbdbdb"></path>
+                    <path d="M221.866667 864l-42.666667-4.266667c0-4.266667 8.533333-83.2 51.2-164.266667 25.6-49.066667 59.733333-87.466667 100.266667-115.2 51.2-34.133333 110.933333-53.333333 181.333333-53.333333 68.266667 0 130.133333 17.066667 181.333333 51.2 40.533333 27.733333 74.666667 64 100.266667 110.933333 44.8 78.933333 51.2 157.866667 51.2 160l-42.666667 4.266667c0 0-6.4-72.533333-46.933333-145.066667-53.333333-91.733333-134.4-138.666667-243.2-138.666667-108.8 0-192 49.066667-243.2 142.933333C228.266667 789.333333 221.866667 861.866667 221.866667 864L221.866667 864zM221.866667 864"
+                          p-id="2284" fill="#dbdbdb"></path>
+                </svg>
             </div>
         </div>
-
-        <input id="password" type="password" placeholder="password"/>
-        <button onclick="doLogin()">登录</button>
-        <p id="message" class="message"></p>
-
+        <div style="display: flex">
+            <input id="password" type="password" placeholder="password"/>
+            <button onclick="doLogin()">登录</button>
+        </div>
+        <div id="message"></div>
 
     </div>
-</div>
-<script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jsencrypt/3.2.1/jsencrypt.min.js"></script>
-<script type="text/javascript">
+    <script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jsencrypt/3.2.1/jsencrypt.min.js"></script>
+    <script type="text/javascript">
 
-    function doLogin() {
-        let password = document.getElementById("password").value
-        document.getElementById("message").innerText = ""
-        let encrypt = new JSEncrypt();
-        let PUBLIC_KEY = "${rsapublic}";
-        encrypt.setPublicKey('-----BEGIN PUBLIC KEY-----' + PUBLIC_KEY + '-----END PUBLIC KEY-----');
-        let encrypted = encrypt.encrypt(password);
+        function doLogin() {
+            let password = document.getElementById("password").value
+            document.getElementById("message").innerText = ""
+            let encrypt = new JSEncrypt();
+            let PUBLIC_KEY = "${rsapublic}";
+            encrypt.setPublicKey('-----BEGIN PUBLIC KEY-----' + PUBLIC_KEY + '-----END PUBLIC KEY-----');
+            let encrypted = encrypt.encrypt(password);
 
-        async function postData(url = '', data) {
-            // Default options are marked with *
-            const response = await fetch(url, {
-                method: 'POST',
-                cache: 'no-cache',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: data
-            });
-            return response.json();
+            async function postData(url = '', data) {
+                // Default options are marked with *
+                const response = await fetch(url, {
+                    method: 'POST',
+                    cache: 'no-cache',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: data
+                });
+                return response.json();
+            }
+
+            postData('/tomcat/api/login', "password=" + encrypted)
+                .then(data => {
+                    if (data.status) {
+                        window.location.href = "/"
+                        return
+                    }
+                    let tip = data["msg"] || "密码错误"
+                    document.getElementById("message").innerText = tip
+                });
         }
-
-        postData('/tomcat/api/login', "password=" + encrypted)
-            .then(data => {
-                if (data.status) {
-                    window.location.href = "/"
-                    return
-                }
-                let tip = data["msg"] || "密码错误"
-                document.getElementById("message").innerText =tip
-            });
-    }
-</script>
+    </script>
 </body>
 </html>
