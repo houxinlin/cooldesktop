@@ -1,4 +1,4 @@
-package com.hxl.desktop.system.tail
+package com.hxl.desktop.system.core.tail
 
 import java.util.*
 

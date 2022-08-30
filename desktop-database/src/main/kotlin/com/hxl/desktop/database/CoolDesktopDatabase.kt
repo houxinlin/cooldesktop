@@ -27,6 +27,7 @@ class CoolDesktopDatabase {
         const val APP_PROPERTIES_TABLE_NAME = "app_properties"
         const val SYS_LOG_TABLE_NAME = "sys_log"
         const val SYS_CONFIG_TABLE_NAME = "sys_config"
+        const val SYS_FILE_SHARE_LINK_MAP = "share_file_map"
         const val SELECT_SYS_CONFIG_ALL = "select * from $SYS_CONFIG_TABLE_NAME"
         const val SELECT_APP_PROPERTIES_ALL = "select * from $APP_PROPERTIES_TABLE_NAME"
         val PERIOD_MAP = mutableMapOf("今天" to 1, "三天内" to 3, "一周内" to 7)
@@ -41,6 +42,8 @@ class CoolDesktopDatabase {
         jdbcTemplate.execute("create table if not exists  $APP_PROPERTIES_TABLE_NAME (key_name VARCHAR ,key_value VARCHAR)")
         //创建系统日志表
         jdbcTemplate.execute("create table if not exists  $SYS_LOG_TABLE_NAME (id integer   auto_increment ,log_type varchar ,log_level varchar  ,log_name varchar, log_value varchar ,log_time TIMESTAMP,user_name varchar ,ip varchar )")
+        //共享
+        jdbcTemplate.execute("create table if not exists  $SYS_FILE_SHARE_LINK_MAP (hasCode integer ,file_path varchar )")
 
     }
 
@@ -138,7 +141,7 @@ class CoolDesktopDatabase {
             }
 
             fun generator(): String {
-                var result = StringBuffer()
+                val result = StringBuffer()
                 result.append("where ")
                 conditionMap.forEach { (k, v) -> result.append(if (v is kotlin.Function<*>) (v as () -> String).invoke() else "$k=$v and ") }
 
@@ -154,4 +157,24 @@ class CoolDesktopDatabase {
         sqlCondition.orderBy("id","desc")
         return jdbcTemplate.queryForList("select * from $SYS_LOG_TABLE_NAME $sqlCondition").toPage(page = page,size = LOG_PAGE_SIZE)
     }
+    
+    /**
+    * @description: 删除系统分享链接
+    * @date: 2022/8/30 上午2:54
+    */
+    
+    fun deleteShareLink(path:String){
+        
+    }
+    
+    /**
+    * @description: 添加系统分享链接
+    * @date: 2022/8/30 上午2:53
+    */
+    
+    fun addShareLink(path:String){
+        val strHashCode = path.hashCode()
+
+    }
+
 }

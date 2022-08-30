@@ -1,4 +1,4 @@
-package com.hxl.desktop.system.terminal
+package com.hxl.desktop.system.core.terminal
 
 import com.hxl.desktop.common.kotlin.extent.toFile
 import java.io.IOException

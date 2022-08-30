@@ -1,4 +1,4 @@
-package com.hxl.desktop.system.terminal
+package com.hxl.desktop.system.core.terminal
 
 /**
  * 终端

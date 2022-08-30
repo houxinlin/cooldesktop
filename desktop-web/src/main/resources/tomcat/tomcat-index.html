@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
     <title> 登录 </title>
+    <script src="tomcat/resource/tomcat/jsencrypt.min.js"></script>
     <style>
         html, body {
             height: 100%;
@@ -26,7 +27,6 @@
             right: -21px;
             bottom: -21px;
             top: -21px;
-            filter: blur(14px);
         }
 
         .login-page {
@@ -38,7 +38,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-
+            backdrop-filter: blur(28px);
         }
 
         .login-page .form .login {
@@ -78,7 +78,8 @@
             margin-left: 11px;
             border-radius: 4px;
         }
-        ::placeholder{
+
+        ::placeholder {
             color: #413f3f;
         }
 
@@ -101,8 +102,6 @@
         }
 
         body {
-            background-color: #328f8a;
-            background-image: linear-gradient(160deg, #328f8a, #4ab977);
             font-family: "Roboto", sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
@@ -136,43 +135,46 @@
             <button onclick="doLogin()">登录</button>
         </div>
         <div id="message"></div>
-
     </div>
-    <script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jsencrypt/3.2.1/jsencrypt.min.js"></script>
-    <script type="text/javascript">
+</div>
 
-        function doLogin() {
-            let password = document.getElementById("password").value
-            document.getElementById("message").innerText = ""
-            let encrypt = new JSEncrypt();
-            let PUBLIC_KEY = "${rsapublic}";
-            encrypt.setPublicKey('-----BEGIN PUBLIC KEY-----' + PUBLIC_KEY + '-----END PUBLIC KEY-----');
-            let encrypted = encrypt.encrypt(password);
 
-            async function postData(url = '', data) {
-                // Default options are marked with *
-                const response = await fetch(url, {
-                    method: 'POST',
-                    cache: 'no-cache',
-                    credentials: 'same-origin',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: data
-                });
-                return response.json();
-            }
+<script type="text/javascript">
 
-            postData('/tomcat/api/login', "password=" + encrypted)
-                .then(data => {
-                    if (data.status) {
-                        window.location.href = "/"
-                        return
-                    }
-                    let tip = data["msg"] || "密码错误"
-                    document.getElementById("message").innerText = tip
-                });
+    function doLogin() {
+        let password = document.getElementById("password").value
+        document.getElementById("message").innerText = ""
+        let encrypt = new JSEncrypt();
+        let PUBLIC_KEY = "${rsapublic}";
+        encrypt.setPublicKey('-----BEGIN PUBLIC KEY-----' + PUBLIC_KEY + '-----END PUBLIC KEY-----');
+        let encrypted = encrypt.encrypt(password);
+
+        async function postData(url = '', data) {
+            // Default options are marked with *
+            const response = await fetch(url, {
+                method: 'POST',
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: data
+            });
+            return response.json();
         }
-    </script>
+
+        postData('/tomcat/api/login', "password=" + encrypted)
+            .then(data => {
+                if (data.status) {
+                    window.location.href = "/"
+                    return
+                }
+                let tip = data["msg"] || "密码错误"
+                document.getElementById("message").innerText = tip
+            });
+    }
+</script>
+<!--    <script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jsencrypt/3.2.1/jsencrypt.min.js"></script>-->
+
 </body>
 </html>

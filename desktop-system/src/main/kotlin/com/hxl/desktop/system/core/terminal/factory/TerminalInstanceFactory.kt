@@ -1,8 +1,8 @@
-package com.hxl.desktop.system.terminal.factory
+package com.hxl.desktop.system.core.terminal.factory
 
-import com.hxl.desktop.system.terminal.Terminal
-import com.hxl.desktop.system.terminal.LinuxTerminal
-import com.hxl.desktop.system.terminal.ServerConnectionInfoWrap
+import com.hxl.desktop.system.core.terminal.Terminal
+import com.hxl.desktop.system.core.terminal.LinuxTerminal
+import com.hxl.desktop.system.core.terminal.ServerConnectionInfoWrap
 import java.util.concurrent.atomic.AtomicInteger
 
 object TerminalInstanceFactory {
@@ -13,7 +13,7 @@ object TerminalInstanceFactory {
     private const val THREAD_NAME_PREFIX = "ssh-client-thread-"
     private fun createThread(linuxTerminal: LinuxTerminal): LinuxTerminal {
         val thread = Thread(linuxTerminal)
-        thread.name = "${THREAD_NAME_PREFIX}${threadId.addAndGet(1)}"
+        thread.name = "$THREAD_NAME_PREFIX${threadId.addAndGet(1)}"
         thread.start()
         return linuxTerminal
     }

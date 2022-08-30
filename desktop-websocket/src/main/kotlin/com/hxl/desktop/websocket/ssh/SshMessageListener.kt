@@ -1,6 +1,6 @@
 package com.hxl.desktop.websocket.ssh
 
-import com.hxl.desktop.system.terminal.TerminalResponse
+import com.hxl.desktop.system.core.terminal.TerminalResponse
 import org.springframework.web.socket.TextMessage
 import org.springframework.web.socket.WebSocketSession
 

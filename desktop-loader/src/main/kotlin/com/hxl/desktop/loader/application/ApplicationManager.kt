@@ -6,7 +6,7 @@ import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.kotlin.extent.toPath
 import com.hxl.desktop.loader.application.easyapp.EaseApplicationWrapper
 import com.hxl.desktop.system.core.register.CoolDesktopApplicationStaticResourceRegister
-import com.hxl.desktop.system.manager.OpenUrlManager
+import com.hxl.desktop.system.core.manager.OpenUrlManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

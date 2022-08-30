@@ -4,7 +4,7 @@ import com.hxl.desktop.common.utils.LanguageUtils
 import com.hxl.desktop.common.utils.ThreadUtils
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
-import com.hxl.desktop.system.tail.TailManager
+import com.hxl.desktop.system.core.tail.TailManager
 import com.hxl.desktop.websocket.utils.DelayEvent
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

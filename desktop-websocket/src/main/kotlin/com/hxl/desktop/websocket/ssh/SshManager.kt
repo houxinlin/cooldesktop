@@ -1,7 +1,7 @@
 package com.hxl.desktop.websocket.ssh
 
-import com.hxl.desktop.system.terminal.ServerConnectionInfo
-import com.hxl.desktop.system.terminal.Terminal
+import com.hxl.desktop.system.core.terminal.ServerConnectionInfo
+import com.hxl.desktop.system.core.terminal.Terminal
 import org.springframework.stereotype.Service
 import org.springframework.web.socket.WebSocketSession
 import java.util.concurrent.ConcurrentHashMap

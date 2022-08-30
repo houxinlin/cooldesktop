@@ -2,11 +2,11 @@ package com.hxl.desktop.websocket.action
 
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
-import com.hxl.desktop.system.terminal.ServerConnectionInfo
-import com.hxl.desktop.system.terminal.ServerConnectionInfoWrap
-import com.hxl.desktop.system.sys.SystemProperty
-import com.hxl.desktop.system.terminal.Terminal
-import com.hxl.desktop.system.terminal.factory.TerminalInstanceFactory
+import com.hxl.desktop.system.core.terminal.ServerConnectionInfo
+import com.hxl.desktop.system.core.terminal.ServerConnectionInfoWrap
+import com.hxl.desktop.system.core.sys.SystemProperty
+import com.hxl.desktop.system.core.terminal.Terminal
+import com.hxl.desktop.system.core.terminal.factory.TerminalInstanceFactory
 import com.hxl.desktop.websocket.ssh.SshMessageListener
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service

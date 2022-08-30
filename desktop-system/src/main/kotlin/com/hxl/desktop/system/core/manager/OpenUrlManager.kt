@@ -1,4 +1,4 @@
-package com.hxl.desktop.system.manager
+package com.hxl.desktop.system.core.manager
 
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory

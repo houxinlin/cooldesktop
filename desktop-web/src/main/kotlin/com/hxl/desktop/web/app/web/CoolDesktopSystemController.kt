@@ -9,8 +9,8 @@ import com.hxl.desktop.common.utils.JSON
 import com.hxl.desktop.database.CoolDesktopDatabase
 import com.hxl.desktop.file.bean.FileAttribute
 import com.hxl.desktop.system.ano.LogRecord
-import com.hxl.desktop.system.manager.OpenUrlManager
-import com.hxl.desktop.system.sys.CoolDesktopSystem
+import com.hxl.desktop.system.core.manager.OpenUrlManager
+import com.hxl.desktop.system.core.sys.CoolDesktopSystem
 import com.hxl.desktop.system.ano.UnifiedApiResult
 import com.hxl.desktop.web.util.JsonArrayConvert
 import org.springframework.beans.factory.annotation.Autowired

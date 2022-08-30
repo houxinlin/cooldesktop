@@ -1,8 +1,8 @@
 package com.hxl.desktop.system.utils
 
 import com.hxl.desktop.common.kotlin.extent.toFile
-import com.hxl.desktop.system.terminal.CommandConstant
-import com.hxl.desktop.system.terminal.TerminalCommand
+import com.hxl.desktop.system.core.terminal.CommandConstant
+import com.hxl.desktop.system.core.terminal.TerminalCommand
 import com.sun.tools.attach.VirtualMachine
 import com.sun.tools.attach.VirtualMachineDescriptor
 import java.util.concurrent.TimeUnit

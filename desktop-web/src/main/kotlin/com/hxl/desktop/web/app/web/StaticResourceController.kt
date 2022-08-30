@@ -29,6 +29,16 @@ class StaticResourceController {
     @Resource
     lateinit var fileSystemService: IFileService;
 
+
+    /**
+    * @description: 创建共享文件链接
+    * @date: 2022/8/30 上午1:48
+    */
+
+    @PostMapping("share/link/create")
+    fun createShareLink(@RequestParam("path")path:String):FileHandlerResult{
+       return fileSystemService.createShareLink(path)
+    }
     /**
      *tail 日志追踪
      */

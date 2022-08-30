@@ -1,6 +1,6 @@
-package com.hxl.desktop.system.tail
+package com.hxl.desktop.system.core.tail
 
-import com.hxl.desktop.system.terminal.CommandConstant
+import com.hxl.desktop.system.core.terminal.CommandConstant
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 

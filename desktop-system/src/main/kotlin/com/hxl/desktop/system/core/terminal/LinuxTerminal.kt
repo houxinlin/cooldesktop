@@ -1,8 +1,8 @@
-package com.hxl.desktop.system.terminal
+package com.hxl.desktop.system.core.terminal
 
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
-import com.hxl.desktop.system.sys.CoolDesktopSystem
+import com.hxl.desktop.system.core.sys.CoolDesktopSystem
 import com.jcraft.jsch.ChannelShell
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session

@@ -1,4 +1,4 @@
-package com.hxl.desktop.system.sys
+package com.hxl.desktop.system.core.sys
 
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
@@ -13,8 +13,8 @@ import com.hxl.desktop.system.config.SystemResourceMvcConfigurer.Companion.WALLP
 import com.hxl.desktop.system.utils.TomcatGlobalAuthenticationPasswordUtils
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
-import com.hxl.desktop.system.terminal.CommandConstant
-import com.hxl.desktop.system.terminal.TerminalCommand
+import com.hxl.desktop.system.core.terminal.CommandConstant
+import com.hxl.desktop.system.core.terminal.TerminalCommand
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -93,7 +93,7 @@ class CoolDesktopSystem {
     fun configSecureShell(): String {
         //如果已经配置了密钥，则删除
         val privateRsaPath = Paths.get(Directory.getSecureShellConfigDirectory(), RSA_NAME)
-        val publicRsaPath = Paths.get(Directory.getSecureShellConfigDirectory(), "${RSA_NAME}.pub")
+        val publicRsaPath = Paths.get(Directory.getSecureShellConfigDirectory(), "$RSA_NAME.pub")
         val authorizedKeysFile = File(AUTHORIZED_KEYS)
         if (publicRsaPath.exists() && authorizedKeysFile.canRead()) {
             val publicKeyText = publicRsaPath.toFile().readText()
