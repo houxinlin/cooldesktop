@@ -2,10 +2,12 @@ package com.hxl.desktop.file.service.impl
 
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
+import com.hxl.desktop.common.kotlin.extent.mapToShortArg
 import com.hxl.desktop.system.ano.NotifyWebSocket
 import com.hxl.desktop.common.kotlin.extent.toFile
 import com.hxl.desktop.common.kotlin.extent.toPath
 import com.hxl.desktop.common.model.FileHandlerResult
+import com.hxl.desktop.common.utils.StringUtils
 import com.hxl.desktop.database.CoolDesktopDatabase
 import com.hxl.desktop.file.bean.FileAttribute
 import com.hxl.desktop.file.bean.UploadInfo
@@ -35,6 +37,9 @@ import org.springframework.util.FileSystemUtils
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Future
 import java.util.stream.Collectors
@@ -390,7 +395,7 @@ class FileServiceImpl : IFileService {
 
     override fun tailStart(path: String): FileHandlerResult {
         if (!path.toFile().exists()) return FileHandlerResult.NOT_EXIST
-        if(!path.toFile().canRead()) return FileHandlerResult.NO_PERMISSION
+        if (!path.toFile().canRead()) return FileHandlerResult.NO_PERMISSION
         return FileHandlerResult.createOK(TailManager.create(path) {
             webSocketSender.send(
                 WebSocketMessageBuilder.Builder()
@@ -406,7 +411,36 @@ class FileServiceImpl : IFileService {
         return FileHandlerResult.OK
     }
 
-    override fun createShareLink(path: String): FileHandlerResult {
-        return FileHandlerResult.createOK("")
+    override fun createShareLink(path: String,day:String): FileHandlerResult {
+        if (!path.toFile().exists()) return FileHandlerResult.NOT_EXIST
+        if(!path.toFile().canRead()) return FileHandlerResult.NO_PERMISSION
+        val strHashCode = path.hashCode()
+        //short id 为路径的hashcode每两位一组的字符映射+一位的随机字符
+        var shortId = strHashCode.toString().mapToShortArg()+StringUtils.randomString(1)
+        val listShareLinks = coolDesktopDatabase.listShareLink()
+
+        if (listShareLinks.find { it.filePath==path }!= null) return FileHandlerResult.create(-1,"{}","此文件已经分享!")
+        //如果短路经存在，加一位
+        while (listShareLinks.find { it.shareId==shortId } !=null){
+            shortId += StringUtils.randomString(1)
+        }
+        //推算过期时间
+        val expireTime: LocalDateTime = when (day) {
+            "1天" -> LocalDateTime.now().plusDays(1)
+            "7天" -> LocalDateTime.now().plusDays(7)
+            else -> {
+                LocalDateTime.now().plusDays(365*10)
+            }
+        }
+        coolDesktopDatabase.addShareLink(shortId, path, DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss").format(expireTime))
+        return FileHandlerResult.createOK(shortId)
+    }
+
+    override fun listShareLink(): FileHandlerResult {
+        return FileHandlerResult.OK
+    }
+
+    override fun deleteShareLink(code: Int): FileHandlerResult {
+        return FileHandlerResult.OK
     }
 }

@@ -11,7 +11,7 @@ object TomcatGlobalAuthenticationPasswordUtils {
     )
     private val PASSWORD_PATH = System.getProperty("user.home") + "/cooldesktop-work"
     private const val PASSWORD_FILE_NAME = "password.conf"
-    fun createIfNotExist(): Boolean {
+    private fun createIfNotExist(): Boolean {
         try {
             if (!Files.exists(Paths.get(PASSWORD_PATH, PASSWORD_FILE_NAME))) {
                 Files.createDirectories(Paths.get(PASSWORD_PATH))

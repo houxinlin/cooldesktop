@@ -20,7 +20,7 @@ class TomcatCallback : CommandLineRunner {
     @Autowired
     lateinit var systemLogRecord: SystemLogRecord
 
-    @Resource
+    @Autowired
     lateinit var cooldesktopShareHttpServlet: CoolDesktopShareHttpServlet
 
     override fun run(vararg args: String?) {
@@ -28,7 +28,7 @@ class TomcatCallback : CommandLineRunner {
         setShareLinkCallback()
     }
 
-    fun setShareLinkCallback(){
+  private  fun setShareLinkCallback(){
         val sharelinkClass :Class<*>? = loadClass("org.apache.catalina.core.TomcatShareFileHttpServlet")
         sharelinkClass?.apply {
             val methodType = MethodType.methodType(Void.TYPE, HttpServlet::class.java)
@@ -42,11 +42,12 @@ class TomcatCallback : CommandLineRunner {
        try {
            return Class.forName(name)
        }catch (e: ClassNotFoundException){
+           e.printStackTrace()
            //no-op
        }
         return null
     }
-    fun setLoginCallback(){
+    private   fun setLoginCallback(){
         try {
             //设置tomcat登录接口回调
             val authServlet :Class<*>? = loadClass("org.apache.catalina.core.TomcatGlobalAuthenticationHttpServlet")

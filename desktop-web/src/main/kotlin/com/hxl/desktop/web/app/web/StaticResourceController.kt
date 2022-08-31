@@ -32,12 +32,28 @@ class StaticResourceController {
 
     /**
     * @description: 创建共享文件链接
+     * @param path 文件路径
     * @date: 2022/8/30 上午1:48
     */
 
+    @LogRecord(logName = "创建共享链接")
     @PostMapping("share/link/create")
-    fun createShareLink(@RequestParam("path")path:String):FileHandlerResult{
-       return fileSystemService.createShareLink(path)
+    fun createShareLink(@RequestParam("path")path:String,@RequestParam("day")day:String):FileHandlerResult{
+       return fileSystemService.createShareLink(path,day)
+    }
+    
+    /**
+    * @description: 获取共享的share link
+    * @date: 2022/9/1 上午2:19
+    */
+    
+    @GetMapping("share/link/list")
+    fun listShareLink():FileHandlerResult{
+        return fileSystemService.listShareLink()
+    }
+    @GetMapping("share/link/delete")
+    fun deleteShareLink(@RequestParam("code") code:Int):FileHandlerResult{
+        return fileSystemService.deleteShareLink(code)
     }
     /**
      *tail 日志追踪

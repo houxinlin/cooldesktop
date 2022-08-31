@@ -1,13 +1,17 @@
 package com.hxl.desktop.database
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.hxl.desktop.common.kotlin.extent.mapToShortArg
 import com.hxl.desktop.common.model.Page
 import com.hxl.desktop.common.kotlin.extent.toPage
+import com.hxl.desktop.database.model.ShareLink
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Component
 import org.springframework.util.StringUtils
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
+import java.sql.ResultSet
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.annotation.PostConstruct
@@ -23,7 +27,7 @@ class CoolDesktopDatabase {
     lateinit var objectMapper: ObjectMapper
 
     companion object {
-        const val LOG_PAGE_SIZE=50
+        const val LOG_PAGE_SIZE = 50
         const val APP_PROPERTIES_TABLE_NAME = "app_properties"
         const val SYS_LOG_TABLE_NAME = "sys_log"
         const val SYS_CONFIG_TABLE_NAME = "sys_config"
@@ -43,7 +47,7 @@ class CoolDesktopDatabase {
         //创建系统日志表
         jdbcTemplate.execute("create table if not exists  $SYS_LOG_TABLE_NAME (id integer   auto_increment ,log_type varchar ,log_level varchar  ,log_name varchar, log_value varchar ,log_time TIMESTAMP,user_name varchar ,ip varchar )")
         //共享
-        jdbcTemplate.execute("create table if not exists  $SYS_FILE_SHARE_LINK_MAP (hasCode integer ,file_path varchar )")
+        jdbcTemplate.execute("create table if not exists  $SYS_FILE_SHARE_LINK_MAP (short_id varchar ,file_path varchar,expir_time TIMESTAMP )")
 
     }
 
@@ -103,7 +107,8 @@ class CoolDesktopDatabase {
         val time = DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss").format(LocalDateTime.now())
         val ra = RequestContextHolder.getRequestAttributes()
         val ip = if (ra is ServletRequestAttributes) ra.request.remoteAddr else ""
-        val insert = "insert into  $SYS_LOG_TABLE_NAME (log_type,log_level,log_name, log_value,log_time,user_name,ip) values(?,?,?,?,?,?,?)"
+        val insert =
+            "insert into  $SYS_LOG_TABLE_NAME (log_type,log_level,log_name, log_value,log_time,user_name,ip) values(?,?,?,?,?,?,?)"
         jdbcTemplate.update(insert, logType, logLevel, logName, logValue, time, userName, ip)
     }
 
@@ -111,7 +116,7 @@ class CoolDesktopDatabase {
      * 删除过期日志(>180天的)
      */
     fun deleteSysExpireLog() {
-        jdbcTemplate.update("DELETE  FROM SYS_LOG  WHERE DATEDIFF(DAY,log_time,CURRENT_TIMESTAMP()) >=180")
+        jdbcTemplate.update("DELETE  FROM $SYS_LOG_TABLE_NAME  WHERE DATEDIFF(DAY,log_time,CURRENT_TIMESTAMP()) >=180")
     }
 
     /**
@@ -145,36 +150,55 @@ class CoolDesktopDatabase {
                 result.append("where ")
                 conditionMap.forEach { (k, v) -> result.append(if (v is kotlin.Function<*>) (v as () -> String).invoke() else "$k=$v and ") }
 
-                return result.removeSuffix("and ").toString() +if (StringUtils.hasText(orderByFieldName))" order by $orderByFieldName $orderByType" else ""
+                return result.removeSuffix("and ")
+                    .toString() + if (StringUtils.hasText(orderByFieldName)) " order by $orderByFieldName $orderByType" else ""
             }
         }
 
         val sqlCondition = SqlCondition()
         sqlCondition.and("log_type", logType)
         if ("全部" != logLevel) sqlCondition.and("log_level", logLevel)
-        if ("全部" != logFilterTimer) sqlCondition.and { "DATEDIFF(day, log_time,CURRENT_DATE())<=${PERIOD_MAP.getOrDefault(logFilterTimer, 1)}" }
+        if ("全部" != logFilterTimer) sqlCondition.and {
+            "DATEDIFF(day, log_time,CURRENT_DATE())<=${
+                PERIOD_MAP.getOrDefault(logFilterTimer,
+                    1)
+            }"
+        }
 
-        sqlCondition.orderBy("id","desc")
-        return jdbcTemplate.queryForList("select * from $SYS_LOG_TABLE_NAME $sqlCondition").toPage(page = page,size = LOG_PAGE_SIZE)
+        sqlCondition.orderBy("id", "desc")
+        return jdbcTemplate.queryForList("select * from $SYS_LOG_TABLE_NAME $sqlCondition")
+            .toPage(page = page, size = LOG_PAGE_SIZE)
     }
-    
+
     /**
-    * @description: 删除系统分享链接
-    * @date: 2022/8/30 上午2:54
-    */
-    
-    fun deleteShareLink(path:String){
-        
+     * @description: 删除系统分享链接
+     * @date: 2022/8/30 上午2:54
+     */
+
+    fun deleteShareLink(path: String) {
+
     }
-    
+
     /**
-    * @description: 添加系统分享链接
-    * @date: 2022/8/30 上午2:53
-    */
-    
-    fun addShareLink(path:String){
-        val strHashCode = path.hashCode()
+     * @description: 添加系统分享链接
+     * @date: 2022/8/30 上午2:53
+     */
 
+    fun addShareLink(shortId: String, filePath: String,time:String) {
+        jdbcTemplate.update("INSERT  INTO $SYS_FILE_SHARE_LINK_MAP values(?,?,?) ", shortId, filePath,time)
+    }
+    fun listShareLink():List<ShareLink> {
+      return  jdbcTemplate.query("SELECT  * from $SYS_FILE_SHARE_LINK_MAP")
+        { rs, _ -> ShareLink(rs.getString("short_id"),rs.getString("file_path"),rs.getString("expir_time")) }
     }
 
+
+    /**
+    * @description: 删除过期的共享链接
+    * @date: 2022/9/1 上午5:25
+    */
+
+    fun deleteSysExpireShareLink() {
+        jdbcTemplate.update("DELETE  FROM $SYS_FILE_SHARE_LINK_MAP  WHERE DATEDIFF(DAY,CURRENT_TIMESTAMP(),expir_time)<=0")
+    }
 }

@@ -14,7 +14,7 @@ class SystemLogRecordImpl : SystemLogRecord {
     lateinit var coolDesktopDatabase: CoolDesktopDatabase
 
     override fun addLog(log: Log) {
-        var logInfos = log.getLogInfos()
+        val logInfos = log.getLogInfos()
         coolDesktopDatabase.addSysLog(
             logInfos.coolDesktopLogType.logTypeName,
             logInfos.coolDesktopLogInfoType.logTypeName,

@@ -72,10 +72,3 @@ fun String.toFile(): File {
     return File(this);
 }
 
-fun String.randomString(size: Int): String {
-    val result = StringBuffer()
-    for (i in 0 until size) {
-        result.append(this.random())
-    }
-    return result.toString()
-}
