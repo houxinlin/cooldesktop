@@ -12,13 +12,13 @@ import java.nio.file.Paths
 object ImageUtils {
     private val log: Logger = LoggerFactory.getLogger(ImageUtils::class.java)
     fun thumbnails(path: String): ByteArrayResource? {
-        val canThumbnailsType = arrayOf("jpg", "jpeg", "bmp")
-        val notCanThumbnailsType = arrayOf("svg")
+        val canCompressType = arrayOf("jpg", "jpeg", "bmp")
+        val notCanCompressType = arrayOf("svg","xpm")
         val imageFile = path.toFile()
-        for (itemType in canThumbnailsType) {
+        for (itemType in canCompressType) {
             if (imageFile.name.lowercase().endsWith(itemType)) {
                 try {
-                    var bufferedOutputStream = ByteArrayOutputStream()
+                    val bufferedOutputStream = ByteArrayOutputStream()
                     Thumbnails.of(path)
                         .outputQuality(0.3)
                         .scale(0.3)
@@ -29,7 +29,7 @@ object ImageUtils {
                 }
             }
         }
-        for (itemType in notCanThumbnailsType) {
+        for (itemType in notCanCompressType) {
             if (imageFile.name.lowercase().endsWith(itemType)) {
                 return null;
             }

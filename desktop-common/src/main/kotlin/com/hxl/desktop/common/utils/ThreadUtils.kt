@@ -2,9 +2,9 @@ package com.hxl.desktop.common.utils
 
 object ThreadUtils {
     fun createThread(name:String,runnable: Runnable){
-        createThread(runnable).start()
+        createThread(runnable,name).start()
     }
-    private fun createThread(runnable: Runnable):Thread{
-        return Thread(runnable)
+    private fun createThread(runnable: Runnable,name:String):Thread{
+        return Thread(runnable,name)
     }
 }

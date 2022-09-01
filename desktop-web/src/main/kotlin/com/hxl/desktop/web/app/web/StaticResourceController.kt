@@ -24,18 +24,15 @@ import kotlin.io.path.exists
 @RestController
 @UnifiedApiResult
 class StaticResourceController {
-
-
     @Resource
     lateinit var fileSystemService: IFileService;
-
 
     /**
     * @description: 创建共享文件链接
      * @param path 文件路径
+     * @param day  多少天过期
     * @date: 2022/8/30 上午1:48
     */
-
     @LogRecord(logName = "创建共享链接")
     @PostMapping("share/link/create")
     fun createShareLink(@RequestParam("path")path:String,@RequestParam("day")day:String):FileHandlerResult{
@@ -51,22 +48,37 @@ class StaticResourceController {
     fun listShareLink():FileHandlerResult{
         return fileSystemService.listShareLink()
     }
-    @GetMapping("share/link/delete")
-    fun deleteShareLink(@RequestParam("code") code:Int):FileHandlerResult{
-        return fileSystemService.deleteShareLink(code)
-    }
-    /**
-     *tail 日志追踪
-     */
-    @LogRecord(logName = "停止日志追逐")
-    @PostMapping("tail/stop")
-    fun tailStop(@RequestParam("id") path: String): FileHandlerResult {
-        return fileSystemService.tailStop(path)
-    }
 
     /**
-     *tail 日志追踪
-     */
+    * @description: 删除共享链接
+     * @param id 共享id
+    * @date: 2022/9/1 下午7:15
+    */
+
+    @PostMapping("share/link/delete")
+    fun deleteShareLink(@RequestParam("id") id:String):FileHandlerResult{
+        return fileSystemService.deleteShareLink(id)
+    }
+
+   /**
+   * @description: tail 日志追踪
+   * @date: 2022/9/1 下午7:16
+    * @param
+   */
+
+    @LogRecord(logName = "停止日志追逐")
+    @PostMapping("tail/stop")
+    fun tailStop(@RequestParam("id") id: String): FileHandlerResult {
+        return fileSystemService.tailStop(id)
+    }
+
+
+    /**
+    * @description: tail 日志追踪
+    * @date: 2022/9/1 下午7:17
+     * @param path 追踪的文件路径
+    */
+
     @LogRecord(logName = "启动日志追逐")
     @PostMapping("tail/start")
     fun tailStart(@RequestParam("path") path: String): FileHandlerResult {

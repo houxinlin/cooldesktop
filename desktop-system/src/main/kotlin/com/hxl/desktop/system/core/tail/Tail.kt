@@ -1,5 +1,6 @@
 package com.hxl.desktop.system.core.tail
 
+import com.hxl.desktop.common.utils.ThreadUtils
 import com.hxl.desktop.system.core.terminal.CommandConstant
 import org.slf4j.LoggerFactory
 import java.lang.Exception
@@ -11,7 +12,7 @@ class Tail(private val path: String, private val tailCallback: TailCallback) : R
 
     private var process: Process? = null
     fun begin() {
-        Thread(this).start()
+        ThreadUtils.createThread("tail-thread",this)
     }
 
     override fun run() {

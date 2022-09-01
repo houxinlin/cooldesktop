@@ -47,6 +47,7 @@ class Constant {
         const val NOTIFY_MESSAGE_ERROR: String = "/event/notify/message/error"
         const val APPLICATION_MESSAGE_PUSH: String = "/event/application/message/push"
         const val NOTIFY_SHELL_EXEC_RESULT: String = "/event/shell/message"
+        const val NOTIFY_REFRESL_SHARE_LINK: String = "/event/notif/refresh/share/link"
     }
     object KeyNames{
         const val DESKTOP_FILE_KEY: String = "desktop_file_key"

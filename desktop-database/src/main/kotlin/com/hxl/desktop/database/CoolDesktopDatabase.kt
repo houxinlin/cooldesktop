@@ -38,19 +38,6 @@ class CoolDesktopDatabase {
 
     }
 
-    @PostConstruct
-    private fun init() {
-        //创建系统配置表
-        jdbcTemplate.execute("create  table if not exists  $SYS_CONFIG_TABLE_NAME (key_name VARCHAR,key_value VARCHAR)")
-        //创建属性表
-        jdbcTemplate.execute("create table if not exists  $APP_PROPERTIES_TABLE_NAME (key_name VARCHAR ,key_value VARCHAR)")
-        //创建系统日志表
-        jdbcTemplate.execute("create table if not exists  $SYS_LOG_TABLE_NAME (id integer   auto_increment ,log_type varchar ,log_level varchar  ,log_name varchar, log_value varchar ,log_time TIMESTAMP,user_name varchar ,ip varchar )")
-        //共享
-        jdbcTemplate.execute("create table if not exists  $SYS_FILE_SHARE_LINK_MAP (short_id varchar ,file_path varchar,expir_time TIMESTAMP )")
-
-    }
-
     /**
      * 获取系统配置
      */
@@ -88,15 +75,12 @@ class CoolDesktopDatabase {
 
     @Synchronized
     private fun save(tableName: String, key: String, value: String) {
-//        val query = "select count(key_name) from $tableName where key_name=?"
         jdbcTemplate.update("insert into  $tableName (key_name, key_value) values(?, ?)", key, value)
     }
 
     fun listConfigs(select: String = SELECT_SYS_CONFIG_ALL): MutableMap<String, String> {
         val result = mutableMapOf<String, String>()
-        jdbcTemplate.query(select) { rs, _ ->
-            result.put(rs.getString("key_name"), rs.getString("key_value"))
-        }
+        jdbcTemplate.query(select) { rs, _ -> result.put(rs.getString("key_name"), rs.getString("key_value")) }
         return result
     }
 
@@ -107,8 +91,7 @@ class CoolDesktopDatabase {
         val time = DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss").format(LocalDateTime.now())
         val ra = RequestContextHolder.getRequestAttributes()
         val ip = if (ra is ServletRequestAttributes) ra.request.remoteAddr else ""
-        val insert =
-            "insert into  $SYS_LOG_TABLE_NAME (log_type,log_level,log_name, log_value,log_time,user_name,ip) values(?,?,?,?,?,?,?)"
+        val insert = "insert into  $SYS_LOG_TABLE_NAME (log_type,log_level,log_name, log_value,log_time,user_name,ip) values(?,?,?,?,?,?,?)"
         jdbcTemplate.update(insert, logType, logLevel, logName, logValue, time, userName, ip)
     }
 
@@ -116,7 +99,7 @@ class CoolDesktopDatabase {
      * 删除过期日志(>180天的)
      */
     fun deleteSysExpireLog() {
-        jdbcTemplate.update("DELETE  FROM $SYS_LOG_TABLE_NAME  WHERE DATEDIFF(DAY,log_time,CURRENT_TIMESTAMP()) >=180")
+        jdbcTemplate.update("delete from   $SYS_LOG_TABLE_NAME  where DATEDIFF(DAY,log_time,CURRENT_TIMESTAMP()) >=180")
     }
 
     /**
@@ -158,25 +141,20 @@ class CoolDesktopDatabase {
         val sqlCondition = SqlCondition()
         sqlCondition.and("log_type", logType)
         if ("全部" != logLevel) sqlCondition.and("log_level", logLevel)
-        if ("全部" != logFilterTimer) sqlCondition.and {
-            "DATEDIFF(day, log_time,CURRENT_DATE())<=${
-                PERIOD_MAP.getOrDefault(logFilterTimer,
-                    1)
-            }"
-        }
+        if ("全部" != logFilterTimer) sqlCondition.and { "DATEDIFF(day, log_time,CURRENT_DATE())<=${PERIOD_MAP.getOrDefault(logFilterTimer, 1)}" }
 
         sqlCondition.orderBy("id", "desc")
-        return jdbcTemplate.queryForList("select * from $SYS_LOG_TABLE_NAME $sqlCondition")
-            .toPage(page = page, size = LOG_PAGE_SIZE)
+        return jdbcTemplate.queryForList("select * from $SYS_LOG_TABLE_NAME $sqlCondition").toPage(page = page, size = LOG_PAGE_SIZE)
     }
 
     /**
      * @description: 删除系统分享链接
+     * @param id short id
      * @date: 2022/8/30 上午2:54
      */
 
-    fun deleteShareLink(path: String) {
-
+    fun deleteShareLink(id: String) {
+        jdbcTemplate.update("delete from  $SYS_FILE_SHARE_LINK_MAP where short_id=?", id)
     }
 
     /**
@@ -185,11 +163,19 @@ class CoolDesktopDatabase {
      */
 
     fun addShareLink(shortId: String, filePath: String,time:String) {
-        jdbcTemplate.update("INSERT  INTO $SYS_FILE_SHARE_LINK_MAP values(?,?,?) ", shortId, filePath,time)
+        jdbcTemplate.update("insert  into  $SYS_FILE_SHARE_LINK_MAP values(?,?,?) ", shortId, filePath,time)
     }
+
+
+    /**
+    * @description: 获取共享链接
+    * @date: 2022/9/1 上午7:07
+    */
+
     fun listShareLink():List<ShareLink> {
-      return  jdbcTemplate.query("SELECT  * from $SYS_FILE_SHARE_LINK_MAP")
-        { rs, _ -> ShareLink(rs.getString("short_id"),rs.getString("file_path"),rs.getString("expir_time")) }
+      val  link: List<ShareLink> =  jdbcTemplate.query("select  * from $SYS_FILE_SHARE_LINK_MAP")
+      { rs, _ -> ShareLink(rs.getString("short_id"),rs.getString("file_path"),rs.getString("expir_time")) }
+        return link;
     }
 
 
@@ -199,6 +185,6 @@ class CoolDesktopDatabase {
     */
 
     fun deleteSysExpireShareLink() {
-        jdbcTemplate.update("DELETE  FROM $SYS_FILE_SHARE_LINK_MAP  WHERE DATEDIFF(DAY,CURRENT_TIMESTAMP(),expir_time)<=0")
+        jdbcTemplate.update("delete  from  $SYS_FILE_SHARE_LINK_MAP  where  DATEDIFF(DAY,CURRENT_TIMESTAMP(),expir_time)<=0")
     }
 }

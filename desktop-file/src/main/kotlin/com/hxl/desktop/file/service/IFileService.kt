@@ -59,7 +59,10 @@ interface IFileService {
     fun tailStart(path: String): FileHandlerResult
 
     fun tailStop(uuid: String): FileHandlerResult
+
     fun createShareLink(path: String,day:String):FileHandlerResult
+
     fun listShareLink(): FileHandlerResult
-    fun deleteShareLink(code: Int): FileHandlerResult
+
+    fun deleteShareLink(id: String): FileHandlerResult
 }

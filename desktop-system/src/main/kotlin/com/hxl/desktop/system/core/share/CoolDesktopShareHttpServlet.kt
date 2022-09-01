@@ -4,6 +4,7 @@ import com.hxl.desktop.common.kotlin.extent.toFile
 import com.hxl.desktop.database.CoolDesktopDatabase
 import org.apache.commons.io.IOUtils
 import org.springframework.beans.factory.annotation.Autowired
+import java.net.URLEncoder
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -20,8 +21,8 @@ class CoolDesktopShareHttpServlet : HttpServlet() {
         val shareLink = coolDesktopDatabase.listShareLink().find { it.shareId == shareId }
         shareLink?.run {
             val file = this.filePath.toFile()
+            resp.addHeader("Content-Disposition", "attachment;filename*=UTF-8''${URLEncoder.encode(file.name,"UTF-8")}");
             resp.addHeader("content-length", "${file.length()}");
-            resp.addHeader("Content-Disposition", "attachment;filename=${file.name}");
             IOUtils.copy(this.filePath.toFile().inputStream(), resp.outputStream)
             return
         }

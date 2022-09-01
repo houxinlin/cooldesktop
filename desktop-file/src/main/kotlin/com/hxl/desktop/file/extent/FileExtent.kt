@@ -10,6 +10,7 @@ import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import java.io.File
+import java.net.URLEncoder
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFileAttributeView
 
@@ -147,7 +148,7 @@ fun File.decompression() {
 
 fun File.toHttpResponse(): ResponseEntity<FileSystemResource> {
     val header = HttpHeaders()
-    header.set("Content-Disposition", "attachment; filename=" + this.name)
+    header.set("Content-Disposition", "attachment;filename*=UTF-8''${URLEncoder.encode(this.name,"UTF-8")}");
     return ResponseEntity.ok()
         .headers(header)
         .contentLength(this.length())

@@ -37,7 +37,6 @@ import org.springframework.util.FileSystemUtils
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.ConcurrentHashMap
@@ -86,15 +85,9 @@ class FileServiceImpl : IFileService {
         val sourceFile = source.toFile()
         val target = File(sourceFile.parent, newName)
 
-        if (!sourceFile.exists()) {
-            return FileHandlerResult.NOT_EXIST
-        }
-        if (target.exists()) {
-            return FileHandlerResult.TARGET_EXIST
-        }
-        if (!hasPermission(source)) {
-            return FileHandlerResult.NO_PERMISSION
-        }
+        if (!sourceFile.exists()) return FileHandlerResult.NOT_EXIST
+        if (target.exists()) return FileHandlerResult.TARGET_EXIST
+        if (!hasPermission(source)) return FileHandlerResult.NO_PERMISSION
         sourceFile.renameTo(target)
         return FileHandlerResult.OK
     }
@@ -105,9 +98,7 @@ class FileServiceImpl : IFileService {
      */
     override fun fileMerge(chunkId: String, name: String, inPath: String): FileHandlerResult {
         val rootPath = Paths.get(Directory.getChunkDirectory(), chunkId).toString()
-        if (!rootPath.toPath().exists()) {
-            return FileHandlerResult.TARGET_NOT_EXIST
-        }
+        if (!rootPath.toPath().exists()) return FileHandlerResult.TARGET_NOT_EXIST
         val target = Paths.get(inPath, name)
         //如果目标已经存在
         if (target.exists()) {
@@ -292,21 +283,17 @@ class FileServiceImpl : IFileService {
     @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.FILE_EVENT, action = "")
     override fun fileDecompression(path: String, taskId: String): Future<FileHandlerResult> {
         val file = path.toFile()
-        if (file.isDirectory) {
-            return AsyncResultWithID(FileHandlerResult.IS_DIRECTORY, taskId)
-        }
-        if (!file.exists()) {
-            return AsyncResultWithID(FileHandlerResult.TARGET_EXIST, taskId)
-        }
+        if (file.isDirectory) return AsyncResultWithID(FileHandlerResult.IS_DIRECTORY, taskId)
+        if (!file.exists()) return AsyncResultWithID(FileHandlerResult.TARGET_EXIST, taskId)
         val fileType = FileCompressUtils.getFileType(path)
         if (fileType.isNotEmpty()) {
-            try {
+            return try {
                 val compressByType = FileCompressUtils.getCompressByType(fileType)
                 compressByType?.decompression(path)
-                return AsyncResultWithID(FileHandlerResult.OK, taskId)
+                AsyncResultWithID(FileHandlerResult.OK, taskId)
             } catch (e: Exception) {
                 val msg = e.message as String
-                return AsyncResultWithID(FileHandlerResult.fail(msg, msg), taskId)
+                AsyncResultWithID(FileHandlerResult.fail(msg, msg), taskId)
             }
         }
         return AsyncResultWithID(FileHandlerResult.NOT_SUPPORT_COMPRESS_TYPE, taskId)
@@ -314,12 +301,8 @@ class FileServiceImpl : IFileService {
 
     override fun createFile(parent: String, name: String, type: String): FileHandlerResult {
         try {
-            if ("folder" == type) {
-                Paths.get(parent, name).createDirectories()
-            }
-            if ("file" == type) {
-                Paths.get(parent, name).createFile()
-            }
+            if ("folder" == type) Paths.get(parent, name).createDirectories()
+            if ("file" == type) Paths.get(parent, name).createFile()
         } catch (e: Exception) {
             return FileHandlerResult.CREATE_FILE_FAIL
         }
@@ -339,8 +322,8 @@ class FileServiceImpl : IFileService {
 
     override fun setTextFileContent(path: String, content: String): FileHandlerResult {
         val file = path.toFile()
-        if (!file.exists())
-            return FileHandlerResult.NOT_EXIST
+        if (!file.exists()) return FileHandlerResult.NOT_EXIST
+
         if (hasPermission(file.parent)) {
             Files.write(Paths.get(path), content.toByteArray())
             return FileHandlerResult.OK
@@ -350,9 +333,7 @@ class FileServiceImpl : IFileService {
 
     override fun download(path: String): ResponseEntity<FileSystemResource> {
         val downloadPath = path.toPath()
-        if (downloadPath.isDirectory() || (!downloadPath.exists())) {
-            return ResponseEntity.notFound().build()
-        }
+        if (downloadPath.isDirectory() || (!downloadPath.exists())) return ResponseEntity.notFound().build()
         return downloadPath.toFile().toHttpResponse()
     }
 
@@ -366,9 +347,7 @@ class FileServiceImpl : IFileService {
         val maxWaitSecond = 5L //最大等待秒数
         if (type == 1) {
             val stopMessage = stopJar(path)
-            if (stopMessage != Constant.StringConstant.STOP_JAR_PROCESS_SUCCESS) {
-                return false
-            }
+            if (stopMessage != Constant.StringConstant.STOP_JAR_PROCESS_SUCCESS) return false
         }
         JarUtils.getProcessIds(path).let {
             //指定路径中是否已经有一个或者多个在运行,有多个检查的时候需要排除，用来检测是否启动成功
@@ -411,17 +390,21 @@ class FileServiceImpl : IFileService {
         return FileHandlerResult.OK
     }
 
-    override fun createShareLink(path: String,day:String): FileHandlerResult {
+    @Synchronized
+    @NotifyWebSocket(subject = Constant.WebSocketSubjectNameConstant.NOTIFY_REFRESL_SHARE_LINK, action = "refresh")
+    override fun createShareLink(path: String, day: String): FileHandlerResult {
         if (!path.toFile().exists()) return FileHandlerResult.NOT_EXIST
-        if(!path.toFile().canRead()) return FileHandlerResult.NO_PERMISSION
+        if (!path.toFile().canRead()) return FileHandlerResult.NO_PERMISSION
         val strHashCode = path.hashCode()
         //short id 为路径的hashcode每两位一组的字符映射+一位的随机字符
-        var shortId = strHashCode.toString().mapToShortArg()+StringUtils.randomString(1)
+        var shortId = strHashCode.toString().mapToShortArg() + StringUtils.randomString(1)
         val listShareLinks = coolDesktopDatabase.listShareLink()
 
-        if (listShareLinks.find { it.filePath==path }!= null) return FileHandlerResult.create(-1,"{}","此文件已经分享!")
+        if (listShareLinks.find { it.filePath == path } != null) return FileHandlerResult.create(-1,
+            "{}",
+            "此文件已经分享!")
         //如果短路经存在，加一位
-        while (listShareLinks.find { it.shareId==shortId } !=null){
+        while (listShareLinks.find { it.shareId == shortId } != null) {
             shortId += StringUtils.randomString(1)
         }
         //推算过期时间
@@ -429,18 +412,21 @@ class FileServiceImpl : IFileService {
             "1天" -> LocalDateTime.now().plusDays(1)
             "7天" -> LocalDateTime.now().plusDays(7)
             else -> {
-                LocalDateTime.now().plusDays(365*10)
+                LocalDateTime.now().plusDays(365 * 10)
             }
         }
-        coolDesktopDatabase.addShareLink(shortId, path, DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss").format(expireTime))
+        coolDesktopDatabase.addShareLink(shortId,
+            path,
+            DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss").format(expireTime))
         return FileHandlerResult.createOK(shortId)
     }
 
     override fun listShareLink(): FileHandlerResult {
-        return FileHandlerResult.OK
+        return FileHandlerResult.createOK(coolDesktopDatabase.listShareLink())
     }
 
-    override fun deleteShareLink(code: Int): FileHandlerResult {
+    override fun deleteShareLink(id: String): FileHandlerResult {
+        coolDesktopDatabase.deleteShareLink(id)
         return FileHandlerResult.OK
     }
 }
