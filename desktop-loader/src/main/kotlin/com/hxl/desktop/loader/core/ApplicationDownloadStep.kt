@@ -8,7 +8,7 @@ import java.net.URL
 import java.text.MessageFormat
 import java.util.concurrent.CompletableFuture
 
-class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloadManager) :
+class ApplicationDownloadStep(private val serverHost:String,private val applicationDownloadManager: ApplicationDownloadManager) :
     InstallStep<String, List<ByteArray>> {
     companion object {
         private val log: Logger = LoggerFactory.getLogger(ApplicationDownloadStep::class.java)
@@ -26,6 +26,7 @@ class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloa
             return installApplication(urls)
         } catch (e: Exception) {
             e.printStackTrace()
+            //下载任何异常将通知异常
             applicationDownloadManager.refreshProgressState(InstallStep.INSTALL_FAIL_STATE)
         }
         return arrayListOf()
@@ -83,7 +84,7 @@ class ApplicationDownloadStep(var applicationDownloadManager: ApplicationDownloa
     }
 
     private fun getDownloadUrl(id: String): String {
-        return applicationDownloadManager.coolProperties.softwareServer + format(DOWNLOAD, id)
+        return serverHost + format(DOWNLOAD, id)
     }
 
 }

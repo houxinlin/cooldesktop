@@ -1,20 +1,16 @@
 package com.hxl.desktop.database
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.hxl.desktop.common.kotlin.extent.mapToShortArg
 import com.hxl.desktop.common.model.Page
 import com.hxl.desktop.common.kotlin.extent.toPage
 import com.hxl.desktop.database.model.ShareLink
 import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Component
 import org.springframework.util.StringUtils
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
-import java.sql.ResultSet
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import javax.annotation.PostConstruct
 import javax.annotation.Resource
 
 
@@ -41,8 +37,8 @@ class CoolDesktopDatabase {
     /**
      * 获取系统配置
      */
-    fun getSysConfig(key: String): String {
-        return listConfigs(SELECT_SYS_CONFIG_ALL).getOrDefault(key, "")
+    fun getSysConfig(key: String, default: String =""): String {
+        return listConfigs(SELECT_SYS_CONFIG_ALL).getOrDefault(key, default)
     }
 
     /**

@@ -35,7 +35,7 @@ class LogRecordAspect {
     }
 
     @Pointcut(value = "@annotation(com.hxl.desktop.system.ano.LogRecord)")
-    fun logPointcut() {
+    private fun logPointcut() {
     }
 
     @Before("logPointcut()")

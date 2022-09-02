@@ -38,8 +38,8 @@ class WebApplicationResourceController {
                     response: HttpServletResponse
     ): ResponseEntity<Resource> {
         val application = applicationManager.getApplicationById(applicationId) ?: return ResponseEntity.notFound().build()
-        val restOfTheUrl = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE) as String
-        val pathOfApplication = restOfTheUrl.removePrefix("${WEB_MINE_REQUEST_PREFIX}${applicationId}")
+        val fullUrl = request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE) as String
+        val pathOfApplication = fullUrl.removePrefix("${WEB_MINE_REQUEST_PREFIX}${applicationId}")
         //加载资源
         val requestResource = application.loadResource(pathOfApplication)
         requestResource?.run {

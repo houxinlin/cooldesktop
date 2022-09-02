@@ -78,6 +78,12 @@ class CoolDesktopSystem {
 
     }
 
+    fun setCoolDesktopConfigs(key: String, value: String): String {
+        if (SENSITIVE_KEY.contains(key)) return "不允许直接设置此值"
+        coolDesktopDatabase.setSysConfigValue(key, value)
+        return "设置成功";
+    }
+
     /**
      * 获取系统所有配置
      */
@@ -153,4 +159,6 @@ class CoolDesktopSystem {
         if (TomcatGlobalAuthenticationPasswordUtils.reset(pass.uppercase())) return Constant.StringConstant.RESET_OK
         return Constant.StringConstant.RESET_FAIL
     }
+
+
 }

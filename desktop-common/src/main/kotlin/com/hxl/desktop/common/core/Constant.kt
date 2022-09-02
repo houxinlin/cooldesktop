@@ -29,6 +29,7 @@ class Constant {
         const val STOP_JAR_PROCESS_FAIL_EMPTY = "未运行"
         const val STOP_JAR_PROCESS_SUCCESS = "已终止"
         const val FILE_NOT_EXIST = "文件不存在"
+        const val NO_CONFIG_APPLIACTION_SERVER = "未配置软件服务器地址，无法在线安装应用，请在设置中增加服务器地址"
         const val SHELL_EXEC_RESULT = "shell脚本执行输出如下\n\r"
         var SSH_WRITE_AUTHOR_FAIL =
             "生成密钥成功，但无法写入到authorized_keys文件中，请尝试手动复制\r,系统将在3秒后为您弹出资源目录，请将cooldes.pub中的文件复制到/root/.ssh/authorized_keys中"

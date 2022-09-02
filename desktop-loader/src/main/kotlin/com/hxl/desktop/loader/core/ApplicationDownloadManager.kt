@@ -3,6 +3,7 @@ package com.hxl.desktop.loader.core
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.log.LogInfosTemplate
 import com.hxl.desktop.common.core.log.SystemLogRecord
+import com.hxl.desktop.common.utils.ThreadUtils
 import com.hxl.desktop.loader.application.ApplicationInstallDispatcher
 import com.hxl.desktop.loader.application.ApplicationManager
 import com.hxl.desktop.loader.application.easyapp.EasyApplicationLoader
@@ -28,7 +29,6 @@ class ApplicationDownloadManager {
         const val INSTALL_STATUS_SUBJECT = "/event/software/status"
         const val INSTALL_DONE_SUBJECT = "/event/install/done"
     }
-
     private val applicationInstallQueue = LinkedBlockingQueue<String>()
 
     @Volatile
@@ -47,11 +47,10 @@ class ApplicationDownloadManager {
     lateinit var applicationInstallDispatcher: ApplicationInstallDispatcher
 
     @Autowired
-    lateinit var easyApplicationLoader: EasyApplicationLoader
-
-    @Autowired
     lateinit var logRecord: SystemLogRecord
 
+    @Autowired
+    lateinit var applicationDownloadFactory: ApplicationDownloadFactory
     @Volatile
     var currentApplicationCount = 0
 
@@ -61,16 +60,16 @@ class ApplicationDownloadManager {
 
     @PostConstruct
     fun init() {
-        Thread(this::startConsumer).start()
+        ThreadUtils.createThread("install-software",this::startConsumer)
     }
 
     fun startConsumer() {
         //一次只能安装一个软件
         while (true) {
             val applicationInstallId = applicationInstallQueue.take()
-            val step = InstallStep.of(ApplicationDownloadStep(this))
-                .addSoftwareInstallStep(ApplicationInstallStep(this))
-                .addSoftwareInstallStep(ClientApplicationRefreshStep(this))
+            val step = InstallStep.of(applicationDownloadFactory.createDownloadStep(this))
+                .addApplicationInstallStep(ApplicationInstallStep(this))
+                .addApplicationInstallStep(ClientApplicationRefreshStep(this))
             currentInstallSoftware = applicationInstallId
             currentApplicationCount = applicationManager.getTotalApplication()
             step.execute(applicationInstallId)

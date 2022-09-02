@@ -14,7 +14,7 @@ import java.nio.file.Paths
 import java.util.concurrent.LinkedBlockingQueue
 
 
-class LinuxTerminal(var serverConnectionWrap: ServerConnectionInfoWrap) : Terminal {
+class LinuxTerminal(private var serverConnectionWrap: ServerConnectionInfoWrap) : Terminal {
     companion object {
         private const val CONNECTION_TIMEOUT: Int = 1000 * 5
         private val CONNECTION_FAIL = "连接失败".toByteArray()
@@ -67,7 +67,7 @@ class LinuxTerminal(var serverConnectionWrap: ServerConnectionInfoWrap) : Termin
     }
 
 
-    fun doHandlerCommand(command: String) {
+    private fun doHandlerCommand(command: String) {
         if (command.startsWith("setSize")) {
             handlerSystemCommand(command)
             return
@@ -76,7 +76,7 @@ class LinuxTerminal(var serverConnectionWrap: ServerConnectionInfoWrap) : Termin
         terminalOutputStream?.flush()
     }
 
-    fun startCommandConsumeThread() {
+    private fun startCommandConsumeThread() {
         commandConsumeThread = Thread() {
             try {
                 while (true) {
@@ -116,9 +116,7 @@ class LinuxTerminal(var serverConnectionWrap: ServerConnectionInfoWrap) : Termin
 
     private fun initJsch(): Boolean {
         try {
-            jsch.addIdentity(
-                Paths.get(Directory.getSecureShellConfigDirectory(), CoolDesktopSystem.RSA_NAME).toString()
-            )
+            jsch.addIdentity(Paths.get(Directory.getSecureShellConfigDirectory(), CoolDesktopSystem.RSA_NAME).toString())
             session = jsch.getSession(
                 serverConnectionWrap.info.userName,
                 serverConnectionWrap.info.host,

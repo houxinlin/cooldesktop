@@ -31,47 +31,68 @@ class CoolDesktopSystemController {
     @Autowired
     lateinit var coolDesktopDatabase: CoolDesktopDatabase
 
+
+    /**
+    * @description: 修改壁纸
+    * @date: 2022/9/2 下午11:58
+    */
+
     @LogRecord(logName = "修改壁纸")
-    @PostMapping("changeWallpaper")
+    @PostMapping("wallpaper/change")
     fun changeWallpaper(@RequestParam file: MultipartFile): FileHandlerResult {
         return coolDesktopSystem.changeWallpaper(file)
     }
 
-    @PostMapping("getCoolDesktopConfigs")
+
+    /**
+    * @description: 获取系统配置
+    * @date: 2022/9/2 下午11:56
+    */
+
+    @GetMapping("cooldesktop/config/get")
     fun getCoolDesktopConfigs(): MutableMap<String, String> {
         return coolDesktopSystem.getCoolDesktopConfigs()
     }
+    @PostMapping("cooldesktop/config/set")
+    fun getCoolDesktopConfigs(@RequestParam("key")key:String,@RequestParam("value")value: String):String {
+        return coolDesktopSystem.setCoolDesktopConfigs(key,value)
+    }
+
+    /**
+    * @description: 重置SSH公钥
+    * @date: 2022/9/2 下午11:59
+    */
 
     @LogRecord(logName = "重置SSH")
-    @PostMapping("configSecureShell")
+    @PostMapping("ssh/reset")
     fun configSecureShell(): String {
         return coolDesktopSystem.configSecureShell()
     }
 
     @LogRecord(logName = "设置SSH用户名")
-    @PostMapping("configSecureShellUser")
+    @PostMapping("ssh/username/set")
     fun configSecureShellUser(@RequestParam("userName") userName: String): String {
         return coolDesktopSystem.configSecureShellUser(userName)
     }
 
     @LogRecord(logName = "重置登录密码")
-    @PostMapping("resetLoginPasswd")
+    @PostMapping("login/passwd/reset")
     fun resetLogoPasswd(@RequestParam("pass") pass: String): String {
         return coolDesktopSystem.resetLoginPasswd(pass)
     }
 
     @LogRecord(logName = "添加开放URL")
-    @PostMapping("addOpenUrl")
+    @PostMapping("open/url/add")
     fun addOpenUrl(@RequestParam("url") url: String): String {
         return OpenUrlManager.register(url)
     }
 
-    @PostMapping("getOpenUrl")
+    @GetMapping("open/url/get")
     fun getOpenUrl(): MutableList<String> {
         return OpenUrlManager.getOpenUrl()
     }
 
-    @LogRecord(logName = "删除开放URL")
+    @LogRecord(logName = "open/url/add")
     @PostMapping("removeOpenUrl")
     fun removeOpenUrl(@RequestParam("url") url: String): String {
         OpenUrlManager.unregister(url)
@@ -79,13 +100,13 @@ class CoolDesktopSystemController {
     }
 
     @LogRecord(logName = "设置APP属性")
-    @PostMapping("setAppProperty")
+    @PostMapping("app/property/set")
     fun setSysProperty(@RequestParam("key") key: String, @RequestParam("value") value: String): String {
         coolDesktopDatabase.setAppProperties(key, value)
         return Constant.StringConstant.OK
     }
 
-    @PostMapping("getAppProperty")
+    @GetMapping("app/property/get")
     fun getSysProperty(@RequestParam("key") key: String): Any {
         return coolDesktopDatabase.getAppProperties(key)
 
@@ -122,7 +143,7 @@ class CoolDesktopSystemController {
         return Constant.StringConstant.OK
     }
 
-    @GetMapping("baseInfo")
+    @GetMapping("system/info/base")
     fun getBaseInfo(): MutableMap<String, Any> {
         return mutableMapOf("timer" to System.currentTimeMillis(), "user" to System.getProperty("user.name"))
     }
@@ -135,6 +156,4 @@ class CoolDesktopSystemController {
     ): Page<Map<String, Any>> {
         return coolDesktopDatabase.listSysLog(logType, logLevel, filterTimer, page)
     }
-
-
 }

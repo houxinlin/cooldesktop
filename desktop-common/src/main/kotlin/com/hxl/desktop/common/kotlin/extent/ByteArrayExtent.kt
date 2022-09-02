@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity
 import java.util.concurrent.TimeUnit
 
 
-fun ByteArray.toHttpResponse(mediaType: MediaType): ResponseEntity<Resource> {
+fun ByteArray.toHttpResponse(mediaType: MediaType=MediaType.APPLICATION_OCTET_STREAM): ResponseEntity<Resource> {
     val resource = ByteArrayResource(this)
     val header = HttpHeaders()
     return ResponseEntity.ok()
