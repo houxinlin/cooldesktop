@@ -99,7 +99,7 @@ class StaticResourceController {
      *运行一个shell
      */
     @LogRecord(logName = "运行shell")
-    @PostMapping("runShell")
+    @PostMapping("shell/run")
     fun runShell(@RequestParam("path") path: String): Future<String> {
         return fileSystemService.runShell(path)
     }
@@ -108,7 +108,7 @@ class StaticResourceController {
      * 停止一个jar文件，如果存在此路径下多个进程，则终止失败
      */
     @LogRecord(logName = "停止jar")
-    @PostMapping("stopJar")
+    @PostMapping("jar/stop")
     fun stopJar(@RequestParam("path") path: String): String {
         return fileSystemService.stopJar(path)
     }
@@ -117,7 +117,7 @@ class StaticResourceController {
      * 运行一个Jar文件
      */
     @LogRecord(logName = "运行jar")
-    @PostMapping("runJar")
+    @PostMapping("jar/run")
     fun runJarFile(
         @RequestParam("path") path: String,
         @RequestParam(value = "arg", required = false, defaultValue = "") arg: String,
@@ -130,7 +130,7 @@ class StaticResourceController {
      *创建文件
      */
     @LogRecord(logName = "创建文件")
-    @PostMapping("createFile")
+    @PostMapping("create")
     fun createFile(
         @RequestParam("parent") parent: String,
         @RequestParam("name") name: String,
@@ -143,7 +143,7 @@ class StaticResourceController {
      * 文件重命名
      */
     @LogRecord(logName = "文件重命名")
-    @PostMapping("fileRename")
+    @PostMapping("rename")
     fun fileCopy(
         @RequestParam("source") source: String,
         @RequestParam("newName") newName: String
@@ -155,7 +155,7 @@ class StaticResourceController {
      * 文件复制
      */
     @LogRecord(logName = "文件复制")
-    @PostMapping("fileCopy")
+    @PostMapping("copy")
     fun fileCopy(@RequestParam("path") path: String): Boolean {
         return fileSystemService.fileCopy(path)
     }
@@ -164,7 +164,7 @@ class StaticResourceController {
      * 文件剪切
      */
     @LogRecord(logName = "文件剪切")
-    @PostMapping("fileCut")
+    @PostMapping("cut")
     fun fileCut(@RequestParam("path") path: String): Boolean {
         return fileSystemService.fileCut(path)
     }
@@ -174,7 +174,7 @@ class StaticResourceController {
      * 文件粘贴，粘贴的任务比较耗时，异步处理
      */
     @LogRecord(logName = "文件粘贴")
-    @PostMapping("filePaste")
+    @PostMapping("paste")
     fun filePaste(@RequestParam("path") target: String, @RequestParam("taskId") taskId: String): FileHandlerResult {
         fileSystemService.filePaste(target, taskId)
         return FileHandlerResult.TASK_SUBMIT_OK
@@ -184,7 +184,7 @@ class StaticResourceController {
      * 文件上传
      */
     @LogRecord(logName = "文件上传")
-    @PostMapping("chunkUpload")
+    @PostMapping("chunk/upload")
     fun chunkUpload(uploadInfo: UploadInfo): FileHandlerResult {
         return fileSystemService.chunkUpload(uploadInfo)
     }
@@ -193,7 +193,7 @@ class StaticResourceController {
      * 合并块文件
      */
     @LogRecord(logName = "合并块文件")
-    @PostMapping("chunkFileMerge")
+    @PostMapping("chunk/file/merge")
     fun chunkFileMerge(
         @RequestParam(value = "name") name: String,
         @RequestParam(value = "targetName") targetName: String,
@@ -223,7 +223,7 @@ class StaticResourceController {
     /**
      * 获取文件icon
      */
-    @GetMapping("getFileIconByType")
+    @GetMapping("icon/by/type/get")
     fun getFileIconByType(@RequestParam("type") type: String): ResponseEntity<org.springframework.core.io.Resource> {
         val header = HttpHeaders()
         header.add(HttpHeaders.CONTENT_TYPE, "image/png")
@@ -237,7 +237,7 @@ class StaticResourceController {
     /**
      * 获取文件icon
      */
-    @GetMapping("getFileIconByPath")
+    @GetMapping("icon/by/path/get")
     fun getFileIconByPath(@RequestParam("path") path: String): ResponseEntity<org.springframework.core.io.Resource> {
         val header = HttpHeaders()
         header.add(HttpHeaders.CONTENT_TYPE, "image/png")
@@ -266,7 +266,7 @@ class StaticResourceController {
      * 文件压缩
      */
     @LogRecord(logName = "文件压缩")
-    @PostMapping("fileCompress")
+    @PostMapping("compress")
     fun fileCompress(
         @RequestParam("path") path: String,
         @RequestParam("targetName") targetName: String,
@@ -280,7 +280,7 @@ class StaticResourceController {
      * 文件解压
      */
     @LogRecord(logName = "文件解压")
-    @PostMapping("fileDecompression")
+    @PostMapping("decompression")
     fun fileCompress(
         @RequestParam("path") path: String,
         @RequestParam("taskId") taskId: String
@@ -291,7 +291,7 @@ class StaticResourceController {
     /**
      * 文件属性
      */
-    @PostMapping("getFileAttribute")
+    @PostMapping("attribute/get")
     fun getFileAttribute(@RequestParam("path") path: String): FileHandlerResult {
         if (path.toPath().exists()) {
             return FileHandlerResult.createOK(path.toFile().getAttribute())
@@ -302,7 +302,7 @@ class StaticResourceController {
     /**
      * 获取文本内容
      */
-    @GetMapping("getTextFileContent")
+    @GetMapping("text/content/get")
     fun getTextFileContent(@RequestParam("path") path: String): FileHandlerResult {
         if (path.toPath().exists()) {
             return fileSystemService.getTextFileContent(path)
@@ -314,7 +314,7 @@ class StaticResourceController {
      * 设置文本内容
      */
     @LogRecord(logName = "设置文本内容")
-    @PostMapping("setTextFileContent")
+    @PostMapping("text/content/set")
     fun setTextFileContent(
         @RequestParam("path") path: String,
         @RequestParam("content") content: String

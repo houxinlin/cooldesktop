@@ -13,7 +13,7 @@ object ImageUtils {
     private val log: Logger = LoggerFactory.getLogger(ImageUtils::class.java)
     fun thumbnails(path: String): ByteArrayResource? {
         val canCompressType = arrayOf("jpg", "jpeg", "bmp")
-        val notCanCompressType = arrayOf("svg","xpm")
+        val notCanCompressType = arrayOf("svg","xpm","png")
         val imageFile = path.toFile()
 
         var flag =false
@@ -35,9 +35,7 @@ object ImageUtils {
                 }
             }
         }
-        for (itemType in notCanCompressType) {
-            if (imageFile.name.lowercase().endsWith(itemType))    return null
-        }
+
         return getImageByteArrayResource(path);
     }
 

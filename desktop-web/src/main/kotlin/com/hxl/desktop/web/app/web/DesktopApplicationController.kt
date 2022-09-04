@@ -80,7 +80,7 @@ class DesktopApplicationController {
      * 安装自定义应用
      */
     @LogRecord(logName = "安装自定义软件")
-    @PostMapping("installCustomApplication")
+    @PostMapping("custom/application/install")
     fun installCustomApplication(@RequestParam file: MultipartFile): String {
         return applicationInstallDispatcher.installCustomApplicationDispatcher(file)
     }

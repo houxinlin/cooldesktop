@@ -92,8 +92,8 @@ class CoolDesktopSystemController {
         return OpenUrlManager.getOpenUrl()
     }
 
-    @LogRecord(logName = "open/url/add")
-    @PostMapping("removeOpenUrl")
+    @LogRecord(logName = "删除开放URL")
+    @PostMapping("open/url/remove")
     fun removeOpenUrl(@RequestParam("url") url: String): String {
         OpenUrlManager.unregister(url)
         return Constant.StringConstant.DELETE_SUCCESS
