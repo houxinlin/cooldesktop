@@ -65,4 +65,5 @@ interface IFileService {
     fun listShareLink(): FileHandlerResult
 
     fun deleteShareLink(id: String): FileHandlerResult
+    fun getSpaceUse(root: String): FileHandlerResult
 }

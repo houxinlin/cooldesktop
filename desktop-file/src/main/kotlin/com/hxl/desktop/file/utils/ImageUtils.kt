@@ -15,6 +15,12 @@ object ImageUtils {
         val canCompressType = arrayOf("jpg", "jpeg", "bmp")
         val notCanCompressType = arrayOf("svg","xpm")
         val imageFile = path.toFile()
+
+        var flag =false
+        for (itemType in canCompressType.plus(notCanCompressType)){
+            if (imageFile.name.lowercase().endsWith(itemType)) flag=true
+        }
+        if (!flag) return  null
         for (itemType in canCompressType) {
             if (imageFile.name.lowercase().endsWith(itemType)) {
                 try {
@@ -30,9 +36,7 @@ object ImageUtils {
             }
         }
         for (itemType in notCanCompressType) {
-            if (imageFile.name.lowercase().endsWith(itemType)) {
-                return null;
-            }
+            if (imageFile.name.lowercase().endsWith(itemType))    return null
         }
         return getImageByteArrayResource(path);
     }

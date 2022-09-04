@@ -429,4 +429,10 @@ class FileServiceImpl : IFileService {
         coolDesktopDatabase.deleteShareLink(id)
         return FileHandlerResult.OK
     }
+
+    override fun getSpaceUse(root: String): FileHandlerResult {
+        val file = File(root)
+        if (!file.exists()) return FileHandlerResult.NOT_EXIST
+        return FileHandlerResult.createOK(mutableMapOf("used" to file.usableSpace ,"total" to file.totalSpace, "free" to file.freeSpace))
+    }
 }
