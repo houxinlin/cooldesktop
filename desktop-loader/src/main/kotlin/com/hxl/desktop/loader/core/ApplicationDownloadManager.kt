@@ -6,8 +6,6 @@ import com.hxl.desktop.common.core.log.SystemLogRecord
 import com.hxl.desktop.common.utils.ThreadUtils
 import com.hxl.desktop.loader.application.ApplicationInstallDispatcher
 import com.hxl.desktop.loader.application.ApplicationManager
-import com.hxl.desktop.loader.application.easyapp.EasyApplicationLoader
-import com.hxl.desktop.system.config.CoolProperties
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
 import org.slf4j.Logger
@@ -29,13 +27,11 @@ class ApplicationDownloadManager {
         const val INSTALL_STATUS_SUBJECT = "/event/software/status"
         const val INSTALL_DONE_SUBJECT = "/event/install/done"
     }
+
     private val applicationInstallQueue = LinkedBlockingQueue<String>()
 
     @Volatile
     private var currentInstallSoftware: String? = null
-
-    @Autowired
-    lateinit var coolProperties: CoolProperties
 
     @Autowired
     lateinit var webSocketSender: WebSocketSender
@@ -51,6 +47,7 @@ class ApplicationDownloadManager {
 
     @Autowired
     lateinit var applicationDownloadFactory: ApplicationDownloadFactory
+
     @Volatile
     var currentApplicationCount = 0
 
@@ -60,7 +57,7 @@ class ApplicationDownloadManager {
 
     @PostConstruct
     fun init() {
-        ThreadUtils.createThread("install-software",this::startConsumer)
+        ThreadUtils.createThread("install-software", this::startConsumer)
     }
 
     fun startConsumer() {
@@ -79,15 +76,7 @@ class ApplicationDownloadManager {
     @Async
     fun install(id: String) {
         //如果已经安装
-        if (applicationManager.isLoaded(id)) {
-            sendMessageToWebSocket(
-                WebSocketMessageBuilder.Builder()
-                    .applySubject(INSTALL_STATUS_SUBJECT)
-                    .addItem("data", "已经安装")
-                    .build()
-            )
-            return
-        }
+        if (applicationManager.isLoaded(id)) applicationInstallDispatcher.uninstallApplicationDispatcher(id)
         if (!applicationInstallQueue.contains(id)) {
             logRecord.addLog(LogInfosTemplate.SystemInfoLog("安装软件", "软件id${id}"))
             applicationInstallQueue.offer(id)
