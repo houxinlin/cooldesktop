@@ -1,13 +1,13 @@
 package com.hxl.desktop.file.bean
 
 
+
+
 /**
- * @author:   HouXinLin
- * @email:    2606710413@qq.com
- * @date:     20212021/12/18
- * @describe: file attribute
- * @version:  v1.0
- */
+* @description: 文件属性
+* @date: 2022/9/6 下午10:50
+*/
+
 data class FileAttribute(
     var path: String = "",
     var type: String = "",

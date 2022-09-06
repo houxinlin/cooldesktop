@@ -48,15 +48,11 @@ fun createTika(): Tika {
  * 获取文件扩展名
  */
 fun File.getFileSuffixValue(): String {
-    if (this.isDirectory) {
-        return FileType.FOLDER.typeName
-    }
-    var pointIndex = this.name.lastIndexOf(".")
+    if (this.isDirectory) return FileType.FOLDER.typeName
+    val pointIndex = this.name.lastIndexOf(".")
     if (pointIndex >= 0) {
-        var suffix = this.name.substring(pointIndex + 1)
-        if (suffix.isNotEmpty()) {
-            return suffix.lowercase();
-        }
+        val suffix = this.name.substring(pointIndex + 1)
+        if (suffix.isNotEmpty()) return suffix.lowercase();
     }
     return FileType.NONE.typeName
 }
@@ -65,9 +61,7 @@ fun File.getFileSuffixValue(): String {
  * 获取文件类型
  */
 fun File.getFileType(): String {
-    if (this.isDirectory) {
-        return FileType.FOLDER.typeName
-    }
+    if (this.isDirectory) return FileType.FOLDER.typeName
     return getFileTypeUseMagic()
 }
 
@@ -75,9 +69,7 @@ fun File.getFileType(): String {
  * 文件大小
  */
 fun File.getFileSize(): Long {
-    if (this.isDirectory) {
-        return -1;
-    }
+    if (this.isDirectory) return -1
     return Files.size(this.toPath())
 }
 
@@ -85,11 +77,9 @@ fun File.getFileSize(): Long {
  * 是否是文本文件
  */
 fun File.isTextFile(): Boolean {
-    if (this.isDirectory) {
-        return false
-    }
+    if (this.isDirectory) return false
 
-    var fileType = this.getFileTypeUseMagic()
+    val fileType = this.getFileTypeUseMagic()
     return fileType.startsWith("text")
 }
 
@@ -97,9 +87,8 @@ fun File.isTextFile(): Boolean {
  * 获取Mime类型
  */
 fun File.getMimeType(): String {
-    if (!this.canRead() || this.length() == 0L) {
-        return "text/none"
-    }
+    if (!this.canRead() || this.length() == 0L) return "text/none"
+
     if (this.isDirectory) {
         return FileType.FOLDER.typeName
     }
@@ -114,7 +103,7 @@ fun File.getAttribute(): FileAttribute {
     /**
      * 在jdk17这里有点问题，jackson无法序列化他，原因不知
      */
-    var readAttributes = Files.getFileAttributeView(this.toPath(), PosixFileAttributeView::class.java).readAttributes()
+    val readAttributes = Files.getFileAttributeView(this.toPath(), PosixFileAttributeView::class.java).readAttributes()
     return FileAttribute(
         this.toString(),
         this.getFileType(),
@@ -148,7 +137,7 @@ fun File.decompression() {
 
 fun File.toHttpResponse(): ResponseEntity<FileSystemResource> {
     val header = HttpHeaders()
-    header.set("Content-Disposition", "attachment;filename*=UTF-8''${URLEncoder.encode(this.name,"UTF-8")}");
+    header.set("Content-Disposition", "attachment;filename*=UTF-8''${URLEncoder.encode(this.name, "UTF-8")}");
     return ResponseEntity.ok()
         .headers(header)
         .contentLength(this.length())
@@ -156,8 +145,6 @@ fun File.toHttpResponse(): ResponseEntity<FileSystemResource> {
 }
 
 fun File.writeStringBuffer(buffer: StringBuffer) {
-    if (!this.exists()) {
-        this.createNewFile()
-    }
+    if (!this.exists()) this.createNewFile()
     this.writeBytes(buffer.toString().toByteArray())
 }

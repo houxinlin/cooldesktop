@@ -12,7 +12,6 @@ class SystemProperty {
     @Autowired
     lateinit var coolDesktopDatabase: CoolDesktopDatabase
 
-
     fun getServerConnectionInfo(): ServerConnectionInfo {
         return ServerConnectionInfo().apply {
             this.userName = coolDesktopDatabase.getSysConfig(CoolDesktopDatabaseConfigKeys.SSH_USER_NAME.keyName)

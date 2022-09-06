@@ -15,7 +15,7 @@ class PathExtent {
 }
 
 fun Path.walkFileTree(suffix: String = "", onlyFile: Boolean = false): MutableList<Path> {
-    var mutableListOf = mutableListOf<Path>()
+    val mutableListOf = mutableListOf<Path>()
     Files.walkFileTree(this, object : SimpleFileVisitor<Path>() {
         override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
             if ("" == suffix) {

@@ -7,8 +7,7 @@ class LogInfosTemplate {
     open class BaseInfoLog(
         private val coolDesktopLogType: CoolDesktopLogType,
         private val logName: String,
-        private val value: String
-    ) :
+        private val value: String) :
         Log(coolDesktopLogType, CoolDesktopLogInfoType.INFO_LOG) {
         override fun getLogName(): String {
             return logName
@@ -22,8 +21,7 @@ class LogInfosTemplate {
     open class BaseErrorLog(
         private val coolDesktopLogType: CoolDesktopLogType,
         private val logName: String,
-        private val value: String
-    ) :
+        private val value: String) :
         Log(coolDesktopLogType, CoolDesktopLogInfoType.ERROR_LOG) {
         override fun getLogName(): String {
             return logName

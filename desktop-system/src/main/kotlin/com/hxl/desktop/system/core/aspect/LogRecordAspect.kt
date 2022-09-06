@@ -64,7 +64,7 @@ class LogRecordAspect {
     }
 
     class BaseDataRecord : IRecord {
-        val BASE_DATA_TYPE = arrayOf(String::class, Int::class, Float::class, Double::class)
+        private val BASE_DATA_TYPE = arrayOf(String::class, Int::class, Float::class, Double::class)
         override fun support(param: Any): Boolean {
             return BASE_DATA_TYPE.contains(param::class)
         }

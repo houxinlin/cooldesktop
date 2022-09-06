@@ -1,5 +1,10 @@
 package com.hxl.desktop.common.core
 
+/**
+* @description: 系统常量
+* @date: 2022/9/6 下午10:47
+*/
+
 class Constant {
     object FileName {
         const val OPEN_URL = "config"

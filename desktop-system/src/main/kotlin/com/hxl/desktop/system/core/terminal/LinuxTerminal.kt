@@ -22,6 +22,7 @@ class LinuxTerminal(private var serverConnectionWrap: ServerConnectionInfoWrap) 
     }
 
     private val jsch = JSch()
+
     private var session: Session? = null
 
     @Volatile
@@ -32,6 +33,7 @@ class LinuxTerminal(private var serverConnectionWrap: ServerConnectionInfoWrap) 
 
     @Volatile
     private var connectioned = false
+
     private var channelShell: ChannelShell? = null
 
     private var commandQueue: LinkedBlockingQueue<String> = LinkedBlockingQueue<String>()

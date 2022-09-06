@@ -102,9 +102,9 @@ object Directory {
         return Paths.get(getChunkDirectory(), name).toString();
     }
 
-    fun createDirector(root: String, vararg child: String) {
+    private fun createDirector(root: String, vararg child: String) {
         child.toList().stream().forEach {
-            var createPath = Paths.get(root, it)
+            val createPath = Paths.get(root, it)
             if (!createPath.exists())
                 createPath.createDirectories()
 

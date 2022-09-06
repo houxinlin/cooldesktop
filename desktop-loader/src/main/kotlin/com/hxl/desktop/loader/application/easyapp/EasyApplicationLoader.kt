@@ -54,6 +54,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
 
     @Autowired
     lateinit var coolDesktopBeanRegister: CoolDesktopBeanRegister
+
     @Autowired
     private lateinit var requestMappingRegister: RequestMappingRegister
 

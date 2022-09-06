@@ -12,12 +12,12 @@ import java.nio.file.Paths
 object ImageUtils {
     private val log: Logger = LoggerFactory.getLogger(ImageUtils::class.java)
     fun thumbnails(path: String): ByteArrayResource? {
-        val canCompressType = arrayOf("jpg", "jpeg", "bmp")
-        val notCanCompressType = arrayOf("svg","xpm","png")
+        val canCompressType = arrayOf("jpg", "jpeg", "bmp") //能压缩的
+        val notCanCompressType = arrayOf("svg","xpm","png") //不能压缩的
         val imageFile = path.toFile()
 
         var flag =false
-        for (itemType in canCompressType.plus(notCanCompressType)){
+        for (itemType in canCompressType.plus(notCanCompressType)){//其余可能是类型检测出现问题，并不是图片
             if (imageFile.name.lowercase().endsWith(itemType)) flag=true
         }
         if (!flag) return  null

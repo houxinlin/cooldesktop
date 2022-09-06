@@ -7,7 +7,7 @@ import java.nio.file.Paths
 
 class ZipCompress : Compressed() {
     override fun compress(path: String, targetName: String) {
-        var parent = File(path).parent
+        val parent = File(path).parent
         super.compressByType(path, CZipArchiveOutputStream(Paths.get(parent, targetName).toString()))
     }
 

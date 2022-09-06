@@ -8,7 +8,7 @@ import java.io.FileOutputStream
 
 class CTarArchiveOutputStream(outPath: String) : BaseCompressOutputStream(outPath) {
     override fun createOutputStream(): ArchiveOutputStream {
-        var compressorOutputStream =
+        val compressorOutputStream =
             CompressorStreamFactory().createCompressorOutputStream(
                 getAlgorithmName(),
                 BufferedOutputStream(FileOutputStream(outPath))

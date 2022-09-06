@@ -8,8 +8,7 @@ import java.io.IOException
 import java.net.URL
 
 class EaseApplicationWrapper(application: Application,
-                             applicationEventListener: ApplicationEventListener?
-) : ApplicationWrapper(application, applicationEventListener) {
+                             applicationEventListener: ApplicationEventListener?) : ApplicationWrapper(application, applicationEventListener) {
     companion object {
         private val log = LoggerFactory.getLogger(EaseApplicationWrapper::class.java)
     }

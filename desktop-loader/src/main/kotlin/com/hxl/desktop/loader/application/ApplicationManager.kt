@@ -20,7 +20,6 @@ class ApplicationManager : CommandLineRunner {
         private val log: Logger = LoggerFactory.getLogger(ApplicationManager::class.java)
     }
 
-
     //web应用集合
     private val webMiniApplicationMap = mutableMapOf<String, ApplicationWrapper>()
 
@@ -109,6 +108,7 @@ class ApplicationManager : CommandLineRunner {
         webMiniApplicationMap.remove(id)
         easyApplicationMap.remove(id)
         coolDesktopApplicationStaticResourceRegister.unregister(id)
+
     }
 
 

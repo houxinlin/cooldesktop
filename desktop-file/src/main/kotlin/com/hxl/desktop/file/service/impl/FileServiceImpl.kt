@@ -53,7 +53,9 @@ import kotlin.io.path.*
  */
 @Service
 class FileServiceImpl : IFileService {
-    private val log: Logger = LoggerFactory.getLogger(FileServiceImpl::class.java)
+    companion object{
+        private val log: Logger = LoggerFactory.getLogger(FileServiceImpl::class.java)
+    }
     private val fileMergeLockMap: ConcurrentHashMap<String, Any> = ConcurrentHashMap()
 
     @Autowired

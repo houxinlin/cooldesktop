@@ -19,7 +19,7 @@ class FileCompressUtils {
 
         fun getFileType(path: String): String {
             try {
-                var compressByType = ArchiveStreamFactory.detect(path.toFile().inputStream().buffered())
+                val compressByType = ArchiveStreamFactory.detect(path.toFile().inputStream().buffered())
                 if (compressByType != null) return compressByType
             } catch (e: Exception) {
                 return CompressorStreamFactory.detect(path.toFile().inputStream().buffered())

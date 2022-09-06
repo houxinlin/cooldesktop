@@ -1,7 +1,6 @@
 repositories {
     mavenCentral()
 }
-
 dependencies{
     implementation(project(":desktop-file"))
     implementation(project(":desktop-loader"))
@@ -10,3 +9,6 @@ dependencies{
     implementation(project(":desktop-system"))
 }
 
+tasks.jar{
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

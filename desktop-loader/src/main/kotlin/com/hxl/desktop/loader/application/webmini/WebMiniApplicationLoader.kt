@@ -35,7 +35,22 @@ import java.util.stream.Collectors
 
 @Component
 class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
-    private val log: Logger = LoggerFactory.getLogger(WebMiniApplicationLoader::class.java)
+    companion object {
+        private val log: Logger = LoggerFactory.getLogger(WebMiniApplicationLoader::class.java)
+        fun getApplicationFromByte(byteBuffer: ByteBuffer): WebMiniApplication {
+            if (byteBuffer.position() == 0) {
+                //消费4个字节的魔术
+                byteBuffer.readInt()
+            }
+            val applicationInfoHeaderSize = byteBuffer.readInt()
+            val applicationInfoByte = byteBuffer.readByte(applicationInfoHeaderSize)
+            //提取应用程序信息
+            val webMiniApplication =
+                JSON.parseObject(applicationInfoByte.decodeToString(), WebMiniApplication::class.java)
+            webMiniApplication.staticResOffset = 12L + applicationInfoHeaderSize
+            return webMiniApplication
+        }
+    }
     @Autowired
     lateinit var applicationManager: ApplicationManager
 
@@ -87,24 +102,6 @@ class WebMiniApplicationLoader : ApplicationLoader<WebMiniApplication> {
             refresh()
         }
     }
-
-    companion object {
-        fun getApplicationFromByte(byteBuffer: ByteBuffer): WebMiniApplication {
-            if (byteBuffer.position() == 0) {
-                //消费4个字节的魔术
-                byteBuffer.readInt()
-            }
-            val applicationInfoHeaderSize = byteBuffer.readInt()
-            val applicationInfoByte = byteBuffer.readByte(applicationInfoHeaderSize)
-            //提取应用程序信息
-            val webMiniApplication =
-                JSON.parseObject(applicationInfoByte.decodeToString(), WebMiniApplication::class.java)
-            webMiniApplication.staticResOffset = 12L + applicationInfoHeaderSize
-            return webMiniApplication
-        }
-    }
-
-
     fun refresh() {
         val webapp = Paths.get(Directory.getWebAppDirectory()).walkFileTree(".webapp", true)
         log.info("web应用列表{}", webapp.stream().map { it.toFile().name }.collect(Collectors.toList()))

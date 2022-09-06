@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     id("org.springframework.boot") version "2.6.1"
@@ -45,6 +46,7 @@ tasks.register<Copy>("copyLib") {
 }
 
 subprojects {
+
     apply {
         apply {
             plugin("io.spring.dependency-management")
@@ -119,4 +121,9 @@ subprojects {
     tasks.withType<Test> {
         useJUnitPlatform()
     }
+    tasks.bootJar<BootJar>{
+        archiveFileName.set("cooldesktop.jar")
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
 }

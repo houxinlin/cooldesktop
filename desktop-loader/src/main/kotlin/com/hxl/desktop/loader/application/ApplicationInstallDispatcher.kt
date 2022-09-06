@@ -12,11 +12,13 @@ import org.springframework.web.multipart.MultipartFile
 
 @Component
 class ApplicationInstallDispatcher {
-    private val  log: Logger = LoggerFactory.getLogger(ApplicationInstallDispatcher::class.java)
-
+    companion object{
+        private val  log: Logger = LoggerFactory.getLogger(ApplicationInstallDispatcher::class.java)
+    }
 
     @Autowired
     private lateinit var applicationManager: ApplicationManager
+
     private lateinit var applicationLoaders: List<ApplicationLoader<*>>
     @Autowired
     lateinit var logRecored: SystemLogRecord
