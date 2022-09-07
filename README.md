@@ -1,8 +1,21 @@
 #  📚 CoolDesktop介绍
 
-CoolDesktop是一个Linux服务器管理软件，
-CoolDesktop采用全新的操作方式，让您像操作本地系统一样，操作远程Linux，除了基本的文件复制、粘贴、上传、删除、重复名等基本操作，
-还可以进行终端操作，如果对当前应用不满意，可以自行开发软件，挂载到CoolDesktop上，这和我们平常在系统上安装软件是一个道理。
+CoolDesktop是一个Linux服务器管理软件，采用全新的操作方式，让您像操作本地系统一样，操作远程Linux，所拥有的功能如下：
+  1. 一键文件复制、粘帖、剪切、删除、重命名
+  
+  2. 一键文件zip、tar、7z格式压缩、解压
+  
+  3. 开启多终端，任意Linux命令都可执行
+  
+  4. 多文件管理窗口、上传文件托放既可完成
+  
+  5. 日志文件追踪
+  
+  6. jar文件一键启动、停止、重启
+  
+  7. 文件共享，分享文件链接给朋友，立即下载
+  
+  8. 开发自定义管理软件
 
 # 所用语言及依赖
 1. kotlin  https://kotlinlang.org/
@@ -49,7 +62,7 @@ cp -r ./dist/* ${CoolDesktop_Home}/desktop-web/src/main/resources/static/
 # 启动配置
 1. 如果需要在线安装软件，需要对软件商店服务器地址进行配置，进入《设置》-《软件商店》，输入以下服务器地址，即可在线安装软件。
 ```shell
-http://www.houxinlin.com:8082
+https://www.houxinlin.com/application
 ```
 # 软件商店
 
