@@ -255,6 +255,13 @@ class FileServiceImpl : IFileService {
     override fun deleteFile(path: String): FileHandlerResult {
         if (hasPermission(path)) {
             FileSystemUtils.deleteRecursively(Paths.get(path))
+            coolDesktopDatabase.listShareLink().find { it.filePath==path }?.run {
+                webSocketSender.send( WebSocketMessageBuilder.Builder()
+                    .applySubject(Constant.WebSocketSubjectNameConstant.NOTIFY_MESSAGE_SUCCESS)
+                    .addItem("data", "此文件关联共享文件，已同时删除")
+                    .build())
+                coolDesktopDatabase.deleteShareLink(this.shareId)
+            }
             return FileHandlerResult.OK
         }
         return FileHandlerResult.NO_PERMISSION

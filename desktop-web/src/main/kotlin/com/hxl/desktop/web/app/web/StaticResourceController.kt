@@ -27,12 +27,10 @@ class StaticResourceController {
     @Resource
     lateinit var fileSystemService: IFileService;
 
-
     /**
     * @description: 获取空间使用情况
     * @date: 2022/9/3 下午7:23
     */
-
     @GetMapping("/space/status")
     fun getSpaceUse(@RequestParam(value = "root", required = false, defaultValue = "/")root:String):FileHandlerResult{
             return fileSystemService.getSpaceUse(root)
