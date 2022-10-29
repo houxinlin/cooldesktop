@@ -45,9 +45,7 @@ fun Path.listRootDirector(): List<File> {
     if (!this.toFile().canRead()) return emptyList()
     if (!this.exists()) return emptyList()
     if (!this.isDirectory()) return emptyList()
-    return Files.list(this).map { it.toFile() }.filter {
-        !Files.isSymbolicLink(it.toPath())
-    }.collect(Collectors.toList())
+    return Files.list(this).map { it.toFile() }.collect(Collectors.toList())
 }
 
 

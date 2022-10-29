@@ -6,5 +6,6 @@ enum class FileType(var typeName: String) {
     IMAGE("img"),
     NONE("none"),
     TEXT("text"),
-    APPLICATION("application")
+    APPLICATION("application"),
+    LINK("link")
 }

@@ -21,5 +21,6 @@ data class FileAttribute(
     var isTextType: Boolean = false,
     var mimeType: String,
     var isFile: Boolean = true,
-    var parent: String = ""
+    var parent: String = "",
+    var isSymbolicLink:Boolean=false
 )

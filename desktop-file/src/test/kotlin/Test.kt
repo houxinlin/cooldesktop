@@ -1,3 +1,7 @@
+import com.hxl.desktop.file.extent.getAttribute
+import com.hxl.desktop.file.extent.listRootDirector
+import java.nio.file.Paths
+
 /**
  * @author:   HouXinLin
  * @email:    2606710413@qq.com
@@ -7,5 +11,12 @@
  */
 object  Test {
 
+}
+
+fun main() {
+    Paths.get("/home/HouXinLin/temp-files/test").listRootDirector().forEach {
+        println(it)
+        println(it.getAttribute())
+    }
 }
 

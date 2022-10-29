@@ -193,7 +193,7 @@ class FileServiceImpl : IFileService {
         }
         val files = root.toPath().listRootDirector()
         val mutableListOf = mutableListOf<FileAttribute>()
-        files.forEach { mutableListOf.add(it.getAttribute()) }
+        files.forEach {  mutableListOf.add(it.getAttribute())}
         val folderList = mutableListOf.filter { it.type == FileType.FOLDER.typeName }
         val fileList = mutableListOf.filter { it.type != FileType.FOLDER.typeName }
         folderList.sortedBy { it.name }
