@@ -2,7 +2,6 @@ package com.hxl.desktop.loader.application
 
 import com.desktop.application.definition.application.ApplicationLoader
 import com.hxl.desktop.common.core.Constant
-import com.hxl.desktop.common.core.log.SystemLogRecord
 import com.hxl.desktop.system.ano.NotifyWebSocket
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -11,21 +10,12 @@ import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 
 @Component
-class ApplicationInstallDispatcher {
+class ApplicationInstallDispatcher(private var applicationLoaders: List<ApplicationLoader<*>>) {
     companion object{
         private val  log: Logger = LoggerFactory.getLogger(ApplicationInstallDispatcher::class.java)
     }
-
     @Autowired
     private lateinit var applicationManager: ApplicationManager
-
-    private lateinit var applicationLoaders: List<ApplicationLoader<*>>
-    @Autowired
-    lateinit var logRecored: SystemLogRecord
-    @Autowired
-    fun setApplicationLoader(loader: MutableList<ApplicationLoader<*>>) {
-        applicationLoaders = loader
-    }
 
     /**
      * 卸载应用分发

@@ -6,6 +6,7 @@ import org.springframework.http.CacheControl
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.util.DigestUtils
 import java.util.concurrent.TimeUnit
 
 
@@ -14,6 +15,7 @@ fun ByteArray.toHttpResponse(mediaType: MediaType=MediaType.APPLICATION_OCTET_ST
     val header = HttpHeaders()
     return ResponseEntity.ok()
         .headers(header)
+        .eTag(DigestUtils.md5DigestAsHex(this))
         .cacheControl(CacheControl.noCache())
         .contentType(mediaType)
         .contentLength(resource.contentLength())
