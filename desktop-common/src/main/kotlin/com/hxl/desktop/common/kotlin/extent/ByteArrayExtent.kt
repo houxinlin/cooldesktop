@@ -14,7 +14,7 @@ fun ByteArray.toHttpResponse(mediaType: MediaType=MediaType.APPLICATION_OCTET_ST
     val header = HttpHeaders()
     return ResponseEntity.ok()
         .headers(header)
-        .cacheControl(CacheControl.maxAge(3, TimeUnit.DAYS))
+        .cacheControl(CacheControl.noCache())
         .contentType(mediaType)
         .contentLength(resource.contentLength())
         .body(resource);
