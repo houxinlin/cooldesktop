@@ -71,6 +71,9 @@
             height: 40px;
         }
 
+        .form button:hover{
+            border-radius: 32px;
+        }
         .form button {
             text-transform: uppercase;
             outline: 0;
@@ -83,6 +86,7 @@
             width: 70px;
             margin-left: 11px;
             border-radius: 4px;
+            transition: all 0.5s;
         }
 
         ::placeholder {
@@ -107,12 +111,45 @@
             margin: 0 auto;
         }
 
+        #message{
+            position: absolute;
+            margin: auto 0px;
+            left: 0px;
+            right: 0px;
+            top: 237px;
+            color: #161111c2;
+            font-size: 15px;
+        }
         body {
             font-family: "Roboto", sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-
+        @keyframes shake {
+            0%{
+                left: -10px;
+            }
+            25%{
+                left: 10px;
+            }
+            50%{
+                left: -10px;
+            }
+            75%{
+                left: 10px;
+            }
+            100%{
+                left: 0px;
+            }
+        }
+        .input-shake{
+            animation-name: shake;
+            animation-duration: 0.3s;
+            animation-iteration-count: 1;
+            animation-delay: 0s;
+            position: relative;
+            transition: all 0.5s;
+        }
         .password-tip {
             font-size: 9px;
             color: #6e6464;
@@ -137,7 +174,7 @@
             </div>
         </div>
         <div style="display: flex">
-            <input id="password" type="password" placeholder="password"/>
+            <input  onkeyup="inputKeydown()" id="password" type="password" class="" placeholder="password"/>
             <button onclick="doLogin()">登录</button>
         </div>
         <div id="message"></div>
@@ -147,16 +184,18 @@
 
 <script type="text/javascript">
 
+    function inputKeydown(){
+        if(event.keyCode===13) doLogin();
+    }
     function doLogin() {
-        let password = document.getElementById("password").value
-        document.getElementById("message").innerText = ""
+        let password = document.getElementById("password").value;
+        document.getElementById("message").innerText = "";
         let encrypt = new JSEncrypt();
         let PUBLIC_KEY = "${rsapublic}";
         encrypt.setPublicKey('-----BEGIN PUBLIC KEY-----' + PUBLIC_KEY + '-----END PUBLIC KEY-----');
         let encrypted = encrypt.encrypt(password);
 
         async function postData(url = '', data) {
-            // Default options are marked with *
             const response = await fetch(url, {
                 method: 'POST',
                 cache: 'no-cache',
@@ -172,15 +211,18 @@
         postData('/tomcat/api/login', "password=" + encrypted)
             .then(data => {
                 if (data.status) {
-                    window.location.href = "/"
+                    window.location.href = "/";
                     return
                 }
                 let tip = data["msg"] || "密码错误"
+                document.getElementById("password").classList.add("input-shake");
+                setTimeout(()=>{
+                    document.getElementById("password").classList.remove("input-shake");
+                },500)
                 document.getElementById("message").innerText = tip
             });
     }
 </script>
-<!--    <script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jsencrypt/3.2.1/jsencrypt.min.js"></script>-->
 
 </body>
 </html>

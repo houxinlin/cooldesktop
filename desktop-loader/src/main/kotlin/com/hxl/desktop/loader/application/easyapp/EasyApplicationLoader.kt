@@ -53,7 +53,7 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
     private lateinit var applicationManager: ApplicationManager
 
     @Autowired
-    lateinit var coolDesktopBeanRegister: CoolDesktopBeanRegister
+    private lateinit var coolDesktopBeanRegister: CoolDesktopBeanRegister
 
     @Autowired
     private lateinit var requestMappingRegister: RequestMappingRegister
@@ -93,7 +93,9 @@ class EasyApplicationLoader : ApplicationLoader<EasyApplication> {
             log.info("存储{}", tempAppStoragePath)
             Files.write(tempAppStoragePath, byteArray)
 
-            //尝试从这个jar中读取信息，可能会失败，主要原因是没有app.properties,或者配置信息不全
+            //尝试从这个jar中读取信息，可
+            //
+            // 能会失败，主要原因是没有app.properties,或者配置信息不全
             val easyApplication = getApplicationFromFile(JarFile(tempAppStoragePath.toFile()))
             easyApplication?.run {
                 //保存不会重复加载
