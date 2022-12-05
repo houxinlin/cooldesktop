@@ -1,5 +1,8 @@
 package com.hxl.desktop.web.config
 
+import com.hxl.desktop.common.core.Directory
+import com.hxl.desktop.common.kotlin.extent.toFile
+import com.hxl.desktop.file.extent.writeStringBuffer
 import org.springframework.boot.web.server.ErrorPage
 import org.springframework.boot.web.server.WebServerFactoryCustomizer
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory
@@ -16,13 +19,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
  * @version:  v1.0
  */
 @Configuration
-class WebConfig  : WebMvcConfigurer {
-
-    @Bean
-    fun webServerFactoryCustomizer(): WebServerFactoryCustomizer<*>? {
-        return WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> { factory ->
-            val error404Page = ErrorPage(HttpStatus.NOT_FOUND, "/index.html")
-            factory.addErrorPages(error404Page)
-        }
+class WebConfig  : WebMvcConfigurer,WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
+    companion object{
+        const val SERVER_DEFAULT_PORT=2556
+    }
+    override fun customize(factory: ConfigurableServletWebServerFactory) {
+        val port =Directory.getPortConfigPath().toFile()
+        if (!port.exists()) port.writeStringBuffer(SERVER_DEFAULT_PORT.toString())
+        factory.setPort(port.readText().toInt())
+        val error404Page = ErrorPage(HttpStatus.NOT_FOUND, "/index.html")
+        factory.addErrorPages(error404Page)
     }
 }

@@ -1,0 +1,1 @@
+4aab558b475027555a514e7c3afa176862990fed https://github.com/houxinlin/cooldesktop/releases/download/main/cooldesktop.jar

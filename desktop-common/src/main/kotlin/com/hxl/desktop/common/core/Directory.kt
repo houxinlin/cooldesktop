@@ -28,6 +28,7 @@ object Directory {
     private const val WALLPAPER_WORK_DIRECTORY = "config/wallpaper"
     private const val SSH_CONFIG_DIRECTORY = "config/ssh"
     private const val OPEN_URL_DIRECTORY = "config/o_urls"
+    private const val PORT_CONFIG="config/port.cnf"
     private val WORK_DIRECTORY = arrayOf(
         CHUNK_DIRECTORY,
         DATABASE_DIRECTORY,
@@ -60,38 +61,41 @@ object Directory {
         return path.toString()
     }
     fun getEasyAppStorageDirectory(): String {
-        return Paths.get(initializationWorkDirectoryAndGetRoot(), EASY_APP_STORAGE_DIRECTORY).toString();
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), EASY_APP_STORAGE_DIRECTORY).toString()
     }
 
+    fun getPortConfigPath():String{
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), PORT_CONFIG).toString()
+    }
     fun getWebAppDirectory(): String {
-        return Paths.get(initializationWorkDirectoryAndGetRoot(), WEP_APP_STORAGE_DIRECTORY).toString();
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), WEP_APP_STORAGE_DIRECTORY).toString()
     }
 
     fun getWarAppDirectory(): String {
-        return Paths.get(initializationWorkDirectoryAndGetRoot(), WAR_APP_STORAGE_DIRECTORY).toString();
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), WAR_APP_STORAGE_DIRECTORY).toString()
     }
 
     fun getSecureShellConfigDirectory(): String {
-        return Paths.get(initializationWorkDirectoryAndGetRoot(), SSH_CONFIG_DIRECTORY).toString();
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), SSH_CONFIG_DIRECTORY).toString()
     }
 
     fun getDatabaseDirectory(): String {
-        return Paths.get(initializationWorkDirectoryAndGetRoot(), DATABASE_DIRECTORY).toString();
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), DATABASE_DIRECTORY).toString()
     }
 
     fun getTomcatBaseDirDirectory(): String {
-        return Paths.get(initializationWorkDirectoryAndGetRoot(), TOMCAT_BASE_WORK_DIRECTORY).toString();
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), TOMCAT_BASE_WORK_DIRECTORY).toString()
     }
 
     fun getWallpaperWorkDirectory(): String {
-        return Paths.get(initializationWorkDirectoryAndGetRoot(), WALLPAPER_WORK_DIRECTORY).toString();
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), WALLPAPER_WORK_DIRECTORY).toString()
     }
 
     fun getChunkDirectory(): String {
-        return Paths.get(initializationWorkDirectoryAndGetRoot(), CHUNK_DIRECTORY).toString();
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), CHUNK_DIRECTORY).toString()
     }
     fun getOpenUrlDirectory(): String {
-        return Paths.get(initializationWorkDirectoryAndGetRoot(), OPEN_URL_DIRECTORY).toString();
+        return Paths.get(initializationWorkDirectoryAndGetRoot(), OPEN_URL_DIRECTORY).toString()
     }
 
     fun createChunkDirector(name: String): String {

@@ -154,3 +154,7 @@ fun File.writeStringBuffer(buffer: StringBuffer) {
     if (!this.exists()) this.createNewFile()
     this.writeBytes(buffer.toString().toByteArray())
 }
+fun File.writeStringBuffer(buffer: String) {
+    if (!this.exists()) this.createNewFile()
+    this.writeBytes(buffer.toByteArray())
+}
