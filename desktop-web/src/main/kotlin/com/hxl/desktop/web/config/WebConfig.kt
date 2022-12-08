@@ -26,7 +26,8 @@ class WebConfig  : WebMvcConfigurer,WebServerFactoryCustomizer<ConfigurableServl
     override fun customize(factory: ConfigurableServletWebServerFactory) {
         val port =Directory.getPortConfigPath().toFile()
         if (!port.exists()) port.writeStringBuffer(SERVER_DEFAULT_PORT.toString())
-        factory.setPort(port.readText().toInt())
+        val p =port.readText().trim()
+        factory.setPort(p.toInt())
         val error404Page = ErrorPage(HttpStatus.NOT_FOUND, "/index.html")
         factory.addErrorPages(error404Page)
     }
