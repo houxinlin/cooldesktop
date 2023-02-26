@@ -1,12 +1,18 @@
 package com.hxl.desktop.system.core.terminal
 
 import com.hxl.desktop.common.kotlin.extent.toFile
+import org.slf4j.LoggerFactory
 import java.io.IOException
+import java.util.Arrays
 
 class TerminalCommand {
+    companion object {
+        private  val LOGGER =LoggerFactory.getLogger(TerminalCommand::class.java)
+    }
     private constructor()
     private fun execute(commandBuilder: Builder): String {
         try {
+            LOGGER.info("执行命令{}",commandBuilder.commands.joinToString(separator = " ") {it  })
             val processBuilder = ProcessBuilder()
             commandBuilder.home?.run { processBuilder.directory(commandBuilder.home!!.toFile()) }
             processBuilder.command(commandBuilder.commands)
@@ -24,7 +30,6 @@ class TerminalCommand {
     class Builder {
         var commands = mutableListOf<String>()
         var home: String? = null
-
 
         init {
             commands.add("bash")

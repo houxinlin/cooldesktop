@@ -16,7 +16,9 @@ object JarUtils {
 
     fun isRun(path: String, exclude: List<Int>, waitSecond: Long): Boolean {
         for (i in 1 until waitSecond) {
-            if (getJavaProcess().stream().filter { it.displayName().startsWith(path) && !exclude.contains(it.id().toInt()) }.count() >= 1) return true
+            if (getJavaProcess().stream()
+                    .filter { it.displayName().startsWith(path) && !exclude.contains(it.id().toInt()) }.count() >= 1
+            ) return true
             TimeUnit.SECONDS.sleep(i)
         }
         return false
@@ -27,10 +29,10 @@ object JarUtils {
             .collect(Collectors.toList())
     }
 
-    fun run(path: String, arg: String) {
+    fun run(path: String, jvmArg: String, applicationArg: String, logPath: String) {
         TerminalCommand.Builder()
             .setWorkHome(path.toFile().parent)
-            .add(CommandConstant.JAR_RUN.format(path, arg,"log")).execute()
+            .add(CommandConstant.JAR_RUN.format(jvmArg,path, applicationArg, logPath)).execute()
     }
 
     fun stopJar(path: String) {
