@@ -29,6 +29,18 @@ CoolDesktop是一个Linux服务器管理软件，采用全新的操作方式，�
   
   5. java进程管理器，可进行热替换、GC、基础信息仪表盘、实时内存、实时线程、在线反编译出内存中的class
 
+# 应用截图
+
+![image](https://user-images.githubusercontent.com/38684327/175013968-4f28e931-6a09-4cbb-bb65-dd83696156b7.png)
+
+
+![image](https://user-images.githubusercontent.com/38684327/175014042-52c56a47-8a5a-4fd4-8d38-7232187379f9.png)
+
+![image](https://user-images.githubusercontent.com/38684327/175014143-de7f6484-6ab6-414c-87c5-43350c535416.png)
+
+![image](https://user-images.githubusercontent.com/38684327/175014648-0f2413f8-d6a1-450b-8630-9e30e8c26c93.png)
+
+
 # 所用语言及依赖
 1. kotlin  https://kotlinlang.org/
 2. Spring Boot  https://spring.io/projects/spring-boot
@@ -86,16 +98,7 @@ https://www.houxinlin.com/application
 5. Mysql备份
 
 敬请期待
-# 应用截图
 
-![image](https://user-images.githubusercontent.com/38684327/175013968-4f28e931-6a09-4cbb-bb65-dd83696156b7.png)
-
-
-![image](https://user-images.githubusercontent.com/38684327/175014042-52c56a47-8a5a-4fd4-8d38-7232187379f9.png)
-
-![image](https://user-images.githubusercontent.com/38684327/175014143-de7f6484-6ab6-414c-87c5-43350c535416.png)
-
-![image](https://user-images.githubusercontent.com/38684327/175014648-0f2413f8-d6a1-450b-8630-9e30e8c26c93.png)
 
 # 官方应用
 ![image](https://user-images.githubusercontent.com/38684327/188296055-fbf07247-405e-4f20-be5a-4e1395fd024d.png)
