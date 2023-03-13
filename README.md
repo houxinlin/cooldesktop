@@ -41,6 +41,14 @@ CoolDesktop是一个Linux服务器管理软件，采用全新的操作方式，�
 ![image](https://user-images.githubusercontent.com/38684327/175014648-0f2413f8-d6a1-450b-8630-9e30e8c26c93.png)
 
 
+# 官方应用
+![image](https://user-images.githubusercontent.com/38684327/188296055-fbf07247-405e-4f20-be5a-4e1395fd024d.png)
+
+![image](https://user-images.githubusercontent.com/38684327/188296061-03eded11-b90d-4caf-a4ee-07568cde3e08.png)
+
+
+
+
 # 所用语言及依赖
 1. kotlin  https://kotlinlang.org/
 2. Spring Boot  https://spring.io/projects/spring-boot
@@ -99,11 +107,6 @@ https://www.houxinlin.com/application
 
 敬请期待
 
-
-# 官方应用
-![image](https://user-images.githubusercontent.com/38684327/188296055-fbf07247-405e-4f20-be5a-4e1395fd024d.png)
-
-![image](https://user-images.githubusercontent.com/38684327/188296061-03eded11-b90d-4caf-a4ee-07568cde3e08.png)
 
 
 # 联系作者
