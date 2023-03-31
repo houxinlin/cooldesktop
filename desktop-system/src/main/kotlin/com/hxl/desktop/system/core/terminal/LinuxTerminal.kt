@@ -2,6 +2,9 @@ package com.hxl.desktop.system.core.terminal
 
 import com.hxl.desktop.common.core.Constant
 import com.hxl.desktop.common.core.Directory
+import com.hxl.desktop.common.kotlin.extent.commandExist
+import com.hxl.desktop.system.core.command.CommandConstant
+import com.hxl.desktop.system.core.command.TerminalCommand
 import com.hxl.desktop.system.core.sys.CoolDesktopSystem
 import com.jcraft.jsch.ChannelShell
 import com.jcraft.jsch.JSch
@@ -12,6 +15,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.nio.file.Paths
 import java.util.concurrent.LinkedBlockingQueue
+import java.util.stream.Collectors
 
 
 class LinuxTerminal(private var serverConnectionWrap: ServerConnectionInfoWrap) : Terminal {
@@ -119,16 +123,16 @@ class LinuxTerminal(private var serverConnectionWrap: ServerConnectionInfoWrap) 
     private fun initJsch(): Boolean {
         try {
             jsch.addIdentity(Paths.get(Directory.getSecureShellConfigDirectory(), CoolDesktopSystem.RSA_NAME).toString())
-            session = jsch.getSession(
-                serverConnectionWrap.info.userName,
-                serverConnectionWrap.info.host,
-                serverConnectionWrap.info.port
-            )
-            if (session != null) {
-                with(session!!) {
-                    this.setConfig("StrictHostKeyChecking", "no")
-                    this.connect(CONNECTION_TIMEOUT)
-                    return true
+
+            //尝试推测ssh服务
+            for (port in getSshdPorts()) {
+                session = jsch.getSession(serverConnectionWrap.info.userName, serverConnectionWrap.info.host, port)
+                if (session != null) {
+                    with(session!!) {
+                        this.setConfig("StrictHostKeyChecking", "no")
+                        this.connect(CONNECTION_TIMEOUT)
+                        return true
+                    }
                 }
             }
             //连接失败
@@ -149,4 +153,20 @@ class LinuxTerminal(private var serverConnectionWrap: ServerConnectionInfoWrap) 
         connectioned = false
     }
 
+    fun getSshdPorts(): List<Int> {
+        val port: String = if ("lsof".commandExist()) {
+            TerminalCommand.Builder()
+                .add(CommandConstant.FIND_PROCESS_LISTENER_PORT_BY_LSOF.format("sshd"))
+                .execute()
+        } else {
+            TerminalCommand.Builder()
+                .add(CommandConstant.FIND_PROCESS_LISTENER_PORT_BY_NETSTAT.format("sshd"))
+                .execute()
+        }
+        return port.split("\n")
+            .stream()
+            .map { if (it.isNotBlank()) it.toIntOrNull() else null }.filter { it != null }
+            .map { it!!.toInt() }
+            .collect(Collectors.toList())
+    }
 }

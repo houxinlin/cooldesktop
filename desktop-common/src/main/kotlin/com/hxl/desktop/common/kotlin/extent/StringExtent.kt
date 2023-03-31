@@ -72,3 +72,10 @@ fun String.toFile(): File {
     return File(this);
 }
 
+fun String.commandExist(): Boolean {
+    val processBuilder = ProcessBuilder("which", this)
+    val process = processBuilder.start()
+    process.waitFor()
+    val exitCode = process.exitValue()
+    return exitCode == 0
+}

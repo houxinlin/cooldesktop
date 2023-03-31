@@ -1,7 +1,7 @@
 package com.hxl.desktop.system.core.tail
 
 import com.hxl.desktop.common.utils.ThreadUtils
-import com.hxl.desktop.system.core.terminal.CommandConstant
+import com.hxl.desktop.system.core.command.CommandConstant
 import org.slf4j.LoggerFactory
 import java.lang.Exception
 

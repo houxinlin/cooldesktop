@@ -13,8 +13,8 @@ import com.hxl.desktop.system.config.SystemResourceMvcConfigurer.Companion.WALLP
 import com.hxl.desktop.system.utils.TomcatGlobalAuthenticationPasswordUtils
 import com.hxl.desktop.system.core.WebSocketMessageBuilder
 import com.hxl.desktop.system.core.WebSocketSender
-import com.hxl.desktop.system.core.terminal.CommandConstant
-import com.hxl.desktop.system.core.terminal.TerminalCommand
+import com.hxl.desktop.system.core.command.CommandConstant
+import com.hxl.desktop.system.core.command.TerminalCommand
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

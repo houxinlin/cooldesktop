@@ -23,8 +23,7 @@ class TerminalSocketAction : AbstractBasicSocketAction() {
     @Autowired
     lateinit var coolDesktopEventAction: CoolDesktopEventAction
 
-    fun createServerConnectionInfoWrap(
-        connectionInfo: ServerConnectionInfo, session: WebSocketSession): ServerConnectionInfoWrap {
+    fun createServerConnectionInfoWrap(connectionInfo: ServerConnectionInfo, session: WebSocketSession): ServerConnectionInfoWrap {
         return ServerConnectionInfoWrap(connectionInfo, SshMessageListener(session))
     }
 
@@ -41,8 +40,7 @@ class TerminalSocketAction : AbstractBasicSocketAction() {
             return
         }
         //创建终端实例
-        val terminal =
-            TerminalInstanceFactory.getTerminal(createServerConnectionInfoWrap(connectionInfo, webSocketSession!!))
+        val terminal = TerminalInstanceFactory.getTerminal(createServerConnectionInfoWrap(connectionInfo, webSocketSession!!))
         terminalMapping[webSocketSession] = terminal
     }
 
