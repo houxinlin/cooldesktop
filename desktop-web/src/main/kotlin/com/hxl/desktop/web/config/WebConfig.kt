@@ -31,12 +31,12 @@ class WebConfig  : WebMvcConfigurer,WebServerFactoryCustomizer<ConfigurableServl
         const val SERVER_DEFAULT_PORT=2556
     }
     override fun customize(factory: ConfigurableServletWebServerFactory) {
-        val port =Directory.getPortConfigPath().toFile()
-        if (!port.exists()) port.writeStringBuffer(SERVER_DEFAULT_PORT.toString())
-        if (applicationArguments.getOptionValues("server.port")==null){
-            val p =port.readText().trim()
-            factory.setPort(p.toInt())
-        }
+//        val port =Directory.getPortConfigPath().toFile()
+//        if (!port.exists()) port.writeStringBuffer(SERVER_DEFAULT_PORT.toString())
+//        if (applicationArguments.getOptionValues("server.port")==null){
+//            val p =port.readText().trim()
+//            factory.setPort(p.toInt())
+//        }
         val error404Page = ErrorPage(HttpStatus.NOT_FOUND, "/index.html")
         factory.addErrorPages(error404Page)
     }

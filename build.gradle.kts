@@ -20,9 +20,15 @@ configurations {
 
 }
 dependencies {
-
+//    implementation("org.jetbrains.pty4j:pty4j:0.12.10")
 }
 repositories {
+    maven { url =uri ("https://maven.aliyun.com/repository/public/") }
+    maven {
+        url =uri("file:///home/HouXinLin/projects/java/mini-api/mini-api/build/repos/releases/")
+    }
+    maven { url =uri("https://jitpack.io") }
+
     mavenCentral()
     flatDir {
         dirs("desktop-lib")
@@ -46,7 +52,18 @@ tasks.register<Copy>("copyLib") {
 }
 
 subprojects {
+    repositories {
+        maven { url =uri ("https://maven.aliyun.com/repository/public/") }
+        maven {
+            url =uri("file:///home/HouXinLin/projects/java/mini-api/mini-api/build/repos/releases/")
+        }
+        maven { url =uri("https://jitpack.io") }
 
+        mavenCentral()
+        flatDir {
+            dirs("desktop-lib")
+        }
+    }
     apply {
         apply {
             plugin("io.spring.dependency-management")
@@ -109,12 +126,14 @@ subprojects {
 //        implementation("org.springframework.boot:spring-boot-starter-thymeleaf:2.6.4")
         implementation("org.springframework.boot:spring-boot-loader:2.6.1")
         implementation("org.thymeleaf:thymeleaf:3.1.0.M1")
+
+
     }
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = "1.8"
+            jvmTarget = "11"
         }
     }
 

@@ -1,52 +1,41 @@
 package com.hxl.desktop.system.core.terminal
 
-import com.hxl.desktop.common.core.Constant
-import com.hxl.desktop.common.core.Directory
-import com.hxl.desktop.common.kotlin.extent.commandExist
-import com.hxl.desktop.system.core.command.CommandConstant
-import com.hxl.desktop.system.core.command.TerminalCommand
-import com.hxl.desktop.system.core.sys.CoolDesktopSystem
-import com.jcraft.jsch.ChannelShell
-import com.jcraft.jsch.JSch
-import com.jcraft.jsch.Session
+import com.pty4j.PtyProcess
+import com.pty4j.PtyProcessBuilder
+import com.pty4j.WinSize
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.io.OutputStream
-import java.nio.file.Paths
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.stream.Collectors
-
 
 class LinuxTerminal(private var serverConnectionWrap: ServerConnectionInfoWrap) : Terminal {
     companion object {
-        private const val CONNECTION_TIMEOUT: Int = 1000 * 5
-        private val CONNECTION_FAIL = "连接失败".toByteArray()
         private val log: Logger = LoggerFactory.getLogger(LinuxTerminal::class.java)
+        private const val INIT_ECHO = "\u001B[1;34m欢迎来到CoolDesktop终端\u001B[00m  \n\r" +
+                "\u001B[1;34m在这里您可以尽情得操作\u001B[00m\r\n"
     }
-
-    private val jsch = JSch()
-
-    private var session: Session? = null
 
     @Volatile
     private var terminalInputStream: InputStream? = null
 
     @Volatile
     private var terminalOutputStream: OutputStream? = null
+    private val waitInit = CountDownLatch(1);
 
     @Volatile
     private var connectioned = false
-
-    private var channelShell: ChannelShell? = null
-
     private var commandQueue: LinkedBlockingQueue<String> = LinkedBlockingQueue<String>()
-
     private var commandConsumeThread: Thread? = null
+    private lateinit var ptyProcessBuilder: PtyProcessBuilder
+    private lateinit var process: PtyProcess
+    private var terminalHome = ""
+
+
     override fun setSize(col: Int, row: Int, w: Int, h: Int) {
         log.info("终端大小发生改变，新的大小为$col ${row}")
-        channelShell?.setPty(true)
-        channelShell?.setPtySize(col, row, w, h)
+        process.winSize = WinSize(col, row, w, h)
     }
 
     override fun run() {
@@ -64,31 +53,41 @@ class LinuxTerminal(private var serverConnectionWrap: ServerConnectionInfoWrap) 
 
 
     override fun writeCommand(command: String) {
+        if (command.startsWith("INIT_HOME_TERMINAL:")) {
+            terminalHome = command.substring(19)
+            waitInit.countDown()
+            return
+        }
         commandQueue.offer(command)
 
     }
 
     override fun startTerminal() {
-        if (initJsch()) readTerminalData()
+        waitInit.await()
+        println("startTerminal")
+        val home = if (terminalHome.isBlank()) System.getProperty("user.home") else terminalHome
+        ptyProcessBuilder = PtyProcessBuilder()
+            .setDirectory(home)
+            .setCommand(arrayOf("/bin/bash"))
+        process = ptyProcessBuilder.start()
+        serverConnectionWrap.terminalResponse.output(INIT_ECHO.toByteArray())
+        readTerminalData()
     }
 
-
-    private fun doHandlerCommand(command: String) {
-        if (command.startsWith("setSize")) {
-            handlerSystemCommand(command)
-            return
-        }
-        terminalOutputStream?.write(((command).toByteArray()))
-        terminalOutputStream?.flush()
-    }
 
     private fun startCommandConsumeThread() {
         commandConsumeThread = Thread() {
             try {
                 while (true) {
-                    doHandlerCommand(commandQueue.take())
+                    val command = commandQueue.take()
+                    if (command.startsWith("setSize")) {
+                        handlerSystemCommand(command)
+                        continue
+                    }
+                    terminalOutputStream?.write(((command).toByteArray()))
+                    terminalOutputStream?.flush()
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
             }
         }
         commandConsumeThread!!.start()
@@ -96,13 +95,8 @@ class LinuxTerminal(private var serverConnectionWrap: ServerConnectionInfoWrap) 
 
     private fun readTerminalData() {
         try {
-            channelShell = session!!.openChannel("shell") as ChannelShell
-            with(channelShell!!) {
-                terminalInputStream = this.inputStream
-                terminalOutputStream = this.outputStream
-                connect(CONNECTION_TIMEOUT)
-                connectioned = true
-            }
+            terminalInputStream = process.inputStream
+            terminalOutputStream = process.outputStream
             startCommandConsumeThread()
 
             val buffer = ByteArray(1024)
@@ -120,53 +114,12 @@ class LinuxTerminal(private var serverConnectionWrap: ServerConnectionInfoWrap) 
         }
     }
 
-    private fun initJsch(): Boolean {
-        try {
-            jsch.addIdentity(Paths.get(Directory.getSecureShellConfigDirectory(), CoolDesktopSystem.RSA_NAME).toString())
-
-            //尝试推测ssh服务
-            for (port in getSshdPorts()) {
-                session = jsch.getSession(serverConnectionWrap.info.userName, serverConnectionWrap.info.host, port)
-                if (session != null) {
-                    with(session!!) {
-                        this.setConfig("StrictHostKeyChecking", "no")
-                        this.connect(CONNECTION_TIMEOUT)
-                        return true
-                    }
-                }
-            }
-            //连接失败
-            serverConnectionWrap.terminalResponse.output(CONNECTION_FAIL);
-        } catch (e: Exception) {
-            log.info(e.message)
-            serverConnectionWrap.terminalResponse.output((e.message + ":" + Constant.StringConstant.SSH_CONNECTION_FAIL).toByteArray())
-        }
-        return false
-    }
-
     override fun stopTerminal() {
         commandQueue.clear()
         commandConsumeThread?.interrupt()
-        session?.disconnect()
-        session = null
-        channelShell = null
         connectioned = false
-    }
-
-    fun getSshdPorts(): List<Int> {
-        val port: String = if ("lsof".commandExist()) {
-            TerminalCommand.Builder()
-                .add(CommandConstant.FIND_PROCESS_LISTENER_PORT_BY_LSOF.format("sshd"))
-                .execute()
-        } else {
-            TerminalCommand.Builder()
-                .add(CommandConstant.FIND_PROCESS_LISTENER_PORT_BY_NETSTAT.format("sshd"))
-                .execute()
+        if (::process.isInitialized){
+            process.destroyForcibly()
         }
-        return port.split("\n")
-            .stream()
-            .map { if (it.isNotBlank()) it.toIntOrNull() else null }.filter { it != null }
-            .map { it!!.toInt() }
-            .collect(Collectors.toList())
     }
 }

@@ -1,6 +1,6 @@
+import com.hxl.desktop.common.kotlin.extent.commandExist
 import com.hxl.desktop.system.core.command.CommandConstant
 import com.hxl.desktop.system.core.command.TerminalCommand
-import com.hxl.desktop.system.core.sys.commandExist
 import java.util.stream.Collectors
 
 class CommandTest {

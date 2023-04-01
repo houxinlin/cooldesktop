@@ -23,24 +23,13 @@ class TerminalSocketAction : AbstractBasicSocketAction() {
     @Autowired
     lateinit var coolDesktopEventAction: CoolDesktopEventAction
 
-    fun createServerConnectionInfoWrap(connectionInfo: ServerConnectionInfo, session: WebSocketSession): ServerConnectionInfoWrap {
-        return ServerConnectionInfoWrap(connectionInfo, SshMessageListener(session))
+    fun createServerConnectionInfoWrap( session: WebSocketSession): ServerConnectionInfoWrap {
+        return ServerConnectionInfoWrap( SshMessageListener(session))
     }
 
     override fun action(subject: String, webSocketSession: WebSocketSession?) {
-        //获取属性
-        val connectionInfo = systemProperty.getServerConnectionInfo()
-        //连接信息不完整
-        if (!connectionInfo.verification()) {
-            coolDesktopEventAction.sendForSubject(
-                WebSocketMessageBuilder.Builder()
-                    .applySubject(Constant.WebSocketSubjectNameConstant.TERMINAL_MESSAGE)
-                    .addItem("msg", Constant.StringConstant.TERMINAL_MESSAGE_CONNECT_NOT_FOUND)
-            )
-            return
-        }
         //创建终端实例
-        val terminal = TerminalInstanceFactory.getTerminal(createServerConnectionInfoWrap(connectionInfo, webSocketSession!!))
+        val terminal = TerminalInstanceFactory.getTerminal(createServerConnectionInfoWrap( webSocketSession!!))
         terminalMapping[webSocketSession] = terminal
     }
 
