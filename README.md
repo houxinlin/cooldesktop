@@ -46,6 +46,8 @@ CoolDesktop是一个Linux服务器管理软件，采用全新的操作方式，�
 
 ![image](https://user-images.githubusercontent.com/38684327/188296061-03eded11-b90d-4caf-a4ee-07568cde3e08.png)
 
+# 版本支持
+    1. JDK >=11
 
 # 更新日志
 
