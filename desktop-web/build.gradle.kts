@@ -29,7 +29,8 @@ tasks.register("install") {
             "--compress=2",
             "--strip-debug",
             "--add-modules",
-            "java.base,java.desktop,java.logging,java.management,java.naming,java.net.http,java.scripting,java.security.jgss,java.security.sasl,jdk.unsupported",
+            "ALL-MODULE-PATH",
+//            "java.base,java.lang.instrument,java.desktop,java.logging,java.management,java.naming,java.net.http,java.scripting,java.security.jgss,java.security.sasl,java.sql,jdk.unsupported",
             "--output",
             project.rootDir.toString()+"/bin/jre")
     }

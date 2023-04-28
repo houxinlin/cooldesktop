@@ -51,8 +51,6 @@ CoolDesktop是一个Linux服务器管理软件，采用全新的操作方式，�
 
 # 更新日志
 
-## 2023/04/01
-    1. 借助Chatgpt能力升级了终端体验，不需要在通过ssh连接。
 # 所用语言及依赖
 1. kotlin  https://kotlinlang.org/
 2. Spring Boot  https://spring.io/projects/spring-boot
