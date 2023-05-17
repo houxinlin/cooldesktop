@@ -39,8 +39,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Future
+import java.util.concurrent.*
 import java.util.stream.Collectors
 import kotlin.io.path.*
 
@@ -57,6 +56,7 @@ class FileServiceImpl : IFileService {
         private val log: Logger = LoggerFactory.getLogger(FileServiceImpl::class.java)
     }
     private val fileMergeLockMap: ConcurrentHashMap<String, Any> = ConcurrentHashMap()
+    private val fileThreadPool =ThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),Runtime.getRuntime().availableProcessors(),1,TimeUnit.SECONDS,LinkedBlockingDeque())
 
     @Autowired
     lateinit var webSocketSender: WebSocketSender
@@ -192,10 +192,20 @@ class FileServiceImpl : IFileService {
             return emptyList()
         }
         val files = root.toPath().listRootDirector()
-        val mutableListOf = mutableListOf<FileAttribute>()
-        files.forEach {  mutableListOf.add(it.getAttribute())}
-        val folderList = mutableListOf.filter { it.type == FileType.FOLDER.typeName }
-        val fileList = mutableListOf.filter { it.type != FileType.FOLDER.typeName }
+        val result = CopyOnWriteArrayList<FileAttribute>()
+        val countDownLatch = CountDownLatch(files.size)
+        files.forEach {
+            fileThreadPool.execute {
+                try {
+                    result.add(it.getAttribute())
+                }finally {
+                    countDownLatch.countDown()
+                }
+            }
+        }
+        countDownLatch.await(1,TimeUnit.MINUTES)
+        val folderList = result.filter { it.type == FileType.FOLDER.typeName }
+        val fileList = result.filter { it.type != FileType.FOLDER.typeName }
         folderList.sortedBy { it.name }
         fileList.sortedBy { it.name }
         return folderList.plus(fileList)

@@ -64,16 +64,17 @@ class LinuxTerminal(private var serverConnectionWrap: ServerConnectionInfoWrap) 
 
     override fun startTerminal() {
         waitInit.await()
-        println("startTerminal")
-        val home = if (terminalHome.isBlank()) System.getProperty("user.home") else terminalHome
+        val home = terminalHome.ifBlank { System.getProperty("user.home") }
+        val env: MutableMap<String, String> = HashMap(System.getenv())
+        env["TERM"] = "xterm"
         ptyProcessBuilder = PtyProcessBuilder()
             .setDirectory(home)
+            .setEnvironment(env)
             .setCommand(arrayOf("/bin/bash"))
         process = ptyProcessBuilder.start()
         serverConnectionWrap.terminalResponse.output(INIT_ECHO.toByteArray())
         readTerminalData()
     }
-
 
     private fun startCommandConsumeThread() {
         commandConsumeThread = Thread() {
