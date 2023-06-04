@@ -17,12 +17,6 @@ import java.util.concurrent.ConcurrentHashMap
 class TerminalSocketAction : AbstractBasicSocketAction() {
     private val terminalMapping = ConcurrentHashMap<WebSocketSession, Terminal>()
 
-    @Autowired
-    lateinit var systemProperty: SystemProperty
-
-    @Autowired
-    lateinit var coolDesktopEventAction: CoolDesktopEventAction
-
     fun createServerConnectionInfoWrap( session: WebSocketSession): ServerConnectionInfoWrap {
         return ServerConnectionInfoWrap( SshMessageListener(session))
     }
