@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group 'com.hxl.desktop'
+version '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+tasks.jar{
+    manifest {
+        attributes.put("Main-Class","com.hxl.desktop.Startup")
+    }
+    archiveName("startup.jar")
+    destinationDirectory.set(file("../bin"))
+}
+test {
+    useJUnitPlatform()
+}
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
